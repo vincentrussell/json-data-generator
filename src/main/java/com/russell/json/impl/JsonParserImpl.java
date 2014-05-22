@@ -4,9 +4,11 @@ package com.russell.json.impl;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.russell.json.JsonParser;
+import org.apache.commons.io.IOUtils;
 
 import java.io.*;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -63,77 +65,92 @@ public class JsonParserImpl implements JsonParser {
     }
 
     public void generateTestDataJson(String text, OutputStream outputStream) {
-        generateTestDataJson(new StringReader(text),outputStream);
+        generateTestDataJson(new ByteArrayInputStream(text.getBytes()),outputStream);
     }
 
-    public void generateTestDataJson(Reader reader, OutputStream outputStream) {
-        BufferedReader br = new BufferedReader(reader);
+    public void generateTestDataJson(InputStream inputStream, OutputStream outputStream) {
+        StringBuilder builder = new StringBuilder();
+        try {
+            builder.append(IOUtils.toString(inputStream));
+            doGenerateTestDataJson(builder, outputStream);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+
+    public void doGenerateTestDataJson(StringBuilder in, OutputStream out) {
         StringBuilder tempBuffer = new StringBuilder();
         StringBuilder repeatBuffer = new StringBuilder();
         boolean isRepeating = false;
         int bracketCount = 0;
         int repeatTimes = 0;
         try {
-            int i;
-            do {
-                i = br.read();
-                if (i != -1) {
-                    if (isRepeating) {
-                        repeatBuffer.append((char) i);
-                        if (Character.valueOf((char) i).equals("{".toCharArray()[0])) {
-                            bracketCount++;
-                        } else if (Character.valueOf((char) i).equals("}".toCharArray()[0])) {
-                            bracketCount--;
-                            if (bracketCount == 0) {
-                                tempBuffer.append(repeatBuffer);
-                                for (int j = 1; j < repeatTimes; j++) {
-                                    tempBuffer.append(",\n").append(repeatBuffer);
-                                }
-                                outputStream.write(String.valueOf(tempBuffer).getBytes());
-                                repeatBuffer.setLength(0);
-                                tempBuffer.setLength(0);
-                                isRepeating = false;
-                                bracketCount = 0;
+            for (int i=0; i < in.length(); i++) {
+                if (isRepeating) {
+                    repeatBuffer.append(in.substring(i,i+1));
+                    if (in.substring(i,i+1).equals("{")) {
+                        bracketCount++;
+                    } else if (in.substring(i,i+1).equals("}")) {
+                        bracketCount--;
+                        if (bracketCount == 0) {
+                            tempBuffer.append(repeatBuffer);
+                            for (int j = 1; j < repeatTimes; j++) {
+                                tempBuffer.append(",\n").append(repeatBuffer);
                             }
+                            File tempFile = File.createTempFile("tempFile","json");
+                            tempFile.deleteOnExit();
+                            FileOutputStream outputStream = new FileOutputStream(tempFile);
+                            doGenerateTestDataJson(tempBuffer,outputStream);
+                            outputStream.close();
+                            StringBuilder builder = new StringBuilder();
+                            FileInputStream fileInputSteam = new FileInputStream(tempFile);
+                            builder.append(IOUtils.toString(fileInputSteam));
+                            out.write(String.valueOf(builder).getBytes());
+                            fileInputSteam.close();
+                            repeatBuffer.setLength(0);
+                            tempBuffer.setLength(0);
+                            isRepeating = false;
+                            bracketCount = 0;
                         }
-                    } else {
-                        tempBuffer.append((char) i);
                     }
-                    if (isRepeatFunction(tempBuffer)) {
-                        br.mark(1000);
-                        tempBuffer.append((char) i);
-                        repeatTimes = (Integer)getRepeatFunctionNameAndArguments(tempBuffer)[1];
-                        int indexOfRepeat = indexOf(repeatFunctionPattern,tempBuffer);
-                        tempBuffer.setLength(indexOfRepeat);
-                        outputStream.write(String.valueOf(tempBuffer).getBytes());
-                        tempBuffer.setLength(0);
-                        repeatBuffer.setLength(0);
-                        isRepeating = true;
-                        bracketCount = 0;
-                    }
+                } else {
+                    tempBuffer.append(in.substring(i,i+1));
                 }
-            } while (i != -1);
-            br.close();
-        }
-         catch (IOException e) {
+                if (isRepeatFunction(tempBuffer)) {
+                    tempBuffer.append(in.substring(i,i+1));
+                    repeatTimes = (Integer) getRepeatFunctionNameAndArguments(tempBuffer)[1];
+                    int indexOfRepeat = indexOf(repeatFunctionPattern, tempBuffer);
+                    tempBuffer.setLength(indexOfRepeat);
+                    out.write(String.valueOf(tempBuffer).getBytes());
+                    tempBuffer.setLength(0);
+                    repeatBuffer.setLength(0);
+                    isRepeating = true;
+                    bracketCount = 0;
+                }
+            }
+
+        } catch (IOException e) {
             e.printStackTrace();
         } finally {
             try {
-                outputStream.write(String.valueOf(tempBuffer).getBytes());
+                out.write(String.valueOf(tempBuffer).getBytes());
             } catch (IOException e) {
                 //noop
             }
         }
+    }
 
 
-        JsonReader jsonReader = new JsonReader(reader);
+// JsonReader jsonReader = new JsonReader(reader);
 //
 //        try {
 //            handleObject(jsonReader);
 //        } catch (IOException e) {
 //            e.printStackTrace();
 //        }
-    }
+
 
 
     private static void handleObject(JsonReader reader) throws IOException {

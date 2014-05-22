@@ -38,7 +38,7 @@ public class JsonParserTest
     @Test
     public void copyJson() {
         InputStream stream = this.getClass().getClassLoader().getResourceAsStream("copyJson.json");
-        parser.generateTestDataJson(new InputStreamReader(stream),os);
+        parser.generateTestDataJson(stream,os);
         String results  = new String(os.toByteArray());
         System.out.println(results);
 
@@ -47,7 +47,7 @@ public class JsonParserTest
     @Test
     public void copyDoupleNestedJson() {
         InputStream stream = this.getClass().getClassLoader().getResourceAsStream("copyDoubleNestedJson.json");
-        parser.generateTestDataJson(new InputStreamReader(stream),os);
+        parser.generateTestDataJson(stream,os);
         String results  = new String(os.toByteArray());
         System.out.println(results);
 
