@@ -1,13 +1,13 @@
 package com.russell;
 
-import com.russell.json.Functions;
+import com.russell.json.impl.FunctionsImpl;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
 
 public class FunctionsTest {
 
-    Functions functions = new Functions();
+    FunctionsImpl functions = new FunctionsImpl();
 
     @Test
     public void randomInt() {
