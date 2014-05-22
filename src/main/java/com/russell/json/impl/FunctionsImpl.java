@@ -8,8 +8,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
+import java.util.regex.Pattern;
 
 public class FunctionsImpl implements Functions {
+
+    public static final Pattern FUNCTION_PATTERN = Pattern.compile("\\{\\{([\\w]+)\\((.*)\\)\\}\\}");
+    public static final Pattern REPEAT_FUNCTION_PATTERN = Pattern.compile("\'\\{\\{(repeat)\\((\\d+)\\)\\}\\}\'\\s*,");
 
     public String execute(String functionName, Object... arguments) throws IllegalArgumentException {
         List<Class> classList = new ArrayList<Class>();

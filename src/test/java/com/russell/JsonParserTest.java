@@ -1,15 +1,14 @@
 package com.russell;
 
 import com.russell.json.impl.JsonParserImpl;
+import org.apache.commons.io.IOUtils;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 
 import static org.junit.Assert.*;
 
@@ -18,17 +17,17 @@ public class JsonParserTest
 {
 
     private JsonParserImpl parser = new JsonParserImpl();
-    ByteArrayOutputStream os;
+    ByteArrayOutputStream outputStream;
 
     @Before
     public void setUp() {
-        os = new ByteArrayOutputStream();
+        outputStream = new ByteArrayOutputStream();
     }
 
     @After
     public void tearDown() {
         try {
-            os.close();
+            outputStream.close();
         } catch (IOException e) {
             //noop
         }
@@ -36,20 +35,31 @@ public class JsonParserTest
 
 
     @Test
-    public void copyJson() {
-        InputStream stream = this.getClass().getClassLoader().getResourceAsStream("copyJson.json");
-        parser.generateTestDataJson(stream,os);
-        String results  = new String(os.toByteArray());
-        System.out.println(results);
+    public void copyJson() throws IOException {
+        InputStream resultsStream = this.getClass().getClassLoader().getResourceAsStream("copyJson.json.results");
+        parser.generateTestDataJson(this.getClass().getClassLoader().getResource("copyJson.json"), outputStream);
+        String results  = new String(outputStream.toByteArray());
+        assertEquals(IOUtils.toString(resultsStream).trim(),results.trim());
 
     }
 
     @Test
-    public void copyDoupleNestedJson() {
+    public void copyDoubleNestedJson() throws IOException {
         InputStream stream = this.getClass().getClassLoader().getResourceAsStream("copyDoubleNestedJson.json");
-        parser.generateTestDataJson(stream,os);
-        String results  = new String(os.toByteArray());
-        System.out.println(results);
+        InputStream resultsStream = this.getClass().getClassLoader().getResourceAsStream("copyDoubleNestedJson.results");
+        parser.generateTestDataJson(this.getClass().getClassLoader().getResource("copyDoubleNestedJson.json"), outputStream);
+        String results  = new String(outputStream.toByteArray());
+        assertEquals(IOUtils.toString(resultsStream).trim(), results.trim());
+
+    }
+
+
+    @Test
+    public void functionSimpleJson() throws IOException {
+        InputStream resultsStream = this.getClass().getClassLoader().getResourceAsStream("simple.json.results");
+        parser.generateTestDataJson(this.getClass().getClassLoader().getResource("simple.json"), outputStream);
+        String results  = new String(outputStream.toByteArray());
+        assertEquals(IOUtils.toString(resultsStream).trim(),results.trim());
 
     }
 

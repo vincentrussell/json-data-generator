@@ -7,8 +7,7 @@ import com.russell.json.JsonParser;
 import org.apache.commons.io.IOUtils;
 
 import java.io.*;
-import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -16,20 +15,18 @@ import java.util.regex.Pattern;
 
 public class JsonParserImpl implements JsonParser {
 
-    Pattern functionPattern = Pattern.compile("\\{\\{([\\w]+)\\((.*)\\)\\}\\}");
-    Pattern repeatFunctionPattern = Pattern.compile("\'\\{\\{(repeat)\\((\\d+)\\)\\}\\}\'\\s*,");
 
     public JsonParserImpl() {
         //noop
     }
 
     public boolean isFunction(CharSequence input) {
-        Matcher matcher = functionPattern.matcher(input);
+        Matcher matcher = FunctionsImpl.FUNCTION_PATTERN.matcher(input);
         return matcher.find();
     }
 
     public boolean isRepeatFunction(CharSequence input) {
-        Matcher matcher = repeatFunctionPattern.matcher(input);
+        Matcher matcher = FunctionsImpl.REPEAT_FUNCTION_PATTERN.matcher(input);
         return matcher.find();
     }
 
@@ -39,11 +36,11 @@ public class JsonParserImpl implements JsonParser {
     }
 
     public Object[] getFunctionNameAndArguments(CharSequence input) {
-        return getFunctionNameAndArguments(input,functionPattern);
+        return getFunctionNameAndArguments(input,FunctionsImpl.FUNCTION_PATTERN);
     }
 
     public Object[] getRepeatFunctionNameAndArguments(CharSequence input) {
-        return getFunctionNameAndArguments(input, repeatFunctionPattern);
+        return getFunctionNameAndArguments(input, FunctionsImpl.REPEAT_FUNCTION_PATTERN);
     }
 
     public Object[] getFunctionNameAndArguments(CharSequence input, Pattern pattern) {
@@ -64,50 +61,65 @@ public class JsonParserImpl implements JsonParser {
         return null;
     }
 
+    @Override
     public void generateTestDataJson(String text, OutputStream outputStream) {
-        generateTestDataJson(new ByteArrayInputStream(text.getBytes()),outputStream);
+        handleRepeats(new ByteArrayInputStream(text.getBytes()), outputStream);
+        handleNestedFunctions(new ByteArrayInputStream(text.getBytes()), outputStream);
     }
 
-    public void generateTestDataJson(InputStream inputStream, OutputStream outputStream) {
-        StringBuilder builder = new StringBuilder();
+    @Override
+    public void generateTestDataJson(URL classPathResource, OutputStream outputStream) {
         try {
-            builder.append(IOUtils.toString(inputStream));
-            doGenerateTestDataJson(builder, outputStream);
+            handleRepeats(classPathResource.openStream(), outputStream);
+            handleNestedFunctions(classPathResource.openStream(), outputStream);
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
 
+    @Override
+    public void generateTestDataJson(File file, OutputStream outputStream) throws FileNotFoundException {
+        handleRepeats(new FileInputStream(file), outputStream);
+        handleNestedFunctions(new FileInputStream(file), outputStream);
     }
 
 
-    public void doGenerateTestDataJson(StringBuilder in, OutputStream out) {
+    protected void handleRepeats(InputStream inputStream, OutputStream outputStream) {
+        BufferedReader br = new BufferedReader(new InputStreamReader(inputStream));
         StringBuilder tempBuffer = new StringBuilder();
         StringBuilder repeatBuffer = new StringBuilder();
         boolean isRepeating = false;
         int bracketCount = 0;
         int repeatTimes = 0;
         try {
-            for (int i=0; i < in.length(); i++) {
-                if (isRepeating) {
-                    repeatBuffer.append(in.substring(i,i+1));
-                    if (in.substring(i,i+1).equals("{")) {
+            int i;
+             do {
+             i = br.read();
+               if (i != -1) {
+                    if (isRepeating) {
+                        repeatBuffer.append((char) i);
+                    if (Character.valueOf((char) i).equals("{".toCharArray()[0])) {
                         bracketCount++;
-                    } else if (in.substring(i,i+1).equals("}")) {
+                    } else if (Character.valueOf((char) i).equals("}".toCharArray()[0])) {
                         bracketCount--;
                         if (bracketCount == 0) {
-                            tempBuffer.append(repeatBuffer);
+                            File newCopyFile = File.createTempFile("newCopy","json");
+                            newCopyFile.deleteOnExit();
+                            FileOutputStream newCopyFileStream = new FileOutputStream(newCopyFile);
+                            newCopyFileStream.write(String.valueOf(repeatBuffer).getBytes());
                             for (int j = 1; j < repeatTimes; j++) {
-                                tempBuffer.append(",\n").append(repeatBuffer);
+                                newCopyFileStream.write(String.valueOf(",\n").getBytes());
+                                newCopyFileStream.write(String.valueOf(repeatBuffer).getBytes());
                             }
-                            File tempFile = File.createTempFile("tempFile","json");
-                            tempFile.deleteOnExit();
-                            FileOutputStream outputStream = new FileOutputStream(tempFile);
-                            doGenerateTestDataJson(tempBuffer,outputStream);
-                            outputStream.close();
+                            File recursiveJsonObjectFile = File.createTempFile("recursive","json");
+                            recursiveJsonObjectFile.deleteOnExit();
+                            FileOutputStream recursiveOutputStream = new FileOutputStream(recursiveJsonObjectFile);
+                            handleRepeats(new FileInputStream(newCopyFile), recursiveOutputStream);
+                            recursiveOutputStream.close();
                             StringBuilder builder = new StringBuilder();
-                            FileInputStream fileInputSteam = new FileInputStream(tempFile);
+                            FileInputStream fileInputSteam = new FileInputStream(recursiveJsonObjectFile);
                             builder.append(IOUtils.toString(fileInputSteam));
-                            out.write(String.valueOf(builder).getBytes());
+                            outputStream.write(String.valueOf(builder).getBytes());
                             fileInputSteam.close();
                             repeatBuffer.setLength(0);
                             tempBuffer.setLength(0);
@@ -116,30 +128,58 @@ public class JsonParserImpl implements JsonParser {
                         }
                     }
                 } else {
-                    tempBuffer.append(in.substring(i,i+1));
+                    tempBuffer.append((char) i);
                 }
                 if (isRepeatFunction(tempBuffer)) {
-                    tempBuffer.append(in.substring(i,i+1));
+                    tempBuffer.append((char) i);
                     repeatTimes = (Integer) getRepeatFunctionNameAndArguments(tempBuffer)[1];
-                    int indexOfRepeat = indexOf(repeatFunctionPattern, tempBuffer);
+                    int indexOfRepeat = indexOf(FunctionsImpl.REPEAT_FUNCTION_PATTERN, tempBuffer);
                     tempBuffer.setLength(indexOfRepeat);
-                    out.write(String.valueOf(tempBuffer).getBytes());
+                    outputStream.write(String.valueOf(tempBuffer).getBytes());
                     tempBuffer.setLength(0);
                     repeatBuffer.setLength(0);
                     isRepeating = true;
                     bracketCount = 0;
                 }
             }
+            } while (i != -1);
+            br.close();
+
+
+        } catch (IOException e) {
+            //noop
+        } finally {
+            try {
+                outputStream.write(String.valueOf(tempBuffer).getBytes());
+                br.close();
+            } catch (IOException e) {
+                //noop
+            }
+        }
+    }
+
+    protected void handleNestedFunctions(InputStream inputStream, OutputStream outputStream) {
+        Reader reader = new FunctionReplacingReader(new InputStreamReader(inputStream), new FunctionTokenResolver());
+
+        int data = 0;
+        try {
+            data = reader.read();
+
+        while(data != -1){
+            System.out.print((char) data);
+            data = reader.read();
+        }
 
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
             try {
-                out.write(String.valueOf(tempBuffer).getBytes());
+                inputStream.close();
             } catch (IOException e) {
                 //noop
             }
         }
+
     }
 
 
