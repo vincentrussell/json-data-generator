@@ -87,7 +87,7 @@ public class FunctionsImpl implements Functions {
         return null;
     }
 
-    public String randomInt(Integer min, Integer max) {
+    public String integer(Integer min, Integer max) {
         int randomNum = min + (int)(Math.random()*max);
         return new Integer(randomNum).toString();
     }

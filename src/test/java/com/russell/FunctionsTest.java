@@ -55,8 +55,8 @@ public class FunctionsTest {
     }
 
     @Test
-    public void randomInt() {
-        String result = functions.execute("randomInt",new Object[]{1,5});
+    public void integer() {
+        String result = functions.execute("integer",new Object[]{1,5});
         Integer integer = Integer.parseInt(result);
         assertTrue(true);
     }
