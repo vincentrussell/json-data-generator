@@ -88,8 +88,8 @@ public class FunctionsImpl implements Functions {
     }
 
     public String integer(Integer min, Integer max) {
-        int randomNum = min + (int)(Math.random()*max);
-        return new Integer(randomNum).toString();
+        int randomNumber = new Random().nextInt(max - min) + min;
+        return new Integer(randomNumber).toString();
     }
 
     public String uuid(){
