@@ -64,11 +64,15 @@ public class FunctionReplacingReader extends Reader {
             return '{';
         }
 
+        try {
         this.tokenValue = this.tokenResolver
                 .resolveToken("{{"+this.tokenNameBuffer.toString()+"}}");
+        } catch (IllegalArgumentException e) {
+            this.tokenValue = null;
+        }
 
         if(this.tokenValue == null){
-            this.tokenValue = "{{"+ this.tokenNameBuffer.toString() + "}";
+            this.tokenValue = "{{"+ this.tokenNameBuffer.toString() + "}}";
         }
         if(this.tokenValue.length() == 0){
             return read();

@@ -29,7 +29,16 @@ public class FunctionsImpl implements Functions {
         } catch (SecurityException e) {
           throw new IllegalArgumentException(e);
         } catch (NoSuchMethodException e) {
-            throw new IllegalArgumentException(e);
+            try {
+                Method method = this.getClass().getMethod(functionName, Object[].class);
+                return method.invoke(this,new Object[]{arguments}).toString();
+            } catch (NoSuchMethodException e1) {
+                throw new IllegalArgumentException(e);
+            } catch (InvocationTargetException e1) {
+                throw new IllegalArgumentException(e);
+            } catch (IllegalAccessException e1) {
+                throw new IllegalArgumentException(e);
+            }
         } catch (InvocationTargetException e) {
             throw new IllegalArgumentException(e);
         } catch (IllegalAccessException e) {
@@ -85,6 +94,15 @@ public class FunctionsImpl implements Functions {
 
     public String uuid(){
         return UUID.randomUUID().toString();
+    }
+
+    public boolean bool(){
+        return Math.random() < 0.5;
+    }
+
+    public Object random(Object[] options){
+        int randomNum = 0 + (int)(Math.random()*options.length);
+        return options[randomNum];
     }
 
 }

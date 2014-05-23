@@ -148,7 +148,6 @@ public class JsonParserImpl implements JsonParser {
             data = reader.read();
 
         while(data != -1){
-            //System.out.print((char) data);
             outputStream.write(data);
             data = reader.read();
         }

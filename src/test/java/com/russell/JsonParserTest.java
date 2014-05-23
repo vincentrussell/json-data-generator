@@ -57,17 +57,21 @@ public class JsonParserTest
 
     }
 
+    @Test
+    public void invallidJson() throws IOException, JsonParserException {
+        classpathJsonTests("invalidFunction.json.results","invalidFunction.json");
+
+    }
+
 
     @Test
     public void functionSimpleJson() throws IOException, JsonParserException {
-        //InputStream resultsStream = this.getClass().getClassLoader().getResourceAsStream("simple.json.results");
         parser.generateTestDataJson(this.getClass().getClassLoader().getResource("simple.json"), outputStream);
         String results  = new String(outputStream.toByteArray());
         com.google.gson.JsonParser parser = new com.google.gson.JsonParser();
         JsonObject obj = (JsonObject)parser.parse(results);
         assertEquals("A green door",obj.get("name").getAsString());
         assertEquals(12.50,obj.get("price").getAsDouble(),0);
-
     }
 
 }
