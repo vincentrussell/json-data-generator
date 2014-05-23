@@ -87,35 +87,60 @@ public class JsonParserImpl implements JsonParser {
                if (i != -1) {
                     if (isRepeating) {
                         repeatBuffer.append((char) i);
-                    if (Character.valueOf((char) i).equals("{".toCharArray()[0])) {
-                        bracketCount++;
-                    } else if (Character.valueOf((char) i).equals("}".toCharArray()[0])) {
-                        bracketCount--;
-                        if (bracketCount == 0) {
-                            File newCopyFile = File.createTempFile("newCopy","json");
-                            newCopyFile.deleteOnExit();
-                            FileOutputStream newCopyFileStream = new FileOutputStream(newCopyFile);
-                            newCopyFileStream.write(String.valueOf(repeatBuffer).getBytes());
-                            for (int j = 1; j < repeatTimes; j++) {
-                                newCopyFileStream.write(String.valueOf(",\n").getBytes());
+                        if (Character.valueOf((char) i).equals("{".toCharArray()[0])) {
+                            bracketCount++;
+                        } else if (Character.valueOf((char) i).equals("}".toCharArray()[0]) || (Character.valueOf((char) i).equals("]".toCharArray()[0])) && bracketCount==0 ) {
+                            bracketCount--;
+                            if (bracketCount == 0) {
+                                File newCopyFile = File.createTempFile("newCopy","json");
+                                newCopyFile.deleteOnExit();
+                                FileOutputStream newCopyFileStream = new FileOutputStream(newCopyFile);
                                 newCopyFileStream.write(String.valueOf(repeatBuffer).getBytes());
+                                for (int j = 1; j < repeatTimes; j++) {
+                                    newCopyFileStream.write(String.valueOf(",\n").getBytes());
+                                    newCopyFileStream.write(String.valueOf(repeatBuffer).getBytes());
+                                }
+                                File recursiveJsonObjectFile = File.createTempFile("recursive","json");
+                                recursiveJsonObjectFile.deleteOnExit();
+                                FileOutputStream recursiveOutputStream = new FileOutputStream(recursiveJsonObjectFile);
+                                handleRepeats(new FileInputStream(newCopyFile), recursiveOutputStream);
+                                recursiveOutputStream.close();
+                                StringBuilder builder = new StringBuilder();
+                                FileInputStream fileInputSteam = new FileInputStream(recursiveJsonObjectFile);
+                                builder.append(IOUtils.toString(fileInputSteam));
+                                outputStream.write(String.valueOf(builder).getBytes());
+                                fileInputSteam.close();
+                                repeatBuffer.setLength(0);
+                                tempBuffer.setLength(0);
+                                isRepeating = false;
+                                bracketCount = 0;
+                            } else if (bracketCount==-1) {
+                                repeatBuffer.setLength(repeatBuffer.length() -1);
+                                File newCopyFile = File.createTempFile("newCopy","json");
+                                newCopyFile.deleteOnExit();
+                                FileOutputStream newCopyFileStream = new FileOutputStream(newCopyFile);
+                                newCopyFileStream.write(String.valueOf(repeatBuffer).getBytes());
+                                for (int j = 1; j < repeatTimes; j++) {
+                                    newCopyFileStream.write(String.valueOf(",\n").getBytes());
+                                    newCopyFileStream.write(String.valueOf(repeatBuffer).getBytes());
+                                }
+                                newCopyFileStream.write(String.valueOf("]").getBytes());
+                                File recursiveJsonObjectFile = File.createTempFile("recursive","json");
+                                recursiveJsonObjectFile.deleteOnExit();
+                                FileOutputStream recursiveOutputStream = new FileOutputStream(recursiveJsonObjectFile);
+                                handleRepeats(new FileInputStream(newCopyFile), recursiveOutputStream);
+                                recursiveOutputStream.close();
+                                StringBuilder builder = new StringBuilder();
+                                FileInputStream fileInputSteam = new FileInputStream(recursiveJsonObjectFile);
+                                builder.append(IOUtils.toString(fileInputSteam));
+                                outputStream.write(String.valueOf(builder).getBytes());
+                                fileInputSteam.close();
+                                repeatBuffer.setLength(0);
+                                tempBuffer.setLength(0);
+                                isRepeating = false;
+                                bracketCount = 0;
                             }
-                            File recursiveJsonObjectFile = File.createTempFile("recursive","json");
-                            recursiveJsonObjectFile.deleteOnExit();
-                            FileOutputStream recursiveOutputStream = new FileOutputStream(recursiveJsonObjectFile);
-                            handleRepeats(new FileInputStream(newCopyFile), recursiveOutputStream);
-                            recursiveOutputStream.close();
-                            StringBuilder builder = new StringBuilder();
-                            FileInputStream fileInputSteam = new FileInputStream(recursiveJsonObjectFile);
-                            builder.append(IOUtils.toString(fileInputSteam));
-                            outputStream.write(String.valueOf(builder).getBytes());
-                            fileInputSteam.close();
-                            repeatBuffer.setLength(0);
-                            tempBuffer.setLength(0);
-                            isRepeating = false;
-                            bracketCount = 0;
                         }
-                    }
                 } else {
                     tempBuffer.append((char) i);
                 }
