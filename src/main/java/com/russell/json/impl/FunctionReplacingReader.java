@@ -16,7 +16,7 @@ public class FunctionReplacingReader extends Reader {
     protected int tokenValueIndex = 0;
 
     public FunctionReplacingReader(Reader source, TokenResolver resolver) {
-        this.pushbackReader = new PushbackReader(source, 2);
+        this.pushbackReader = new PushbackReader(source, 80);
         this.tokenResolver = resolver;
     }
 
@@ -38,9 +38,11 @@ public class FunctionReplacingReader extends Reader {
         int data = this.pushbackReader.read();
         if(data != '{') return data;
 
+        int tokenLength = 1;
         data = this.pushbackReader.read();
         if(data != '{'){
             this.pushbackReader.unread(data);
+            tokenLength = 0;
             return '{';
         }
 
@@ -50,6 +52,16 @@ public class FunctionReplacingReader extends Reader {
         while(data != '}'){
             this.tokenNameBuffer.append((char) data);
             data = this.pushbackReader.read();
+            tokenLength++;
+        }
+
+        data = this.pushbackReader.read();
+        tokenLength++;
+        if(data != '}'){
+            for (int i = 0; i < tokenLength; i++) {
+                this.pushbackReader.unread(data);
+            }
+            return '{';
         }
 
         this.tokenValue = this.tokenResolver

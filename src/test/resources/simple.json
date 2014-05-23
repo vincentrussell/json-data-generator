@@ -1,7 +1,7 @@
 {
     "id": "{{uuid()}}",
     "name": "A green door",
-    "age": {{randomInt(1,50)}}
+    "age": {{randomInt(1,50)}},
     "price": 12.50,
     "tags": ["home", "green"]
 }

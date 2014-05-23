@@ -1,5 +1,8 @@
 package com.russell;
 
+import com.google.gson.JsonObject;
+import com.russell.json.JsonParser;
+import com.russell.json.JsonParserException;
 import com.russell.json.impl.JsonParserImpl;
 import org.apache.commons.io.IOUtils;
 import org.junit.After;
@@ -34,77 +37,37 @@ public class JsonParserTest
     }
 
 
-    @Test
-    public void copyJson() throws IOException {
-        InputStream resultsStream = this.getClass().getClassLoader().getResourceAsStream("copyJson.json.results");
-        parser.generateTestDataJson(this.getClass().getClassLoader().getResource("copyJson.json"), outputStream);
+    private void classpathJsonTests(String expected, String source) throws IOException, JsonParserException {
+        InputStream resultsStream = this.getClass().getClassLoader().getResourceAsStream(expected);
+        parser.generateTestDataJson(this.getClass().getClassLoader().getResource(source), outputStream);
         String results  = new String(outputStream.toByteArray());
-        assertEquals(IOUtils.toString(resultsStream).trim(),results.trim());
-
-    }
-
-    @Test
-    public void copyDoubleNestedJson() throws IOException {
-        InputStream stream = this.getClass().getClassLoader().getResourceAsStream("copyDoubleNestedJson.json");
-        InputStream resultsStream = this.getClass().getClassLoader().getResourceAsStream("copyDoubleNestedJson.results");
-        parser.generateTestDataJson(this.getClass().getClassLoader().getResource("copyDoubleNestedJson.json"), outputStream);
-        String results  = new String(outputStream.toByteArray());
-        assertEquals(IOUtils.toString(resultsStream).trim(), results.trim());
-
+        assertEquals(IOUtils.toString(resultsStream).replaceAll("\\s+",""),results.trim().replaceAll("\\s+", ""));
     }
 
 
     @Test
-    public void functionSimpleJson() throws IOException {
-        InputStream resultsStream = this.getClass().getClassLoader().getResourceAsStream("simple.json.results");
+    public void copyJson() throws IOException, JsonParserException {
+        classpathJsonTests("copyJson.json.results","copyJson.json");
+
+    }
+
+    @Test
+    public void copyDoubleNestedJson() throws IOException, JsonParserException {
+        classpathJsonTests("copyDoubleNestedJson.json.results","copyDoubleNestedJson.json");
+
+    }
+
+
+    @Test
+    public void functionSimpleJson() throws IOException, JsonParserException {
+        //InputStream resultsStream = this.getClass().getClassLoader().getResourceAsStream("simple.json.results");
         parser.generateTestDataJson(this.getClass().getClassLoader().getResource("simple.json"), outputStream);
         String results  = new String(outputStream.toByteArray());
-        assertEquals(IOUtils.toString(resultsStream).trim(),results.trim());
+        com.google.gson.JsonParser parser = new com.google.gson.JsonParser();
+        JsonObject obj = (JsonObject)parser.parse(results);
+        assertEquals("A green door",obj.get("name").getAsString());
+        assertEquals(12.50,obj.get("price").getAsDouble(),0);
 
     }
 
-    @Test
-    public void isFunctionSimple() {
-        assertTrue(parser.isFunction("{{hello()}}"));
-    }
-
-    @Test
-    public void isFunction1Arg() {
-        assertTrue(parser.isFunction("{{hello(1)}}"));
-    }
-
-    @Test
-    public void functionAndArgNumber() {
-        assertArrayEquals(new Object[]{"hello",1},parser.getFunctionNameAndArguments("{{hello(1)}}"));
-    }
-
-    @Test
-    public void functionAndArgText() {
-        assertArrayEquals(new Object[]{"hello","1"},parser.getFunctionNameAndArguments("{{hello(\"1\")}}"));
-    }
-
-    @Test
-    public void functionAndArgNumberText() {
-        assertArrayEquals(new Object[]{"hello",1,"String"},parser.getFunctionNameAndArguments("{{hello(1,\"String\")}}"));
-    }
-
-    @Test
-    public void repeatAndArgText() {
-        assertArrayEquals(null,parser.getRepeatFunctionNameAndArguments("'{{repeat(\"1\")}}',"));
-    }
-
-    @Test
-    public void repeatAndArgNumber() {
-        assertArrayEquals(new Object[]{"repeat",1},parser.getRepeatFunctionNameAndArguments("'{{repeat(1)}}',"));
-    }
-
-    @Test
-    public void repeatAndArgMultipleNumbers() {
-        assertArrayEquals(null,parser.getRepeatFunctionNameAndArguments("'{{repeat(1,2)}}',"));
-    }
-
-    @Test
-    public void repeatAndArgNumberAndSpaces() {
-        assertArrayEquals(new Object[]{"repeat",1},parser.getRepeatFunctionNameAndArguments("'{{repeat(1)}}',   \n\n\n"));
-    }
 }
