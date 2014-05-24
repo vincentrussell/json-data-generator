@@ -96,4 +96,26 @@ public class FunctionsTest {
         assertEquals(1, Integer.parseInt(result));
     }
 
+    @Test
+    public void loremWorlds() {
+        String result = functions.execute("lorem",new Object[]{3,"words"});
+        assertEquals("Lorem ipsum dolor", result);
+    }
+
+    @Test
+    public void loremParagraphs() {
+        String result = functions.execute("lorem",new Object[]{1,"paragraphs"});
+        assertEquals("Lorem ipsum dolor sit amet,"+
+                " consetetur sadipscing elitr, sed diam nonumy eirmod"+
+                " tempor invidunt ut labore et dolore magna aliquyam erat,"+
+                " sed diam voluptua. At vero eos et accusam et justo duo dolores"+
+                " et ea rebum. Stet clita kasd gubergren, no sea "+
+                "takimata sanctus est Lorem ipsum dolor sit amet.", result);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void loremInvalid() {
+        String result = functions.execute("lorem",new Object[]{3,"invalid"});
+    }
+
 }

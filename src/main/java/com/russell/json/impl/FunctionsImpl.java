@@ -1,6 +1,7 @@
 package com.russell.json.impl;
 
 import com.russell.json.Functions;
+import de.svenjacobs.loremipsum.LoremIpsum;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -113,6 +114,17 @@ public class FunctionsImpl implements Functions {
 
     public int index(){
         return indexHolder.getNextIndex();
+    }
+
+    public String lorem(Integer amountOfLoremIpsum, String type) {
+        LoremIpsum loremIpsum = new LoremIpsum();
+        if ("words".equals(type)) {
+            return loremIpsum.getWords(amountOfLoremIpsum);
+        } else if ("paragraphs".equals(type)) {
+            return loremIpsum.getParagraphs(amountOfLoremIpsum);
+        } else {
+            throw new IllegalArgumentException(type + " not a valid type for the lorem function");
+        }
     }
 
 }
