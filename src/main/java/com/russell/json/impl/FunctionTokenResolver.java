@@ -8,12 +8,11 @@ import java.util.Arrays;
 
 public class FunctionTokenResolver implements TokenResolver {
 
-    Functions functions = new FunctionsImpl();
-
     public FunctionTokenResolver() {}
 
     @Override
-    public String resolveToken(CharSequence s) {
+    public String resolveToken(IndexHolder indexHolder, CharSequence s) {
+        Functions functions = new FunctionsImpl(indexHolder);
         Object[] functionAndArgs = functions.getFunctionNameAndArguments(s);
         if (functionAndArgs==null) {
             return null;

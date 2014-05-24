@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.PushbackReader;
 import java.io.Reader;
 import java.nio.CharBuffer;
+import java.util.Stack;
 
 public class FunctionReplacingReader extends Reader {
 
@@ -14,10 +15,12 @@ public class FunctionReplacingReader extends Reader {
     protected StringBuilder tokenNameBuffer = new StringBuilder();
     protected String tokenValue = null;
     protected int tokenValueIndex = 0;
+    protected Stack<IndexHolder> integerStackForIndexFunction = new Stack<IndexHolder>();
 
     public FunctionReplacingReader(Reader source, TokenResolver resolver) {
-        this.pushbackReader = new PushbackReader(source, 80);
-        this.tokenResolver = resolver;
+        pushbackReader = new PushbackReader(source, 80);
+        tokenResolver = resolver;
+        integerStackForIndexFunction.push(new IndexHolder());
     }
 
     public int read(CharBuffer target) throws IOException {
@@ -36,13 +39,19 @@ public class FunctionReplacingReader extends Reader {
         }
 
         int data = this.pushbackReader.read();
+
+        if(data == ']') {
+            integerStackForIndexFunction.pop();
+        }
+        if (data == '[') {
+            integerStackForIndexFunction.push(new IndexHolder());
+        }
+
         if(data != '{') return data;
 
-        int tokenLength = 1;
         data = this.pushbackReader.read();
         if(data != '{'){
             this.pushbackReader.unread(data);
-            tokenLength = 0;
             return '{';
         }
 
@@ -52,21 +61,13 @@ public class FunctionReplacingReader extends Reader {
         while(data != '}'){
             this.tokenNameBuffer.append((char) data);
             data = this.pushbackReader.read();
-            tokenLength++;
         }
 
         data = this.pushbackReader.read();
-        tokenLength++;
-        if(data != '}'){
-            for (int i = 0; i < tokenLength; i++) {
-                this.pushbackReader.unread(data);
-            }
-            return '{';
-        }
 
         try {
-        this.tokenValue = this.tokenResolver
-                .resolveToken("{{"+this.tokenNameBuffer.toString()+"}}");
+            this.tokenValue = this.tokenResolver
+                .resolveToken(integerStackForIndexFunction.peek(),"{{"+this.tokenNameBuffer.toString()+"}}");
         } catch (IllegalArgumentException e) {
             this.tokenValue = null;
         }
@@ -74,6 +75,7 @@ public class FunctionReplacingReader extends Reader {
         if(this.tokenValue == null){
             this.tokenValue = "{{"+ this.tokenNameBuffer.toString() + "}}";
         }
+
         if(this.tokenValue.length() == 0){
             return read();
         }
@@ -83,23 +85,11 @@ public class FunctionReplacingReader extends Reader {
     }
 
     public int read(char cbuf[]) throws IOException {
-        return read(cbuf, 0, cbuf.length);
+        throw new RuntimeException("Operation Not Supported");
     }
 
     public int read(char cbuf[], int off, int len) throws IOException {
-        int charsRead = 0;
-        for(int i=0; i<len; i++){
-            int nextChar = read();
-            if(nextChar == -1) {
-                if(charsRead == 0){
-                    charsRead = -1;
-                }
-                break;
-            }
-            charsRead = i + 1;
-            cbuf[off + i] = (char) nextChar;
-        }
-        return charsRead;
+        throw new RuntimeException("Operation Not Supported");
     }
 
     public void close() throws IOException {

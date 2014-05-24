@@ -1,13 +1,15 @@
 package com.russell;
 
 import com.russell.json.impl.FunctionsImpl;
+import com.russell.json.impl.IndexHolder;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
 
 public class FunctionsTest {
 
-    FunctionsImpl functions = new FunctionsImpl();
+    private IndexHolder indexHolder = new IndexHolder();
+    private FunctionsImpl functions = new FunctionsImpl(indexHolder);
 
     @Test
     public void isFunctionSimple() {
@@ -84,6 +86,14 @@ public class FunctionsTest {
     public void randomDouble() {
         String result = functions.execute("random",new Object[]{1.0,2.89,4.09});
         assertTrue("1.0".equals(result) || "2.89".equals(result) || "4.09".equals(result));
+    }
+
+    @Test
+    public void index() {
+        String result = functions.execute("index",null);
+        assertEquals(0, Integer.parseInt(result));
+        result = functions.execute("index",null);
+        assertEquals(1, Integer.parseInt(result));
     }
 
 }

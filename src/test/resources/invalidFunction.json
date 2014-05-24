@@ -1,8 +1,7 @@
 {
     "id": "342523",
     "name": "A green door",
-    "age": {{invalidFunction(1,50)}},
-    "price": {{invalidFunction3342()}},
-    "price": {{invalidFunction3}},
+    "age": "{{invalidFunction(1,50)}}",
+    "price": "{{invalidFunction3342()}}",
     "tags": ["home", "green"]
 }

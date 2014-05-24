@@ -1,6 +1,7 @@
 package com.russell;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.russell.json.JsonParserException;
 import com.russell.json.impl.JsonParserImpl;
@@ -16,8 +17,7 @@ import java.io.InputStream;
 import static org.junit.Assert.*;
 
 
-public class JsonParserTest
-{
+public class JsonParserTest {
 
     private JsonParserImpl parser = new JsonParserImpl();
     ByteArrayOutputStream outputStream;
@@ -47,8 +47,8 @@ public class JsonParserTest
     }
 
     private String remoteWhiteSpaceFromJson(String json) {
-        return json.replaceAll("\\(}|]|,\\)\\s+\\(}|]|\"\\)","")
-                .replaceAll("\\[\\s+\\{","");
+        JsonElement jsonObject = new com.google.gson.JsonParser().parse(json);
+        return jsonObject.toString();
     }
 
 
@@ -65,7 +65,7 @@ public class JsonParserTest
     }
 
     @Test
-    public void invallidJson() throws IOException, JsonParserException {
+    public void invallidFunction() throws IOException, JsonParserException {
         classpathJsonTests("invalidFunction.json.results","invalidFunction.json");
     }
 
@@ -75,11 +75,15 @@ public class JsonParserTest
     }
 
     @Test
+    public void indexFunctionTest() throws IOException, JsonParserException {
+        classpathJsonTests("indexFunctionSimple.json.results", "indexFunctionSimple.json");
+    }
+
+    @Test
     public void repeatFunctionJsonArrayNoQuotes() throws IOException, JsonParserException {
         parser.generateTestDataJson(this.getClass().getClassLoader().getResource("repeatFunctionJsonArrayNoQuotes.json"), outputStream);
         String results  = new String(outputStream.toByteArray());
-        com.google.gson.JsonParser parser = new com.google.gson.JsonParser();
-        JsonObject obj = (JsonObject)parser.parse(results);
+        JsonObject obj = (JsonObject)new com.google.gson.JsonParser().parse(results);
         JsonArray array = obj.getAsJsonArray("numbers");
         assertEquals(3,array.size());
     }
@@ -88,8 +92,7 @@ public class JsonParserTest
     public void repeatFunctionJsonArrayQuotes() throws IOException, JsonParserException {
         parser.generateTestDataJson(this.getClass().getClassLoader().getResource("repeatFunctionJsonArrayQuotes.json"), outputStream);
         String results  = new String(outputStream.toByteArray());
-        com.google.gson.JsonParser parser = new com.google.gson.JsonParser();
-        JsonObject obj = (JsonObject)parser.parse(results);
+        JsonObject obj = (JsonObject)new com.google.gson.JsonParser().parse(results);
         JsonArray array = obj.getAsJsonArray("colors");
         assertEquals(4, array.size());
     }

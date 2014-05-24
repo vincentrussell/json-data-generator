@@ -1,36 +1,36 @@
 [
-
+    
     {
-        id: 1,
-        name: Test'
-        attributes: [
-
+        "id": 1,
+        "name": "Test",
+        "attributes": [
+            
             {
-                shirt: "red",
-                pants: "blue"
+                "shirt": "red",
+                "pants": "blue"
             },
 
             {
-                shirt: "red",
-                pants: "blue"
+                "shirt": "red",
+                "pants": "blue"
             }
         ]
 
     },
 
     {
-        id: 1,
-        name: Test'
-        attributes: [
-
+        "id": 1,
+        "name": "Test",
+        "attributes": [
+            
             {
-                shirt: "red",
-                pants: "blue"
+                "shirt": "red",
+                "pants": "blue"
             },
 
             {
-                shirt: "red",
-                pants: "blue"
+                "shirt": "red",
+                "pants": "blue"
             }
         ]
 

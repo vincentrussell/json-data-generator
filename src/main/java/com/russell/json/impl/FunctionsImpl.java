@@ -16,6 +16,12 @@ public class FunctionsImpl implements Functions {
     public static final Pattern FUNCTION_PATTERN = Pattern.compile("\\{\\{([\\w]+)\\((.*)\\)\\}\\}");
     public static final Pattern REPEAT_FUNCTION_PATTERN = Pattern.compile("\'\\{\\{(repeat)\\((\\d+)\\)\\}\\}\'\\s*,");
 
+    private final IndexHolder indexHolder;
+
+    public FunctionsImpl(IndexHolder indexHolder) {
+        this.indexHolder = indexHolder;
+    }
+
     public String execute(String functionName, Object... arguments) throws IllegalArgumentException {
         List<Class> classList = new ArrayList<Class>();
         if (arguments != null) {
@@ -103,6 +109,10 @@ public class FunctionsImpl implements Functions {
     public Object random(Object[] options){
         int randomNum = 0 + (int)(Math.random()*options.length);
         return options[randomNum];
+    }
+
+    public int index(){
+        return indexHolder.getNextIndex();
     }
 
 }

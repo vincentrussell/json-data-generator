@@ -13,8 +13,6 @@ import java.util.regex.Pattern;
 
 public class JsonParserImpl implements JsonParser {
 
-    Functions functions = new FunctionsImpl();
-
     public JsonParserImpl() {}
 
     public static int indexOf(Pattern pattern, CharSequence input) {
@@ -144,9 +142,9 @@ public class JsonParserImpl implements JsonParser {
                 } else {
                     tempBuffer.append((char) i);
                 }
-                if (functions.isRepeatFunction(tempBuffer)) {
+                if (new FunctionsImpl(null).isRepeatFunction(tempBuffer)) {
                     tempBuffer.append((char) i);
-                    repeatTimes = (Integer) functions.getRepeatFunctionNameAndArguments(tempBuffer)[1];
+                    repeatTimes = (Integer) new FunctionsImpl(null).getRepeatFunctionNameAndArguments(tempBuffer)[1];
                     int indexOfRepeat = indexOf(FunctionsImpl.REPEAT_FUNCTION_PATTERN, tempBuffer);
                     tempBuffer.setLength(indexOfRepeat);
                     outputStream.write(String.valueOf(tempBuffer).getBytes());
@@ -170,16 +168,13 @@ public class JsonParserImpl implements JsonParser {
 
         int data = 0;
         try {
-            data = reader.read();
+            while((data = reader.read()) != -1){
+                outputStream.write(data);
+            }
 
-        while(data != -1){
-            outputStream.write(data);
-            data = reader.read();
-        }
-
-        } finally {
-                inputStream.close();
-        }
+            } finally {
+                    inputStream.close();
+            }
 
     }
 
