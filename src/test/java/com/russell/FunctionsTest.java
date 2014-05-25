@@ -201,6 +201,11 @@ public class FunctionsTest {
         notNullNoArgTest("lastName");
     }
 
+    @Test
+    public void email() {
+        notNullNoArgTest("email");
+    }
+
     private void notNullNoArgTest(String functionName) {
         String result = functions.execute(functionName,null);
         assertNotNull(result);

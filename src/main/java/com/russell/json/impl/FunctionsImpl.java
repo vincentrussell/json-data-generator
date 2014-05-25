@@ -216,6 +216,10 @@ public class FunctionsImpl implements Functions {
         return getRandomElementFromArray(LAST_NAMES);
     }
 
+    public String email() {
+        return firstName().toLowerCase() + "." + lastName().toLowerCase() + "@" + company().toLowerCase() + ".com";
+    }
+
     public String firstName() {
         boolean isMale = (Math.random() < 0.5);
         return (isMale) ? getRandomElementFromArray(MALE_FIRST_NAMES) : getRandomElementFromArray(FEMALE_FIRST_NAMES);
