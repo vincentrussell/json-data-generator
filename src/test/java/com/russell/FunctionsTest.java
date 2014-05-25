@@ -4,6 +4,10 @@ import com.russell.json.impl.FunctionsImpl;
 import com.russell.json.impl.IndexHolder;
 import org.junit.Test;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.regex.Pattern;
+
 import static org.junit.Assert.*;
 
 public class FunctionsTest {
@@ -116,6 +120,91 @@ public class FunctionsTest {
     @Test(expected = IllegalArgumentException.class)
     public void loremInvalid() {
         String result = functions.execute("lorem",new Object[]{3,"invalid"});
+    }
+
+    @Test
+    public void phone() {
+        String result = functions.execute("phone",null);
+        Pattern phoneRegex = Pattern.compile("^\\d{3}-\\d{3}-\\d{4}$");
+        assertTrue(phoneRegex.matcher(result).matches());
+    }
+
+    @Test
+    public void gender() {
+        String result = functions.execute("gender",null);
+        assertTrue("male".equals(result) || "female".equals(result));
+    }
+
+    @Test
+    public void date() throws ParseException {
+        String result = functions.execute("date",null);
+        SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss z");
+        dateFormat.parse(result);
+    }
+
+    @Test
+    public void dateWithFormat() throws ParseException {
+        String dateFormatText = "MMM yyyy HH:mm:ss z";
+        SimpleDateFormat dateFormat = new SimpleDateFormat(dateFormatText);
+        String result = functions.execute("date",new Object[]{dateFormatText});
+        dateFormat.parse(result);
+    }
+
+    @Test
+    public void dateWithinRange() throws ParseException {
+        String dateFormatText = "EEE, d MMM yyyy HH:mm:ss z";
+        SimpleDateFormat dateFormat = new SimpleDateFormat(dateFormatText);
+        String result = functions.execute("date",new Object[]{"06-16-1956 12:00:00","06-16-1975 12:00:00"});
+        dateFormat.parse(result);
+    }
+
+    @Test
+    public void dateWithinRangeWithFormat() throws ParseException {
+        String dateFormatText = "MMM yyyy HH:mm:ss z";
+        SimpleDateFormat dateFormat = new SimpleDateFormat(dateFormatText);
+        String result = functions.execute("date",new Object[]{"06-16-1956 12:00:00","06-16-1975 12:00:00",dateFormatText});
+        dateFormat.parse(result);
+    }
+
+    @Test
+    public void country() {
+        notNullNoArgTest("country");
+    }
+
+    @Test
+    public void city() {
+        notNullNoArgTest("city");
+    }
+
+    @Test
+    public void state() {
+        notNullNoArgTest("state");
+    }
+
+    @Test
+    public void street() {
+        notNullNoArgTest("street");
+    }
+
+    @Test
+    public void company() {
+        notNullNoArgTest("company");
+    }
+
+    @Test
+    public void firstName() {
+        notNullNoArgTest("firstName");
+    }
+
+    @Test
+    public void lastName() {
+        notNullNoArgTest("lastName");
+    }
+
+    private void notNullNoArgTest(String functionName) {
+        String result = functions.execute(functionName,null);
+        assertNotNull(result);
+        assertTrue(result.length() > 0);
     }
 
 }
