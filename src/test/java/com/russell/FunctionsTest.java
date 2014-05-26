@@ -101,20 +101,15 @@ public class FunctionsTest {
     }
 
     @Test
-    public void loremWorlds() {
+    public void loremWords() {
         String result = functions.execute("lorem",new Object[]{3,"words"});
-        assertEquals("Lorem ipsum dolor", result);
+        assertTrue(result.startsWith("lorem ipsum "));
     }
 
     @Test
     public void loremParagraphs() {
-        String result = functions.execute("lorem",new Object[]{1,"paragraphs"});
-        assertEquals("Lorem ipsum dolor sit amet,"+
-                " consetetur sadipscing elitr, sed diam nonumy eirmod"+
-                " tempor invidunt ut labore et dolore magna aliquyam erat,"+
-                " sed diam voluptua. At vero eos et accusam et justo duo dolores"+
-                " et ea rebum. Stet clita kasd gubergren, no sea "+
-                "takimata sanctus est Lorem ipsum dolor sit amet.", result);
+        String result = functions.execute("lorem",new Object[]{2,"paragraphs"});
+        assertTrue(result.startsWith("\tLorem ipsum "));
     }
 
     @Test(expected = IllegalArgumentException.class)
