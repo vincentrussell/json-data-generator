@@ -1,6 +1,6 @@
-package com.russell.json.impl;
+package com.github.vincentrussell.json.datagenerator.impl.impl;
 
-import com.russell.json.Functions;
+import com.github.vincentrussell.json.datagenerator.impl.Functions;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

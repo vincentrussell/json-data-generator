@@ -1,8 +1,7 @@
-package com.russell.json;
+package com.github.vincentrussell.json.datagenerator.impl;
 
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.OutputStream;
 import java.net.URL;
 

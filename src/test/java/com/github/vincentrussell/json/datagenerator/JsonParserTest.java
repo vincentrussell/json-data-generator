@@ -1,10 +1,10 @@
-package com.russell;
+package com.github.vincentrussell.json.datagenerator;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.russell.json.JsonParserException;
-import com.russell.json.impl.JsonParserImpl;
+import com.github.vincentrussell.json.datagenerator.impl.JsonParserException;
+import com.github.vincentrussell.json.datagenerator.impl.impl.JsonParserImpl;
 import org.apache.commons.io.IOUtils;
 import org.junit.After;
 import org.junit.Before;

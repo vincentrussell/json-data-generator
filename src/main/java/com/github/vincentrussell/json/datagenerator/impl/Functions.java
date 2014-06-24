@@ -1,4 +1,4 @@
-package com.russell.json;
+package com.github.vincentrussell.json.datagenerator.impl;
 
 
 import java.util.regex.Pattern;

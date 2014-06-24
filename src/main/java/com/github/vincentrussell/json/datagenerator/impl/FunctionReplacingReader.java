@@ -1,6 +1,6 @@
-package com.russell.json.impl;
+package com.github.vincentrussell.json.datagenerator.impl;
 
-import com.russell.json.TokenResolver;
+import com.github.vincentrussell.json.datagenerator.impl.impl.IndexHolder;
 
 import java.io.IOException;
 import java.io.PushbackReader;

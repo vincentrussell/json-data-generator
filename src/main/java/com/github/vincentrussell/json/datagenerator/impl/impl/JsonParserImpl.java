@@ -1,9 +1,9 @@
-package com.russell.json.impl;
+package com.github.vincentrussell.json.datagenerator.impl.impl;
 
 
-import com.russell.json.Functions;
-import com.russell.json.JsonParser;
-import com.russell.json.JsonParserException;
+import com.github.vincentrussell.json.datagenerator.impl.FunctionReplacingReader;
+import com.github.vincentrussell.json.datagenerator.impl.JsonParser;
+import com.github.vincentrussell.json.datagenerator.impl.JsonParserException;
 import org.apache.commons.io.IOUtils;
 
 import java.io.*;

@@ -1,4 +1,4 @@
-package com.russell.json;
+package com.github.vincentrussell.json.datagenerator.impl;
 
 public class JsonParserException extends Exception {
 

@@ -1,8 +1,8 @@
-package com.russell.json.impl;
+package com.github.vincentrussell.json.datagenerator.impl.impl;
 
 
-import com.russell.json.Functions;
-import com.russell.json.TokenResolver;
+import com.github.vincentrussell.json.datagenerator.impl.Functions;
+import com.github.vincentrussell.json.datagenerator.impl.TokenResolver;
 
 import java.util.Arrays;
 
