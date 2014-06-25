@@ -1,0 +1,81 @@
+json-data-generator
+===================
+
+json-data-generator helps you build json data that you need for test data purposes.   It has a lot of nice features that you can use to build as much test data as you need.
+
+
+For instance you can do repeats like this:
+[
+    '{{repeat(2)}}',
+    {
+        "id": 1,
+        "name": "Test",
+        "attributes": [
+            '{{repeat(2)}}',
+            {
+                "shirt": "red",
+                "pants": "blue"
+            }
+        ]
+
+    }
+]
+
+And you can do a lot of cool functions in your puesdo json.
+
+random integer in range:
+{{integer(min,max)}}
+
+uuid:
+{{uuid()}}
+
+random boolean:
+{{bool()}}
+
+an incrementing index integer (identity)
+{{index()}
+
+lorem ipsum words:
+{{lorem(count,"words")}}
+
+lorem ipsum paragraphs:
+{{lorem(count,"paragraphs")}}
+
+random phone number:
+{{phone()}}
+
+random gender:
+{{gender()}}
+
+current date date:
+{{date()}}
+
+current date with format:
+{{date("java-simple-date-format")}}
+
+random date between two dates with format (your input must be in this format dd-MM-yyyy HH:mm:ss):
+{{date("begin-date","end-date","java-simple-date-format"}}
+
+random date between two dates with default format (your input must be in this format EEE, d MMM yyyy HH:mm:ss z):
+{{date("begin-date","end-date"}}
+
+random country:
+{{country()}}
+
+random city:
+{{city()}}
+
+random state:
+{{state()}}
+
+random company:
+{{company()}}
+
+random lastname:
+{{lastName()}}
+
+rnadom first name:
+{{firstName()}}
+
+random email:
+{{email()}}
