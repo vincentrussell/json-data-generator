@@ -1,10 +1,10 @@
 package com.github.vincentrussell.json.datagenerator;
 
+import com.github.vincentrussell.json.datagenerator.impl.JsonDataGeneratorException;
+import com.github.vincentrussell.json.datagenerator.impl.impl.JsonDataGeneratorImpl;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.github.vincentrussell.json.datagenerator.impl.JsonParserException;
-import com.github.vincentrussell.json.datagenerator.impl.impl.JsonParserImpl;
 import org.apache.commons.io.IOUtils;
 import org.junit.After;
 import org.junit.Before;
@@ -17,9 +17,9 @@ import java.io.InputStream;
 import static org.junit.Assert.*;
 
 
-public class JsonParserTest {
+public class JsonDataGeneratorTest {
 
-    private JsonParserImpl parser = new JsonParserImpl();
+    private JsonDataGeneratorImpl parser = new JsonDataGeneratorImpl();
     ByteArrayOutputStream outputStream;
 
     @Before
@@ -37,7 +37,7 @@ public class JsonParserTest {
     }
 
 
-    private void classpathJsonTests(String expected, String source) throws IOException, JsonParserException {
+    private void classpathJsonTests(String expected, String source) throws IOException, JsonDataGeneratorException {
         InputStream resultsStream = this.getClass().getClassLoader().getResourceAsStream(expected);
         parser.generateTestDataJson(this.getClass().getClassLoader().getResource(source), outputStream);
         String results  = new String(outputStream.toByteArray());
@@ -53,34 +53,34 @@ public class JsonParserTest {
 
 
     @Test
-    public void copyJson() throws IOException, JsonParserException {
+    public void copyJson() throws IOException, JsonDataGeneratorException {
         classpathJsonTests("copyJson.json.results","copyJson.json");
 
     }
 
     @Test
-    public void copyDoubleNestedJson() throws IOException, JsonParserException {
+    public void copyDoubleNestedJson() throws IOException, JsonDataGeneratorException {
         classpathJsonTests("copyDoubleNestedJson.json.results","copyDoubleNestedJson.json");
 
     }
 
     @Test
-    public void invallidFunction() throws IOException, JsonParserException {
+    public void invallidFunction() throws IOException, JsonDataGeneratorException {
         classpathJsonTests("invalidFunction.json.results","invalidFunction.json");
     }
 
     @Test
-    public void repeatNonFunctionJsonArray() throws IOException, JsonParserException {
+    public void repeatNonFunctionJsonArray() throws IOException, JsonDataGeneratorException {
         classpathJsonTests("repeatNonFunctionJsonArray.json.results","repeatNonFunctionJsonArray.json");
     }
 
     @Test
-    public void indexFunctionTest() throws IOException, JsonParserException {
+    public void indexFunctionTest() throws IOException, JsonDataGeneratorException {
         classpathJsonTests("indexFunctionSimple.json.results", "indexFunctionSimple.json");
     }
 
     @Test
-    public void repeatFunctionJsonArrayNoQuotes() throws IOException, JsonParserException {
+    public void repeatFunctionJsonArrayNoQuotes() throws IOException, JsonDataGeneratorException {
         parser.generateTestDataJson(this.getClass().getClassLoader().getResource("repeatFunctionJsonArrayNoQuotes.json"), outputStream);
         String results  = new String(outputStream.toByteArray());
         JsonObject obj = (JsonObject)new com.google.gson.JsonParser().parse(results);
@@ -89,7 +89,7 @@ public class JsonParserTest {
     }
 
     @Test
-    public void repeatFunctionJsonArrayQuotes() throws IOException, JsonParserException {
+    public void repeatFunctionJsonArrayQuotes() throws IOException, JsonDataGeneratorException {
         parser.generateTestDataJson(this.getClass().getClassLoader().getResource("repeatFunctionJsonArrayQuotes.json"), outputStream);
         String results  = new String(outputStream.toByteArray());
         JsonObject obj = (JsonObject)new com.google.gson.JsonParser().parse(results);
@@ -99,7 +99,7 @@ public class JsonParserTest {
 
 
     @Test
-    public void functionSimpleJson() throws IOException, JsonParserException {
+    public void functionSimpleJson() throws IOException, JsonDataGeneratorException {
         parser.generateTestDataJson(this.getClass().getClassLoader().getResource("simple.json"), outputStream);
         String results  = new String(outputStream.toByteArray());
         com.google.gson.JsonParser parser = new com.google.gson.JsonParser();

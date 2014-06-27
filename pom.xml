@@ -6,7 +6,16 @@
   <packaging>jar</packaging>
   <version>1.0-SNAPSHOT</version>
   <name>json-data-generator</name>
-  <url>http://maven.apache.org</url>
+  <url>https://github.com/vincentrussell/json-data-generator</url>
+
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
   <dependencies>
       <dependency>
           <groupId>org.apache.commons</groupId>

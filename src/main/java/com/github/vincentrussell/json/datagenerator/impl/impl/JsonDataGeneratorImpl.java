@@ -2,8 +2,8 @@ package com.github.vincentrussell.json.datagenerator.impl.impl;
 
 
 import com.github.vincentrussell.json.datagenerator.impl.FunctionReplacingReader;
-import com.github.vincentrussell.json.datagenerator.impl.JsonParser;
-import com.github.vincentrussell.json.datagenerator.impl.JsonParserException;
+import com.github.vincentrussell.json.datagenerator.impl.JsonDataGenerator;
+import com.github.vincentrussell.json.datagenerator.impl.JsonDataGeneratorException;
 import org.apache.commons.io.IOUtils;
 
 import java.io.*;
@@ -11,9 +11,9 @@ import java.net.URL;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class JsonParserImpl implements JsonParser {
+public class JsonDataGeneratorImpl implements JsonDataGenerator {
 
-    public JsonParserImpl() {}
+    public JsonDataGeneratorImpl() {}
 
     public static int indexOf(Pattern pattern, CharSequence input) {
         Matcher matcher = pattern.matcher(input);
@@ -22,29 +22,29 @@ public class JsonParserImpl implements JsonParser {
 
 
     @Override
-    public void generateTestDataJson(String text, OutputStream outputStream) throws JsonParserException {
+    public void generateTestDataJson(String text, OutputStream outputStream) throws JsonDataGeneratorException {
         try {
             processRepeatsAndFunctions(new ByteArrayInputStream(text.getBytes()), outputStream);
         } catch (IOException e) {
-            throw new JsonParserException(e);
+            throw new JsonDataGeneratorException(e);
         }
     }
 
     @Override
-    public void generateTestDataJson(URL classPathResource, OutputStream outputStream) throws JsonParserException {
+    public void generateTestDataJson(URL classPathResource, OutputStream outputStream) throws JsonDataGeneratorException {
         try {
             processRepeatsAndFunctions(classPathResource.openStream(), outputStream);
         } catch (IOException e) {
-            throw new JsonParserException(e);
+            throw new JsonDataGeneratorException(e);
         }
     }
 
     @Override
-    public void generateTestDataJson(File file, OutputStream outputStream) throws JsonParserException {
+    public void generateTestDataJson(File file, OutputStream outputStream) throws JsonDataGeneratorException {
         try {
             processRepeatsAndFunctions(new FileInputStream(file), outputStream);
         } catch (IOException e) {
-            throw new JsonParserException(e);
+            throw new JsonDataGeneratorException(e);
         }
     }
 

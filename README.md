@@ -1,4 +1,4 @@
-json-data-generator
+# json-data-generator
 ===================
 
 json-data-generator helps you build json data that you need for test data purposes.   It has a lot of nice features that you can use to build as much test data as you need.
@@ -22,6 +22,27 @@ For instance you can do repeats like this:
     }
 ]
 ```
+##How to use it
+
+```
+JsonDataGeneratorImpl parser = new JsonDataGeneratorImpl();
+parser.generateTestDataJson(String text, OutputStream outputStream)
+```
+
+or
+
+```
+JsonDataGeneratorImpl parser = new JsonDataGeneratorImpl();
+parser.generateTestDataJson(URL classPathResource, OutputStream outputStream)
+```
+
+```
+JsonDataGeneratorImpl parser = new JsonDataGeneratorImpl();
+parser.generateTestDataJson(File file, OutputStream outputStream)
+```
+
+
+##Available functions
 
 And you can do a lot of cool functions in your puesdo json.
 
