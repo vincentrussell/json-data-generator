@@ -3,8 +3,28 @@
 
 json-data-generator helps you build json data that you need for test data purposes.   It has a lot of nice features that you can use to build as much test data as you need.
 
+##How to use it
 
-For instance you can do repeats like this:
+```
+JsonDataGeneratorImpl parser = new JsonDataGeneratorImpl();
+parser.generateTestDataJson(String text, OutputStream outputStream);
+```
+
+or
+
+```
+JsonDataGeneratorImpl parser = new JsonDataGeneratorImpl();
+parser.generateTestDataJson(URL classPathResource, OutputStream outputStream);
+```
+
+```
+JsonDataGeneratorImpl parser = new JsonDataGeneratorImpl();
+parser.generateTestDataJson(File file, OutputStream outputStream);
+```
+##Repeats
+
+You can repeat sections of json to make big amounts of json.
+
 ```
 [
     '{{repeat(2)}}',
@@ -22,29 +42,10 @@ For instance you can do repeats like this:
     }
 ]
 ```
-##How to use it
-
-```
-JsonDataGeneratorImpl parser = new JsonDataGeneratorImpl();
-parser.generateTestDataJson(String text, OutputStream outputStream)
-```
-
-or
-
-```
-JsonDataGeneratorImpl parser = new JsonDataGeneratorImpl();
-parser.generateTestDataJson(URL classPathResource, OutputStream outputStream)
-```
-
-```
-JsonDataGeneratorImpl parser = new JsonDataGeneratorImpl();
-parser.generateTestDataJson(File file, OutputStream outputStream)
-```
-
 
 ##Available functions
 
-And you can do a lot of cool functions in your puesdo json.
+You can do a lot of cool functions in your puesdo json that that help you randomize your test data.
 
 random integer in range:
 ```
