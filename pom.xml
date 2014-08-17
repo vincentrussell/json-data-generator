@@ -8,6 +8,11 @@
   <name>json-data-generator</name>
   <url>https://github.com/vincentrussell/json-data-generator</url>
 
+    <properties>
+        <jdkVersion>1.6</jdkVersion>
+        <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
+    </properties>
+
     <licenses>
         <license>
             <name>Apache License, Version 2.0</name>
@@ -35,4 +40,10 @@
           <scope>test</scope>
       </dependency>
   </dependencies>
+    <scm>
+        <connection>scm:git:git@github.com:vincentrussell/json-data-generator.git</connection>
+        <developerConnection>scm:git:git@github.com:vincentrussell/json-data-generator.git</developerConnection>
+        <tag>HEAD</tag>
+        <url>https://github.com/vincentrussell/json-data-generator</url>
+    </scm>
 </project>
