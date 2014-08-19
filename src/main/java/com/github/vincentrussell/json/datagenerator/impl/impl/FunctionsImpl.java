@@ -45,6 +45,14 @@ public class FunctionsImpl implements Functions {
         this.indexHolder = indexHolder;
     }
 
+    /**
+     * execution a function specified in the json.  The implementations for functions must be specified in this
+     * class and must match the signature of the functions in the json
+     * @param functionName name of the private function in this class
+     * @param arguments the arguments for the function int his class
+     * @return
+     * @throws IllegalArgumentException
+     */
     public String execute(String functionName, Object... arguments) throws IllegalArgumentException {
         List<Class> classList = new ArrayList<Class>();
         if (arguments != null) {

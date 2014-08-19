@@ -23,10 +23,12 @@ public class FunctionReplacingReader extends Reader {
         integerStackForIndexFunction.push(new IndexHolder());
     }
 
+    @Override
     public int read(CharBuffer target) throws IOException {
         throw new RuntimeException("Operation Not Supported");
     }
 
+    @Override
     public int read() throws IOException {
         if(this.tokenValue != null){
             if(this.tokenValueIndex < this.tokenValue.length()){
@@ -84,34 +86,42 @@ public class FunctionReplacingReader extends Reader {
 
     }
 
+    @Override
     public int read(char cbuf[]) throws IOException {
         throw new RuntimeException("Operation Not Supported");
     }
 
+    @Override
     public int read(char cbuf[], int off, int len) throws IOException {
         throw new RuntimeException("Operation Not Supported");
     }
 
+    @Override
     public void close() throws IOException {
         this.pushbackReader.close();
     }
 
+    @Override
     public long skip(long n) throws IOException {
         throw new RuntimeException("Operation Not Supported");
     }
 
+    @Override
     public boolean ready() throws IOException {
         return this.pushbackReader.ready();
     }
 
+    @Override
     public boolean markSupported() {
         return false;
     }
 
+    @Override
     public void mark(int readAheadLimit) throws IOException {
         throw new RuntimeException("Operation Not Supported");
     }
 
+    @Override
     public void reset() throws IOException {
         throw new RuntimeException("Operation Not Supported");
     }
