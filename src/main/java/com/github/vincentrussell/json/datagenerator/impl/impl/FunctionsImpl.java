@@ -50,7 +50,7 @@ public class FunctionsImpl implements Functions {
      * class and must match the signature of the functions in the json
      * @param functionName name of the private function in this class
      * @param arguments the arguments for the function int his class
-     * @return
+     * @return the results of executing the function.
      * @throws IllegalArgumentException
      */
     public String execute(String functionName, Object... arguments) throws IllegalArgumentException {

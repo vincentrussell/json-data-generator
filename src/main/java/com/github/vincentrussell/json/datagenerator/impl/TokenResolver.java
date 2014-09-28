@@ -9,10 +9,10 @@ import com.github.vincentrussell.json.datagenerator.impl.impl.IndexHolder;
 public interface TokenResolver {
 
     /**
-     * process text in json and run it's function specified in FunctionsImpl
+     * process text in json and run return the results of processing the json tokens
      * @param indexHolder
      * @param s
-     * @return
+     * @return the result of resolving the token
      */
     String resolveToken(IndexHolder indexHolder, CharSequence s);
 }

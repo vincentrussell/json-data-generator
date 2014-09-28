@@ -10,7 +10,7 @@ public class IndexHolder {
 
     /**
      * get next index
-     * @return
+     * @return the next index
      */
     public int getNextIndex() {
         return index++;
