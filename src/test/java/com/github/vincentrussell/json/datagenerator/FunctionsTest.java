@@ -1,7 +1,7 @@
 package com.github.vincentrussell.json.datagenerator;
 
-import com.github.vincentrussell.json.datagenerator.impl.impl.FunctionsImpl;
-import com.github.vincentrussell.json.datagenerator.impl.impl.IndexHolder;
+import com.github.vincentrussell.json.datagenerator.impl.FunctionsImpl;
+import com.github.vincentrussell.json.datagenerator.impl.IndexHolder;
 import org.junit.Test;
 
 import java.text.ParseException;

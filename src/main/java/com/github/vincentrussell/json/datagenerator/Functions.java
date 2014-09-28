@@ -1,4 +1,4 @@
-package com.github.vincentrussell.json.datagenerator.impl;
+package com.github.vincentrussell.json.datagenerator;
 
 
 import java.util.regex.Pattern;

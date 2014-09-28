@@ -1,6 +1,6 @@
 package com.github.vincentrussell.json.datagenerator.impl;
 
-import com.github.vincentrussell.json.datagenerator.impl.impl.IndexHolder;
+import com.github.vincentrussell.json.datagenerator.TokenResolver;
 
 import java.io.IOException;
 import java.io.PushbackReader;

@@ -1,7 +1,6 @@
 package com.github.vincentrussell.json.datagenerator;
 
-import com.github.vincentrussell.json.datagenerator.impl.JsonDataGeneratorException;
-import com.github.vincentrussell.json.datagenerator.impl.impl.JsonDataGeneratorImpl;
+import com.github.vincentrussell.json.datagenerator.impl.JsonDataGeneratorImpl;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;

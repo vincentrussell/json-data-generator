@@ -1,9 +1,8 @@
-package com.github.vincentrussell.json.datagenerator.impl.impl;
+package com.github.vincentrussell.json.datagenerator.impl;
 
 
-import com.github.vincentrussell.json.datagenerator.impl.FunctionReplacingReader;
-import com.github.vincentrussell.json.datagenerator.impl.JsonDataGenerator;
-import com.github.vincentrussell.json.datagenerator.impl.JsonDataGeneratorException;
+import com.github.vincentrussell.json.datagenerator.JsonDataGenerator;
+import com.github.vincentrussell.json.datagenerator.JsonDataGeneratorException;
 import org.apache.commons.io.IOUtils;
 
 import java.io.*;

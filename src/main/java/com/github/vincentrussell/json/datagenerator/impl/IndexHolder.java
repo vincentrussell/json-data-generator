@@ -1,4 +1,4 @@
-package com.github.vincentrussell.json.datagenerator.impl.impl;
+package com.github.vincentrussell.json.datagenerator.impl;
 
 /**
  * class used to support auto-incrementing index function in test data json

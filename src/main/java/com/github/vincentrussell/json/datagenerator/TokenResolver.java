@@ -1,7 +1,7 @@
-package com.github.vincentrussell.json.datagenerator.impl;
+package com.github.vincentrussell.json.datagenerator;
 
 
-import com.github.vincentrussell.json.datagenerator.impl.impl.IndexHolder;
+import com.github.vincentrussell.json.datagenerator.impl.IndexHolder;
 
 /**
  * interface for processing functions in the test data
