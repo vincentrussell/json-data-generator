@@ -1,5 +1,4 @@
 # json-data-generator
-===================
 
 json-data-generator helps you build json data that you need for test data purposes.   It has a lot of nice features that you can use to build as much test data as you need.
 
@@ -25,6 +24,31 @@ parser.generateTestDataJson(File file, OutputStream outputStream);
 
 You can repeat sections of json to make big amounts of json.
 
+##How to use it
+
+```
+JsonDataGeneratorImpl parser = new JsonDataGeneratorImpl();
+parser.generateTestDataJson(String text, OutputStream outputStream);
+```
+
+or
+
+```
+JsonDataGeneratorImpl parser = new JsonDataGeneratorImpl();
+parser.generateTestDataJson(URL classPathResource, OutputStream outputStream);
+```
+
+or
+
+```
+JsonDataGeneratorImpl parser = new JsonDataGeneratorImpl();
+parser.generateTestDataJson(File file, OutputStream outputStream);
+```
+
+
+##Repeat sections of json
+
+For instance you can do repeats like this:
 ```
 [
     '{{repeat(2)}}',
