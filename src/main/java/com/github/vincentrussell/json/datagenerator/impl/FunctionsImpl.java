@@ -16,6 +16,7 @@ import java.util.regex.Pattern;
 public class FunctionsImpl implements Functions {
 
     public static final Pattern FUNCTION_PATTERN = Pattern.compile("\\{\\{([\\w]+)\\((.*)\\)\\}\\}");
+    public static final Pattern LONG_PATTERN = Pattern.compile("(\\d+)L");
     public static final Pattern REPEAT_FUNCTION_PATTERN = Pattern.compile("\'\\{\\{(repeat)\\((\\d+)\\)\\}\\}\'\\s*,");
     private static final String DEFAULT_DATE_STRING = "EEE, d MMM yyyy HH:mm:ss z";
     private static final DateFormat DEFAULT_DATE_FORMAT = new SimpleDateFormat(DEFAULT_DATE_STRING);
@@ -55,6 +56,7 @@ public class FunctionsImpl implements Functions {
      * @return the results of executing the function.
      * @throws IllegalArgumentException
      */
+    @Override
     public String execute(String functionName, Object... arguments) throws IllegalArgumentException {
         List<Class> classList = new ArrayList<Class>();
         if (arguments != null) {
@@ -89,30 +91,35 @@ public class FunctionsImpl implements Functions {
 
     private Method getMethod(Class clazz, String functionName, Class<?>... parameterTypes) throws NoSuchMethodException {
         try {
-            return clazz.getMethod(functionName,parameterTypes);
+            return clazz.getDeclaredMethod(functionName, parameterTypes);
         } catch (NoSuchMethodException e) {
-            return clazz.getMethod(RESERVED + functionName, parameterTypes);
+            return clazz.getDeclaredMethod(RESERVED + functionName, parameterTypes);
         }
     }
 
+    @Override
     public boolean isFunction(CharSequence input) {
         Matcher matcher = FunctionsImpl.FUNCTION_PATTERN.matcher(input);
         return matcher.find();
     }
 
+    @Override
     public boolean isRepeatFunction(CharSequence input) {
         Matcher matcher = FunctionsImpl.REPEAT_FUNCTION_PATTERN.matcher(input);
         return matcher.find();
     }
 
+    @Override
     public Object[] getFunctionNameAndArguments(CharSequence input) {
         return getFunctionNameAndArguments(input, FunctionsImpl.FUNCTION_PATTERN);
     }
 
+    @Override
     public Object[] getRepeatFunctionNameAndArguments(CharSequence input) {
         return getFunctionNameAndArguments(input, FunctionsImpl.REPEAT_FUNCTION_PATTERN);
     }
 
+    @Override
     public Object[] getFunctionNameAndArguments(CharSequence input, Pattern pattern) {
         Matcher matcher = pattern.matcher(input);
         List<Object> objectList = new ArrayList<Object>();
@@ -122,11 +129,7 @@ public class FunctionsImpl implements Functions {
                 if (arg == null || arg.length() == 0) {
                     continue;
                 }
-                try {
-                    objectList.add(Integer.valueOf(arg));
-                } catch (NumberFormatException e) {
-                    objectList.add(arg.replaceAll("^\"|\"$", ""));
-                }
+                objectList.add(arg.replaceAll("^\"|\"$", ""));
 
             }
             return objectList.toArray();
@@ -139,19 +142,39 @@ public class FunctionsImpl implements Functions {
         return array[randomNumber];
     }
 
-    public String integer(Integer min, Integer max) {
+    private String integer(String min, String max) {
+        return integer(Integer.parseInt(min),Integer.parseInt(max));
+    }
+
+    private String integer(Integer min, Integer max) {
         int randomNumber = getRandomInteger(min, max);
         return new Integer(randomNumber).toString();
     }
 
-    public String reserved_double(Double min, Double max) {
+    private String reserved_double(Double min, Double max) {
         double randomNumber = getRandomDouble(min, max);
         return new Double(randomNumber).toString();
     }
 
-    public String reserved_long(Long min, Long max) {
+    private String reserved_double(String min, String max) {
+        return reserved_double(Double.parseDouble(min), Double.parseDouble(max));
+    }
+
+    private String reserved_long(Long min, Long max) {
         long randomNumber = getRandomLong(min, max);
         return new Long(randomNumber).toString();
+    }
+
+    private String reserved_long(String min, String max) {
+        return reserved_long(parseLong(min), parseLong(max));
+    }
+
+    private Long parseLong(String string) {
+        Matcher matcher = LONG_PATTERN.matcher(string);
+        if (matcher.matches()) {
+            return Long.parseLong(matcher.group(1));
+        }
+        return Long.parseLong(string);
     }
 
     private int getRandomInteger(Integer min, Integer max) {
@@ -166,20 +189,20 @@ public class FunctionsImpl implements Functions {
         return min + (max - min) * new Random().nextDouble();
     }
 
-    public String uuid() {
+    private String uuid() {
         return UUID.randomUUID().toString();
     }
 
-    public boolean bool() {
+    private boolean bool() {
         return Math.random() < 0.5;
     }
 
-    public Object random(Object[] options) {
+    private Object random(Object[] options) {
         int randomNum = 0 + (int) (Math.random() * options.length);
         return options[randomNum];
     }
 
-    public int index() {
+    private int index() {
         return indexHolder.getNextIndex();
     }
 
@@ -223,7 +246,11 @@ public class FunctionsImpl implements Functions {
         return paragraphs.toString();
     }
 
-    public String lorem(Integer amountOfLoremIpsum, String type) {
+    private String lorem(String amountOfLoremIpsum, String type) {
+        return lorem(Integer.valueOf(amountOfLoremIpsum),type);
+    }
+
+    private String lorem(Integer amountOfLoremIpsum, String type) {
         if ("words".equals(type)) {
             return getWords(amountOfLoremIpsum, false);
         } else if ("paragraphs".equals(type)) {
@@ -233,7 +260,7 @@ public class FunctionsImpl implements Functions {
         }
     }
 
-    public String phone() {
+    private String phone() {
         Random rand = new Random();
         int num1 = (rand.nextInt(7) + 1) * 100 + (rand.nextInt(8) * 10) + rand.nextInt(8);
         int num2 = rand.nextInt(743);
@@ -246,19 +273,19 @@ public class FunctionsImpl implements Functions {
         return phoneNumber;
     }
 
-    public String gender() {
+    private String gender() {
         return (Math.random() < 0.5) ? "male" : "female";
     }
 
-    public String date() {
+    private String date() {
         return DEFAULT_DATE_FORMAT.format(new Date());
     }
 
-    public String date(String format) {
+    private String date(String format) {
         return new SimpleDateFormat(format).format(new Date());
     }
 
-    public String date(String beginDate, String endDate, String format) {
+    private String date(String beginDate, String endDate, String format) {
         try {
             DateFormat formatter = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
             SimpleDateFormat dateFormat = new SimpleDateFormat(format);
@@ -276,39 +303,39 @@ public class FunctionsImpl implements Functions {
 
     }
 
-    public String date(String beginDate, String endDate) {
+    private String date(String beginDate, String endDate) {
         return date(beginDate, endDate, DEFAULT_DATE_STRING);
     }
 
-    public String country(){
+    private String country(){
         return getRandomElementFromArray(COUNTRIES);
     }
 
-    public String city() {
+    private String city() {
         return getRandomElementFromArray(CITIES);
     }
 
-    public String state() {
+    private String state() {
         return getRandomElementFromArray(STATES);
     }
 
-    public String street() {
+    private String street() {
         return getRandomElementFromArray(STREETS);
     }
 
-    public String company() {
+    private String company() {
         return getRandomElementFromArray(COMPANIES);
     }
 
-    public String lastName() {
+    private String lastName() {
         return getRandomElementFromArray(LAST_NAMES);
     }
 
-    public String email() {
+    private String email() {
         return firstName().toLowerCase() + "." + lastName().toLowerCase() + "@" + company().toLowerCase() + ".com";
     }
 
-    public String firstName() {
+    private String firstName() {
         boolean isMale = (Math.random() < 0.5);
         return (isMale) ? getRandomElementFromArray(MALE_FIRST_NAMES) : getRandomElementFromArray(FEMALE_FIRST_NAMES);
     }

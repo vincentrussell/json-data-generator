@@ -143,7 +143,7 @@ public class JsonDataGeneratorImpl implements JsonDataGenerator {
                 }
                 if (new FunctionsImpl(null).isRepeatFunction(tempBuffer)) {
                     tempBuffer.append((char) i);
-                    repeatTimes = (Integer) new FunctionsImpl(null).getRepeatFunctionNameAndArguments(tempBuffer)[1];
+                    repeatTimes = Integer.parseInt(new FunctionsImpl(null).getRepeatFunctionNameAndArguments(tempBuffer)[1].toString());
                     int indexOfRepeat = indexOf(FunctionsImpl.REPEAT_FUNCTION_PATTERN, tempBuffer);
                     tempBuffer.setLength(indexOfRepeat);
                     outputStream.write(String.valueOf(tempBuffer).getBytes());
