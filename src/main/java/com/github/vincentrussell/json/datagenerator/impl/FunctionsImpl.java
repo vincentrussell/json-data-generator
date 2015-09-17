@@ -1,6 +1,7 @@
 package com.github.vincentrussell.json.datagenerator.impl;
 
 import com.github.vincentrussell.json.datagenerator.Functions;
+import org.apache.commons.math3.random.RandomDataGenerator;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -18,6 +19,7 @@ public class FunctionsImpl implements Functions {
     public static final Pattern REPEAT_FUNCTION_PATTERN = Pattern.compile("\'\\{\\{(repeat)\\((\\d+)\\)\\}\\}\'\\s*,");
     private static final String DEFAULT_DATE_STRING = "EEE, d MMM yyyy HH:mm:ss z";
     private static final DateFormat DEFAULT_DATE_FORMAT = new SimpleDateFormat(DEFAULT_DATE_STRING);
+    public static final String RESERVED = "reserved_";
 
     private static String[] COUNTRIES = new String[]{"Afghanistan", "Albania", "Algeria", "Andorra", "Angola", "Anguilla", "Antigua &amp; Barbuda", "Argentina", "Armenia", "Aruba", "Australia", "Austria", "Azerbaijan", "Bahamas", "Bahrain", "Bangladesh", "Barbados", "Belarus", "Belgium", "Belize", "Benin", "Bermuda", "Bhutan", "Bolivia", "Bosnia &amp; Herzegovina", "Botswana", "Brazil", "British Virgin Islands", "Brunei", "Bulgaria", "Burkina Faso", "Burundi", "Cambodia", "Cameroon", "Cape Verde", "Cayman Islands", "Chad", "Chile", "China", "Colombia", "Congo", "Cook Islands", "Costa Rica", "Cote D Ivoire", "Croatia", "Cruise Ship", "Cuba", "Cyprus", "Czech Republic", "Denmark", "Djibouti", "Dominica", "Dominican Republic", "Ecuador", "Egypt", "El Salvador", "Equatorial Guinea", "Estonia", "Ethiopia", "Falkland Islands", "Faroe Islands", "Fiji", "Finland", "France", "French Polynesia", "French West Indies", "Gabon", "Gambia", "Georgia", "Germany", "Ghana", "Gibraltar", "Greece", "Greenland", "Grenada", "Guam", "Guatemala", "Guernsey", "Guinea", "Guinea Bissau", "Guyana", "Haiti", "Honduras", "Hong Kong", "Hungary", "Iceland", "India", "Indonesia", "Iran", "Iraq", "Ireland", "Isle of Man", "Israel", "Italy", "Jamaica", "Japan", "Jersey", "Jordan", "Kazakhstan", "Kenya", "Kuwait", "Kyrgyz Republic", "Laos", "Latvia", "Lebanon", "Lesotho", "Liberia", "Libya", "Liechtenstein", "Lithuania", "Luxembourg", "Macau", "Macedonia", "Madagascar", "Malawi", "Malaysia", "Maldives", "Mali", "Malta", "Mauritania", "Mauritius", "Mexico", "Moldova", "Monaco", "Mongolia", "Montenegro", "Montserrat", "Morocco", "Mozambique", "Namibia", "Nepal", "Netherlands", "Netherlands Antilles", "New Caledonia", "New Zealand", "Nicaragua", "Niger", "Nigeria", "Norway", "Oman", "Pakistan", "Palestine", "Panama", "Papua New Guinea", "Paraguay", "Peru", "Philippines", "Poland", "Portugal", "Puerto Rico", "Qatar", "Reunion", "Romania", "Russia", "Rwanda", "Saint Pierre &amp; Miquelon", "Samoa", "San Marino", "Satellite", "Saudi Arabia", "Senegal", "Serbia", "Seychelles", "Sierra Leone", "Singapore", "Slovakia", "Slovenia", "South Africa", "South Korea", "Spain", "Sri Lanka", "St Kitts &amp; Nevis", "St Lucia", "St Vincent", "St. Lucia", "Sudan", "Suriname", "Swaziland", "Sweden", "Switzerland", "Syria", "Taiwan", "Tajikistan", "Tanzania", "Thailand", "Timor L'Este", "Togo", "Tonga", "Trinidad &amp; Tobago", "Tunisia", "Turkey", "Turkmenistan", "Turks &amp; Caicos", "Uganda", "Ukraine", "United Arab Emirates", "United Kingdom", "Uruguay", "Uzbekistan", "Venezuela", "Vietnam", "Virgin Islands (US)", "Yemen", "Zambia", "Zimbabwe"};
     private static String[] STATES = new String[]{"Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware", "Florida", "Georgia", "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland", "Massachusetts", "Michigan", "Minnesota", "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada", "New Hampshire", "New Jersey", "New Mexico", "New York", "North Carolina", "North Dakota", "Ohio", "Oklahoma", "Oregon", "Pennsylvania", "Rhode Island", "South Carolina", "South Dakota", "Tennessee", "Texas", "Utah", "Vermont", "Virginia", "Washington", "West Virginia", "Wisconsin", "Wyoming"};
@@ -61,13 +63,13 @@ public class FunctionsImpl implements Functions {
             }
         }
         try {
-            Method method = this.getClass().getMethod(functionName, classList.toArray(new Class[classList.size()]));
+            Method method = getMethod(this.getClass(), functionName, classList.toArray(new Class[classList.size()]));
             return method.invoke(this, arguments).toString();
         } catch (SecurityException e) {
             throw new IllegalArgumentException(e);
         } catch (NoSuchMethodException e) {
             try {
-                Method method = this.getClass().getMethod(functionName, Object[].class);
+                Method method = getMethod(this.getClass(), functionName, Object[].class);
                 return method.invoke(this, new Object[]{arguments}).toString();
             } catch (NoSuchMethodException e1) {
                 throw new IllegalArgumentException(e);
@@ -82,6 +84,14 @@ public class FunctionsImpl implements Functions {
             throw new IllegalArgumentException(e);
         } catch (Exception e) {
             throw new IllegalArgumentException(e);
+        }
+    }
+
+    private Method getMethod(Class clazz, String functionName, Class<?>... parameterTypes) throws NoSuchMethodException {
+        try {
+            return clazz.getMethod(functionName,parameterTypes);
+        } catch (NoSuchMethodException e) {
+            return clazz.getMethod(RESERVED + functionName, parameterTypes);
         }
     }
 
@@ -134,8 +144,26 @@ public class FunctionsImpl implements Functions {
         return new Integer(randomNumber).toString();
     }
 
+    public String reserved_double(Double min, Double max) {
+        double randomNumber = getRandomDouble(min, max);
+        return new Double(randomNumber).toString();
+    }
+
+    public String reserved_long(Long min, Long max) {
+        long randomNumber = getRandomLong(min, max);
+        return new Long(randomNumber).toString();
+    }
+
     private int getRandomInteger(Integer min, Integer max) {
         return new Random().nextInt(max - min) + min;
+    }
+
+    private long getRandomLong(Long min, Long max) {
+        return new RandomDataGenerator().nextLong(min, max);
+    }
+
+    private double getRandomDouble(Double min, Double max) {
+        return min + (max - min) * new Random().nextDouble();
     }
 
     public String uuid() {

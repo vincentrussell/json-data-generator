@@ -64,7 +64,21 @@ public class FunctionsTest {
     public void integer() {
         String result = functions.execute("integer",new Object[]{1,5});
         Integer integer = Integer.parseInt(result);
-        assertTrue(true);
+        assertTrue(integer >= 1 && integer <= 5);
+    }
+
+    @Test
+    public void doubleFunction() {
+        String result = functions.execute("double",new Object[]{1.2,20.3});
+        Double doub = Double.parseDouble(result);
+        assertTrue(doub >= 1.2 && doub <= 20.3);
+    }
+
+    @Test
+    public void longFunction() {
+        String result = functions.execute("long",new Object[]{1L,90210L});
+        Long longNumber = Long.parseLong(result);
+        assertTrue(longNumber >= 1L && longNumber <= 90210L);
     }
 
     @Test
