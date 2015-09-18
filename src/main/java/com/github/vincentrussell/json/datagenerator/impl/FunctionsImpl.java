@@ -206,6 +206,15 @@ public class FunctionsImpl implements Functions {
         return reserved_double(Double.parseDouble(min), Double.parseDouble(max));
     }
 
+    private String reserved_float(Float min, Float max) {
+        double randomNumber = getRandomFloat(min, max);
+        return new Double(randomNumber).toString();
+    }
+
+    private String reserved_float(String min, String max) {
+        return reserved_float(Float.parseFloat(min), Float.parseFloat(max));
+    }
+
     private String reserved_long(Long min, Long max) {
         long randomNumber = getRandomLong(min, max);
         return new Long(randomNumber).toString();
@@ -233,6 +242,10 @@ public class FunctionsImpl implements Functions {
 
     private double getRandomDouble(Double min, Double max) {
         return min + (max - min) * new Random().nextDouble();
+    }
+
+    private float getRandomFloat(Float min, Float max) {
+        return min + (max - min) * new Random().nextFloat();
     }
 
     private String uuid() {

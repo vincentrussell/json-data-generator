@@ -103,6 +103,13 @@ public class FunctionsTest {
     }
 
     @Test
+    public void floatFunction() {
+        String result = test("float(1352.2335345,7563.36456464)");
+        Float flo = Float.parseFloat(result);
+        assertTrue(flo >= 1352.2335345f && flo <= 7563.36456464);
+    }
+
+    @Test
     public void longFunctionWithSuffix() {
         String result = test("long(1L,90210L)");
         Long longNumber = Long.parseLong(result);
