@@ -194,12 +194,12 @@ public class FunctionsImpl implements Functions {
 
     private String integer(Integer min, Integer max) {
         int randomNumber = getRandomInteger(min, max);
-        return new Integer(randomNumber).toString();
+        return Integer.toString(randomNumber);
     }
 
     private String reserved_double(Double min, Double max) {
         double randomNumber = getRandomDouble(min, max);
-        return new Double(randomNumber).toString();
+        return Double.toString(randomNumber);
     }
 
     private String reserved_double(String min, String max) {
@@ -207,17 +207,29 @@ public class FunctionsImpl implements Functions {
     }
 
     private String reserved_float(Float min, Float max) {
-        double randomNumber = getRandomFloat(min, max);
-        return new Double(randomNumber).toString();
+        return reserved_float(min, max, null);
     }
 
     private String reserved_float(String min, String max) {
-        return reserved_float(Float.parseFloat(min), Float.parseFloat(max));
+        return reserved_float(min,max,null);
+    }
+
+    private String reserved_float(Float min, Float max, String format) {
+        float randomNumber = getRandomFloat(min, max);
+
+        if (format!=null){
+            return String.format(format, randomNumber);
+        }
+        return Float.toString(randomNumber);
+    }
+
+    private String reserved_float(String min, String max, String format) {
+        return reserved_float(Float.parseFloat(min), Float.parseFloat(max), format);
     }
 
     private String reserved_long(Long min, Long max) {
         long randomNumber = getRandomLong(min, max);
-        return new Long(randomNumber).toString();
+        return Long.toString(randomNumber);
     }
 
     private String reserved_long(String min, String max) {

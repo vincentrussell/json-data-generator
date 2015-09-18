@@ -110,6 +110,18 @@ public class FunctionsTest {
     }
 
     @Test
+    public void floatWithFormat() {
+        String result = test("float(1.1241241,10.36456464,\"%.2f\")");
+        Float flo = Float.parseFloat(result);
+        assertDecimalPlaces(result, 2);
+    }
+
+    private void assertDecimalPlaces(String text,int decimalPlaces) {
+        int integerPlaces = text.indexOf('.');
+        assertEquals(decimalPlaces,text.length() - integerPlaces - 1);
+    }
+
+    @Test
     public void longFunctionWithSuffix() {
         String result = test("long(1L,90210L)");
         Long longNumber = Long.parseLong(result);
