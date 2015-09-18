@@ -3,14 +3,21 @@ package com.github.vincentrussell.json.datagenerator;
 import com.github.vincentrussell.json.datagenerator.impl.FunctionTokenResolver;
 import com.github.vincentrussell.json.datagenerator.impl.FunctionsImpl;
 import com.github.vincentrussell.json.datagenerator.impl.IndexHolder;
+import com.google.common.collect.Iterables;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.regex.Pattern;
 
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.*;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.contains;
 
 public class FunctionsTest {
 
@@ -33,23 +40,31 @@ public class FunctionsTest {
     }
 
     @Test
+    public void nestedFunctionWithArgs() {
+        assertThat(functions.getFunctionNameAndArguments("{{goodBye(hello(1))}}"), contains(
+                equalTo(new Object[]{"hello", "1"}),
+                equalTo(new Object[]{"goodBye", FunctionsImpl.NESTED_RESULT})
+        ));
+    }
+
+    @Test
     public void functionAndArgNumber() {
-        assertArrayEquals(new Object[]{"hello","1"},functions.getFunctionNameAndArguments("{{hello(1)}}"));
+        assertArrayEquals(new Object[]{"hello", "1"}, Iterables.getFirst(functions.getFunctionNameAndArguments("{{hello(1)}}"), null));
     }
 
     @Test
     public void functionAndArgText() {
-        assertArrayEquals(new Object[]{"hello","1"},functions.getFunctionNameAndArguments("{{hello(\"1\")}}"));
+        assertArrayEquals(new Object[]{"hello", "1"}, Iterables.getFirst(functions.getFunctionNameAndArguments("{{hello(\"1\")}}"),null));
     }
 
     @Test
     public void functionAndArgNumberText() {
-        assertArrayEquals(new Object[]{"hello","1","String"},functions.getFunctionNameAndArguments("{{hello(1,\"String\")}}"));
+        assertArrayEquals(new Object[]{"hello", "1", "String"}, Iterables.getFirst(functions.getFunctionNameAndArguments("{{hello(1,\"String\")}}"),null));
     }
 
     @Test
     public void repeatAndArgText() {
-        assertArrayEquals(null,functions.getRepeatFunctionNameAndArguments("'{{repeat(\"1\")}}',"));
+        assertArrayEquals(null, functions.getRepeatFunctionNameAndArguments("'{{repeat(\"1\")}}',"));
     }
 
     @Test
@@ -172,6 +187,32 @@ public class FunctionsTest {
     public void gender() {
         String result = test("gender()");
         assertTrue("male".equals(result) || "female".equals(result));
+    }
+
+    @Test
+    public void substring() {
+        String result = test("substring(gender(),3)");
+        assertTrue("e".equals(result) || "ale".equals(result));
+    }
+
+    @Test
+    public void substring2Args() {
+        String result = test("substring(phone(),0,3)");
+        Integer integer = Integer.parseInt(result);
+        assertTrue(integer < 1000);
+        assertEquals(3,result.length());
+    }
+
+    @Test
+    public void toUpperCaseAnotherFunction() {
+        String result = test("toUpperCase(gender())");
+        assertTrue("male".toUpperCase().equals(result) || "female".toUpperCase().equals(result));
+    }
+
+    @Test
+    public void toLowerCaseAnotherFunction() {
+        String result = test("toLowerCase(random(\"RED\",\"Blue\",\"GrEEN\"))");
+        assertTrue("red".equals(result) || "blue".equals(result) || "green".equals(result));
     }
 
     @Test

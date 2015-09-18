@@ -1,6 +1,7 @@
 package com.github.vincentrussell.json.datagenerator.impl;
 
 import com.github.vincentrussell.json.datagenerator.Functions;
+import com.google.common.collect.Iterables;
 import org.apache.commons.math3.random.RandomDataGenerator;
 
 import java.lang.reflect.InvocationTargetException;
@@ -15,12 +16,13 @@ import java.util.regex.Pattern;
 
 public class FunctionsImpl implements Functions {
 
-    public static final Pattern FUNCTION_PATTERN = Pattern.compile("\\{\\{([\\w]+)\\((.*)\\)\\}\\}");
+    public static final Pattern FUNCTION_PATTERN = Pattern.compile("([\\w]+)\\((.*)\\)");
     public static final Pattern LONG_PATTERN = Pattern.compile("(\\d+)L");
     public static final Pattern REPEAT_FUNCTION_PATTERN = Pattern.compile("\'\\{\\{(repeat)\\((\\d+)\\)\\}\\}\'\\s*,");
     private static final String DEFAULT_DATE_STRING = "EEE, d MMM yyyy HH:mm:ss z";
     private static final DateFormat DEFAULT_DATE_FORMAT = new SimpleDateFormat(DEFAULT_DATE_STRING);
     public static final String RESERVED = "reserved_";
+    public static final String NESTED_RESULT = "NESTED_RESULT";
 
     private static String[] COUNTRIES = new String[]{"Afghanistan", "Albania", "Algeria", "Andorra", "Angola", "Anguilla", "Antigua &amp; Barbuda", "Argentina", "Armenia", "Aruba", "Australia", "Austria", "Azerbaijan", "Bahamas", "Bahrain", "Bangladesh", "Barbados", "Belarus", "Belgium", "Belize", "Benin", "Bermuda", "Bhutan", "Bolivia", "Bosnia &amp; Herzegovina", "Botswana", "Brazil", "British Virgin Islands", "Brunei", "Bulgaria", "Burkina Faso", "Burundi", "Cambodia", "Cameroon", "Cape Verde", "Cayman Islands", "Chad", "Chile", "China", "Colombia", "Congo", "Cook Islands", "Costa Rica", "Cote D Ivoire", "Croatia", "Cruise Ship", "Cuba", "Cyprus", "Czech Republic", "Denmark", "Djibouti", "Dominica", "Dominican Republic", "Ecuador", "Egypt", "El Salvador", "Equatorial Guinea", "Estonia", "Ethiopia", "Falkland Islands", "Faroe Islands", "Fiji", "Finland", "France", "French Polynesia", "French West Indies", "Gabon", "Gambia", "Georgia", "Germany", "Ghana", "Gibraltar", "Greece", "Greenland", "Grenada", "Guam", "Guatemala", "Guernsey", "Guinea", "Guinea Bissau", "Guyana", "Haiti", "Honduras", "Hong Kong", "Hungary", "Iceland", "India", "Indonesia", "Iran", "Iraq", "Ireland", "Isle of Man", "Israel", "Italy", "Jamaica", "Japan", "Jersey", "Jordan", "Kazakhstan", "Kenya", "Kuwait", "Kyrgyz Republic", "Laos", "Latvia", "Lebanon", "Lesotho", "Liberia", "Libya", "Liechtenstein", "Lithuania", "Luxembourg", "Macau", "Macedonia", "Madagascar", "Malawi", "Malaysia", "Maldives", "Mali", "Malta", "Mauritania", "Mauritius", "Mexico", "Moldova", "Monaco", "Mongolia", "Montenegro", "Montserrat", "Morocco", "Mozambique", "Namibia", "Nepal", "Netherlands", "Netherlands Antilles", "New Caledonia", "New Zealand", "Nicaragua", "Niger", "Nigeria", "Norway", "Oman", "Pakistan", "Palestine", "Panama", "Papua New Guinea", "Paraguay", "Peru", "Philippines", "Poland", "Portugal", "Puerto Rico", "Qatar", "Reunion", "Romania", "Russia", "Rwanda", "Saint Pierre &amp; Miquelon", "Samoa", "San Marino", "Satellite", "Saudi Arabia", "Senegal", "Serbia", "Seychelles", "Sierra Leone", "Singapore", "Slovakia", "Slovenia", "South Africa", "South Korea", "Spain", "Sri Lanka", "St Kitts &amp; Nevis", "St Lucia", "St Vincent", "St. Lucia", "Sudan", "Suriname", "Swaziland", "Sweden", "Switzerland", "Syria", "Taiwan", "Tajikistan", "Tanzania", "Thailand", "Timor L'Este", "Togo", "Tonga", "Trinidad &amp; Tobago", "Tunisia", "Turkey", "Turkmenistan", "Turks &amp; Caicos", "Uganda", "Ukraine", "United Arab Emirates", "United Kingdom", "Uruguay", "Uzbekistan", "Venezuela", "Vietnam", "Virgin Islands (US)", "Yemen", "Zambia", "Zimbabwe"};
     private static String[] STATES = new String[]{"Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware", "Florida", "Georgia", "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland", "Massachusetts", "Michigan", "Minnesota", "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada", "New Hampshire", "New Jersey", "New Mexico", "New York", "North Carolina", "North Dakota", "Ohio", "Oklahoma", "Oregon", "Pennsylvania", "Rhode Island", "South Carolina", "South Dakota", "Tennessee", "Texas", "Utah", "Vermont", "Virginia", "Washington", "West Virginia", "Wisconsin", "Wyoming"};
@@ -110,31 +112,75 @@ public class FunctionsImpl implements Functions {
     }
 
     @Override
-    public Object[] getFunctionNameAndArguments(CharSequence input) {
+    public List<Object[]> getFunctionNameAndArguments(CharSequence input) {
         return getFunctionNameAndArguments(input, FunctionsImpl.FUNCTION_PATTERN);
     }
 
     @Override
     public Object[] getRepeatFunctionNameAndArguments(CharSequence input) {
-        return getFunctionNameAndArguments(input, FunctionsImpl.REPEAT_FUNCTION_PATTERN);
+        List<Object[]> objects = getFunctionNameAndArguments(input, FunctionsImpl.REPEAT_FUNCTION_PATTERN);
+        if (objects==null) {
+            return null;
+        }
+        return Iterables.getFirst(objects,null);
     }
 
     @Override
-    public Object[] getFunctionNameAndArguments(CharSequence input, Pattern pattern) {
+    public List<Object[]> getFunctionNameAndArguments(CharSequence input, Pattern pattern) {
+        List<Object[]> objectList = new ArrayList<Object[]>();
+        getFunctionNameAndArguments(objectList,input,pattern);
+        return objectList;
+    }
+
+
+    private CharSequence getFunctionNameAndArguments(List<Object[]> list,  CharSequence input, Pattern pattern) {
         Matcher matcher = pattern.matcher(input);
         List<Object> objectList = new ArrayList<Object>();
         if (matcher.find()) {
-            objectList.add(matcher.group(1));
-            for (String arg : matcher.group(2).split(",")) {
-                if (arg == null || arg.length() == 0) {
-                    continue;
+            String functionNameSection = matcher.group(1);
+            objectList.add(functionNameSection);
+            String argSection = matcher.group(2);
+            Matcher matcher2 = pattern.matcher(argSection);
+            String[] args = argSection.length()==0 ? new String[0] : argSection.split(",");
+            if (matcher2.matches()) {
+                String zero = matcher2.group(0);
+                CharSequence nestedFunctionName = getFunctionNameAndArguments(list, zero, pattern);
+                if (!argSection.equals(nestedFunctionName)) {
+                    addArgsToObjectList(nestedFunctionName, pattern, objectList, args,list);
+                } else {
+                    objectList.add(NESTED_RESULT);
                 }
-                objectList.add(arg.replaceAll("^\"|\"$", ""));
-
+                list.add(objectList.toArray(new Object[objectList.size()]));
+                return input;
+            } else if (args!=null && args.length > 0) {
+                addArgsToObjectList(null, pattern, objectList, args,list);
+                list.add(objectList.toArray());
+                return input;
+            } else {
+                list.add(objectList.toArray(new Object[objectList.size()]));
+                return input;
             }
-            return objectList.toArray();
         }
         return null;
+    }
+
+    private void addArgsToObjectList(CharSequence nestedFunctionName, Pattern pattern, List<Object> objectList, String[] args, List<Object[]> list) {
+        for (String arg : args) {
+            if (arg == null || arg.length() == 0) {
+                continue;
+            }
+            Matcher matcher = pattern.matcher(arg);
+            if (matcher.matches()) {
+                getFunctionNameAndArguments(list, arg, pattern);
+                objectList.add(NESTED_RESULT);
+            } else {
+                String value = arg.replaceAll("^\"|\"$", "");
+                if (value.equals(nestedFunctionName)) {
+                    value = NESTED_RESULT;
+                }
+                objectList.add(value);
+            }
+        }
     }
 
     private String getRandomElementFromArray(String[] array) {
@@ -258,6 +304,30 @@ public class FunctionsImpl implements Functions {
         } else {
             throw new IllegalArgumentException(type + " not a valid type for the lorem function");
         }
+    }
+
+    private String toUpperCase(String string) {
+        return string.toUpperCase();
+    }
+
+    private String toLowerCase(String string) {
+        return string.toLowerCase();
+    }
+
+    private String substring(String value, String beginIndex) {
+        return value.substring(Integer.valueOf(beginIndex));
+    }
+
+    private String substring(String value, int beginIndex) {
+        return value.substring(beginIndex);
+    }
+
+    private  String substring(String value,String beginIndex, String endIndex) {
+        return value.substring(Integer.valueOf(beginIndex),Integer.valueOf(endIndex));
+    }
+
+    private  String substring(String value,int beginIndex, int endIndex) {
+        return value.substring(beginIndex,endIndex);
     }
 
     private String phone() {
