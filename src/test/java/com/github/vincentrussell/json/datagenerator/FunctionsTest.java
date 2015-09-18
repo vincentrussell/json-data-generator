@@ -9,15 +9,11 @@ import org.junit.Test;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.regex.Pattern;
 
 import static org.hamcrest.CoreMatchers.equalTo;
-import static org.junit.Assert.*;
-import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.contains;
+import static org.junit.Assert.*;
 
 public class FunctionsTest {
 
@@ -54,12 +50,12 @@ public class FunctionsTest {
 
     @Test
     public void functionAndArgText() {
-        assertArrayEquals(new Object[]{"hello", "1"}, Iterables.getFirst(functions.getFunctionNameAndArguments("{{hello(\"1\")}}"),null));
+        assertArrayEquals(new Object[]{"hello", "1"}, Iterables.getFirst(functions.getFunctionNameAndArguments("{{hello(\"1\")}}"), null));
     }
 
     @Test
     public void functionAndArgNumberText() {
-        assertArrayEquals(new Object[]{"hello", "1", "String"}, Iterables.getFirst(functions.getFunctionNameAndArguments("{{hello(1,\"String\")}}"),null));
+        assertArrayEquals(new Object[]{"hello", "1", "String"}, Iterables.getFirst(functions.getFunctionNameAndArguments("{{hello(1,\"String\")}}"), null));
     }
 
     @Test
@@ -69,17 +65,17 @@ public class FunctionsTest {
 
     @Test
     public void repeatAndArgNumber() {
-        assertArrayEquals(new Object[]{"repeat","1"},functions.getRepeatFunctionNameAndArguments("'{{repeat(1)}}',"));
+        assertArrayEquals(new Object[]{"repeat", "1"}, functions.getRepeatFunctionNameAndArguments("'{{repeat(1)}}',"));
     }
 
     @Test
     public void repeatAndArgMultipleNumbers() {
-        assertArrayEquals(null,functions.getRepeatFunctionNameAndArguments("'{{repeat(1,2)}}',"));
+        assertArrayEquals(null, functions.getRepeatFunctionNameAndArguments("'{{repeat(1,2)}}',"));
     }
 
     @Test
     public void repeatAndArgNumberAndSpaces() {
-        assertArrayEquals(new Object[]{"repeat","1"},functions.getRepeatFunctionNameAndArguments("'{{repeat(1)}}',   \n\n\n"));
+        assertArrayEquals(new Object[]{"repeat", "1"}, functions.getRepeatFunctionNameAndArguments("'{{repeat(1)}}',   \n\n\n"));
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -200,7 +196,7 @@ public class FunctionsTest {
         String result = test("substring(phone(),0,3)");
         Integer integer = Integer.parseInt(result);
         assertTrue(integer < 1000);
-        assertEquals(3,result.length());
+        assertEquals(3, result.length());
     }
 
     @Test
@@ -242,7 +238,7 @@ public class FunctionsTest {
     public void dateWithinRangeWithFormat() throws ParseException {
         String dateFormatText = "MMM yyyy HH:mm:ss z";
         SimpleDateFormat dateFormat = new SimpleDateFormat(dateFormatText);
-        String result = test("date(06-16-1956 12:00:00,06-16-1975 12:00:00,"+dateFormatText+")");
+        String result = test("date(06-16-1956 12:00:00,06-16-1975 12:00:00," + dateFormatText + ")");
         dateFormat.parse(result);
     }
 
@@ -287,14 +283,14 @@ public class FunctionsTest {
     }
 
     private void notNullNoArgTest(String functionName) {
-        String result = functions.execute(functionName,null);
+        String result = functions.execute(functionName, null);
         assertNotNull(result);
         assertTrue(result.length() > 0);
     }
 
     private String test(String string) {
         TokenResolver tokenResolver = new FunctionTokenResolver();
-        return tokenResolver.resolveToken(indexHolder,"{{"+string+"}}");
+        return tokenResolver.resolveToken(indexHolder, "{{" + string + "}}");
     }
 
 }
