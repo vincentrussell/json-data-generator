@@ -116,6 +116,13 @@ public class FunctionsTest {
         assertDecimalPlaces(result, 2);
     }
 
+    @Test
+    public void floatWithFormatConcatDollarSign() {
+        String result = test("concat(\"$\",float(1.1241241,10.36456464,\"%.2f\"))");
+        assertEquals(0,result.indexOf("$"));
+        assertDecimalPlaces(result.substring(1), 2);
+    }
+
     private void assertDecimalPlaces(String text, int decimalPlaces) {
         int integerPlaces = text.indexOf('.');
         assertEquals(decimalPlaces, text.length() - integerPlaces - 1);

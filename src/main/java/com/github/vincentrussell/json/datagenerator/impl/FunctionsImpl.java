@@ -144,7 +144,7 @@ public class FunctionsImpl implements Functions {
             objectList.add(functionNameSection);
             String argSection = matcher.group(2);
             Matcher matcher2 = pattern.matcher(argSection);
-            String[] args = argSection.length() == 0 ? new String[0] : argSection.split(",");
+            String[] args = argSection.length() == 0 ? new String[0] : argSection.split(",(?![^(]*\\))");
             if (matcher2.matches()) {
                 String zero = matcher2.group(0);
                 CharSequence nestedFunctionName = getFunctionNameAndArguments(list, zero, pattern);
