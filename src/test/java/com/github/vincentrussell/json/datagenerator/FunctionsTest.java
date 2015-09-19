@@ -112,13 +112,13 @@ public class FunctionsTest {
     @Test
     public void floatWithFormat() {
         String result = test("float(1.1241241,10.36456464,\"%.2f\")");
-        Float flo = Float.parseFloat(result);
+        Float.parseFloat(result);
         assertDecimalPlaces(result, 2);
     }
 
-    private void assertDecimalPlaces(String text,int decimalPlaces) {
+    private void assertDecimalPlaces(String text, int decimalPlaces) {
         int integerPlaces = text.indexOf('.');
-        assertEquals(decimalPlaces,text.length() - integerPlaces - 1);
+        assertEquals(decimalPlaces, text.length() - integerPlaces - 1);
     }
 
     @Test
@@ -146,6 +146,18 @@ public class FunctionsTest {
         String result = test("bool()");
         Boolean bool = Boolean.parseBoolean(result);
         assertNotNull(bool);
+    }
+
+    @Test
+    public void concatStrings() {
+        String result = test("concat(\"red\",\"blue\",\"green\")");
+        assertEquals("redbluegreen", result);
+    }
+
+    @Test
+    public void concatNumbersAndStrings() {
+        String result = test("concat(1,\"blue\",2)");
+        assertEquals("1blue2", result);
     }
 
     @Test
