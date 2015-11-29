@@ -8,7 +8,7 @@ public interface Functions {
     String execute(String functionName, Object... arguments) throws IllegalArgumentException;
     boolean isFunction(CharSequence input);
     boolean isRepeatFunction(CharSequence input);
-    List<Object[]> getFunctionNameAndArguments(CharSequence input);
-    Object[] getRepeatFunctionNameAndArguments(CharSequence input);
-    List<Object[]> getFunctionNameAndArguments(CharSequence input, Pattern pattern);
+    List<List<Object>> getFunctionNameAndArguments(CharSequence input);
+    List<Object> getRepeatFunctionNameAndArguments(CharSequence input);
+    List<List<Object>> getFunctionNameAndArguments(CharSequence input, Pattern pattern);
 }

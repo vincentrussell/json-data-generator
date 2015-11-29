@@ -115,13 +115,13 @@ public class FunctionsImpl implements Functions {
     }
 
     @Override
-    public List<Object[]> getFunctionNameAndArguments(CharSequence input) {
+    public List<List<Object>> getFunctionNameAndArguments(CharSequence input) {
         return getFunctionNameAndArguments(input, FunctionsImpl.FUNCTION_PATTERN);
     }
 
     @Override
-    public Object[] getRepeatFunctionNameAndArguments(CharSequence input) {
-        List<Object[]> objects = getFunctionNameAndArguments(input, FunctionsImpl.REPEAT_FUNCTION_PATTERN);
+    public List<Object> getRepeatFunctionNameAndArguments(CharSequence input) {
+        List<List<Object>> objects = getFunctionNameAndArguments(input, FunctionsImpl.REPEAT_FUNCTION_PATTERN);
         if (objects == null) {
             return null;
         }
@@ -129,14 +129,14 @@ public class FunctionsImpl implements Functions {
     }
 
     @Override
-    public List<Object[]> getFunctionNameAndArguments(CharSequence input, Pattern pattern) {
-        List<Object[]> objectList = new ArrayList<Object[]>();
+    public List<List<Object>> getFunctionNameAndArguments(CharSequence input, Pattern pattern) {
+        List<List<Object>> objectList = new ArrayList<List<Object>>();
         getFunctionNameAndArguments(objectList, input, pattern);
         return objectList;
     }
 
 
-    private CharSequence getFunctionNameAndArguments(List<Object[]> list, CharSequence input, Pattern pattern) {
+    private CharSequence getFunctionNameAndArguments(List<List<Object>> outerList, CharSequence input, Pattern pattern) {
         Matcher matcher = pattern.matcher(input);
         List<Object> objectList = new ArrayList<Object>();
         if (matcher.find()) {
@@ -147,27 +147,27 @@ public class FunctionsImpl implements Functions {
             String[] args = argSection.length() == 0 ? new String[0] : argSection.split(",(?![^(]*\\))");
             if (matcher2.matches()) {
                 String zero = matcher2.group(0);
-                CharSequence nestedFunctionName = getFunctionNameAndArguments(list, zero, pattern);
+                CharSequence nestedFunctionName = getFunctionNameAndArguments(outerList, zero, pattern);
                 if (!argSection.equals(nestedFunctionName)) {
-                    addArgsToObjectList(nestedFunctionName, pattern, objectList, args, list);
+                    addArgsToObjectList(nestedFunctionName, pattern, objectList, args, outerList);
                 } else {
                     objectList.add(NESTED_RESULT);
                 }
-                list.add(objectList.toArray(new Object[objectList.size()]));
+                outerList.add(objectList);
                 return input;
             } else if (args != null && args.length > 0) {
-                addArgsToObjectList(null, pattern, objectList, args, list);
-                list.add(objectList.toArray());
+                addArgsToObjectList(null, pattern, objectList, args, outerList);
+                outerList.add(objectList);
                 return input;
             } else {
-                list.add(objectList.toArray(new Object[objectList.size()]));
+                outerList.add(objectList);
                 return input;
             }
         }
         return null;
     }
 
-    private void addArgsToObjectList(CharSequence nestedFunctionName, Pattern pattern, List<Object> objectList, String[] args, List<Object[]> list) {
+    private void addArgsToObjectList(CharSequence nestedFunctionName, Pattern pattern, List<Object> objectList, String[] args, List<List<Object>> list) {
         for (String arg : args) {
             if (arg == null || arg.length() == 0) {
                 continue;

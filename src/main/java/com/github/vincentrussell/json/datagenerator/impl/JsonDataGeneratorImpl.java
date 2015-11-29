@@ -3,6 +3,7 @@ package com.github.vincentrussell.json.datagenerator.impl;
 
 import com.github.vincentrussell.json.datagenerator.JsonDataGenerator;
 import com.github.vincentrussell.json.datagenerator.JsonDataGeneratorException;
+import com.google.common.collect.Iterables;
 import org.apache.commons.io.IOUtils;
 
 import java.io.*;
@@ -143,7 +144,7 @@ public class JsonDataGeneratorImpl implements JsonDataGenerator {
                 }
                 if (new FunctionsImpl(null).isRepeatFunction(tempBuffer)) {
                     tempBuffer.append((char) i);
-                    repeatTimes = Integer.parseInt(new FunctionsImpl(null).getRepeatFunctionNameAndArguments(tempBuffer)[1].toString());
+                    repeatTimes = Integer.parseInt(Iterables.get(new FunctionsImpl(null).getRepeatFunctionNameAndArguments(tempBuffer),1).toString());
                     int indexOfRepeat = indexOf(FunctionsImpl.REPEAT_FUNCTION_PATTERN, tempBuffer);
                     tempBuffer.setLength(indexOfRepeat);
                     outputStream.write(String.valueOf(tempBuffer).getBytes());

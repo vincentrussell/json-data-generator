@@ -4,17 +4,20 @@ import com.github.vincentrussell.json.datagenerator.impl.FunctionTokenResolver;
 import com.github.vincentrussell.json.datagenerator.impl.FunctionsImpl;
 import com.github.vincentrussell.json.datagenerator.impl.IndexHolder;
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Pattern;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.CoreMatchers.hasItems;
 import static org.junit.Assert.*;
 
+@SuppressWarnings({"unchecked","null","nls"})
 public class FunctionsTest {
 
     private IndexHolder indexHolder;
@@ -37,45 +40,50 @@ public class FunctionsTest {
 
     @Test
     public void nestedFunctionWithArgs() {
-        assertThat(functions.getFunctionNameAndArguments("{{goodBye(hello(1))}}"), contains(
-                equalTo(new Object[]{"hello", "1"}),
-                equalTo(new Object[]{"goodBye", FunctionsImpl.NESTED_RESULT})
-        ));
+        String string = "{{goodBye(hello(1))}}";
+        assertHasItems(functions.getFunctionNameAndArguments(string), 0, "hello", "1");
+        assertHasItems(functions.getFunctionNameAndArguments(string), 1, "goodBye", FunctionsImpl.NESTED_RESULT);
     }
 
     @Test
     public void functionAndArgNumber() {
-        assertArrayEquals(new Object[]{"hello", "1"}, Iterables.getFirst(functions.getFunctionNameAndArguments("{{hello(1)}}"), null));
+        assertHasItems(functions.getFunctionNameAndArguments("{{hello(1)}}"), 0, "hello", "1");
     }
 
     @Test
     public void functionAndArgText() {
-        assertArrayEquals(new Object[]{"hello", "1"}, Iterables.getFirst(functions.getFunctionNameAndArguments("{{hello(\"1\")}}"), null));
+        assertHasItems(functions.getFunctionNameAndArguments("{{hello(\"1\")}}"), 0, "hello", "1");
     }
 
     @Test
     public void functionAndArgNumberText() {
-        assertArrayEquals(new Object[]{"hello", "1", "String"}, Iterables.getFirst(functions.getFunctionNameAndArguments("{{hello(1,\"String\")}}"), null));
+        assertHasItems(functions.getFunctionNameAndArguments("{{hello(1,\"String\")}}"), 0, "hello", "1", "String");
+
+    }
+
+    private <T> T assertHasItems(List<List<Object>> outerList, int index, T... items) {
+        assertThat((ArrayList<T>)Lists.newArrayList(Iterables.get(outerList,index)), hasItems(items));
+        return null;
     }
 
     @Test
     public void repeatAndArgText() {
-        assertArrayEquals(null, functions.getRepeatFunctionNameAndArguments("'{{repeat(\"1\")}}',"));
+        assertNull(functions.getRepeatFunctionNameAndArguments("'{{repeat(\"1\")}}',"));
     }
 
     @Test
     public void repeatAndArgNumber() {
-        assertArrayEquals(new Object[]{"repeat", "1"}, functions.getRepeatFunctionNameAndArguments("'{{repeat(1)}}',"));
+        assertHasItems(functions.getFunctionNameAndArguments("{{repeat(1)}}"), 0, "repeat", "1");
     }
 
     @Test
     public void repeatAndArgMultipleNumbers() {
-        assertArrayEquals(null, functions.getRepeatFunctionNameAndArguments("'{{repeat(1,2)}}',"));
+        assertNull(functions.getRepeatFunctionNameAndArguments("'{{repeat(1,2)}}',"));
     }
 
     @Test
     public void repeatAndArgNumberAndSpaces() {
-        assertArrayEquals(new Object[]{"repeat", "1"}, functions.getRepeatFunctionNameAndArguments("'{{repeat(1)}}',   \n\n\n"));
+        assertHasItems(functions.getFunctionNameAndArguments("'{{repeat(1)}}',   \n\n\n"), 0, "repeat", "1");
     }
 
     @Test(expected = IllegalArgumentException.class)
