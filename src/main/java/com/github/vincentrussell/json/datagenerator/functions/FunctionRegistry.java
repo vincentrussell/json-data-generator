@@ -1,0 +1,206 @@
+package com.github.vincentrussell.json.datagenerator.functions;
+
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterables;
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+import static org.apache.commons.lang.StringUtils.isEmpty;
+import static org.apache.commons.lang.Validate.notEmpty;
+import static org.apache.commons.lang.Validate.notNull;
+
+public class FunctionRegistry {
+
+    private static FunctionRegistry INSTANCE;
+
+    private final Map<FunctionInvocationHolder, MethodAndObjectHolder> functionInvocationHolderMethodConcurrentHashMap = new ConcurrentHashMap<FunctionInvocationHolder, MethodAndObjectHolder>();
+
+    private FunctionRegistry() {
+    }
+
+    public void registerClass(Class clazz) {
+        Function annotation = (Function) clazz.getAnnotation(Function.class);
+        checkClassValidity(clazz, annotation);
+        try {
+            Object instance = clazz.newInstance();
+            for (final Method method : clazz.getDeclaredMethods()) {
+                if (method.isAnnotationPresent(FunctionInvocation.class)) {
+                    checkMethodValidity(method);
+                    MethodAndObjectHolder methodAndObjectHolder = new MethodAndObjectHolder(method, instance);
+                    functionInvocationHolderMethodConcurrentHashMap.put(new FunctionInvocationHolder(annotation.name(), method.getParameterTypes()), methodAndObjectHolder);
+                }
+            }
+        } catch (InstantiationException e) {
+            throw new IllegalArgumentException(e);
+        } catch (IllegalAccessException e) {
+            throw new IllegalArgumentException(e);
+        }
+    }
+
+    private void checkMethodValidity(Method method) {
+        int stringClassesCount = Iterables.size(Iterables.filter(Arrays.asList(method.getParameterTypes()), new Predicate<Class<?>>() {
+            public boolean apply(Class<?> aClass) {
+                return aClass == String.class;
+            }
+        }));
+
+        int stringArrayClassesCount = Iterables.size(Iterables.filter(Arrays.asList(method.getParameterTypes()), new Predicate<Class<?>>() {
+            public boolean apply(Class<?> aClass) {
+                return aClass == String[].class;
+            }
+        }));
+
+        if ((stringClassesCount != method.getParameterTypes().length && method.getParameterTypes().length > 1)
+                || (stringArrayClassesCount != 1 && stringClassesCount == 0 && method.getParameterTypes().length == 1)) {
+            throw new IllegalArgumentException("method parameters need to be a String or a single String var-arg parameter");
+        }
+    }
+
+    private void checkClassValidity(Class clazz, Function annotation) {
+        if (annotation == null) {
+            throw new IllegalArgumentException("class must be annotated with " + Function.class);
+        }
+
+        if (isEmpty(annotation.name())) {
+            throw new IllegalArgumentException(Function.class + " annotation must have name attribute populated");
+        }
+
+        int zeroArgConstructorCount = Iterables.size(Iterables.filter(Arrays.asList(clazz.getConstructors()), new Predicate<Constructor>() {
+            public boolean apply(Constructor constructor) {
+                return constructor.getParameterTypes().length == 0;
+            }
+        }));
+
+        if (zeroArgConstructorCount != 1) {
+            throw new IllegalArgumentException(clazz.getName() + " must have a no-arg constructor");
+        }
+
+        int validMethodCount = Iterables.size(Iterables.filter(Arrays.asList(clazz.getDeclaredMethods()), new Predicate<Method>() {
+            public boolean apply(Method method) {
+                return method.isAnnotationPresent(FunctionInvocation.class);
+            }
+        }));
+
+        if (validMethodCount == 0) {
+            throw new IllegalArgumentException("could not find any public methods annotated with " + FunctionInvocation.class);
+        }
+    }
+
+    public Object execute(String functionName, String... arguments) throws IllegalArgumentException {
+        final List<Class> classList = new ArrayList<Class>();
+        if (arguments != null) {
+            for (String argument : arguments) {
+                classList.add(argument.getClass());
+            }
+        }
+
+        MethodAndObjectHolder holder = functionInvocationHolderMethodConcurrentHashMap.get(new FunctionInvocationHolder(functionName, classList.toArray(new Class[classList.size()])));
+
+        if (holder == null) {
+            try {
+                holder = functionInvocationHolderMethodConcurrentHashMap.get(new FunctionInvocationHolder(functionName, new Class[]{String[].class}));
+                return holder.getMethod().invoke(holder.getInstance(), new Object[]{arguments});
+            } catch (InvocationTargetException e) {
+                throw new IllegalArgumentException(e);
+            } catch (IllegalAccessException e) {
+                throw new IllegalArgumentException(e);
+            } catch (NullPointerException e) {
+                //noop
+            }
+        }
+
+        if (holder == null) {
+            throw new IllegalArgumentException("could not find method to invoke.");
+        }
+
+        try {
+            return holder.getMethod().invoke(holder.getInstance(), arguments);
+        } catch (IllegalAccessException e) {
+            throw new IllegalArgumentException(e);
+        } catch (InvocationTargetException e) {
+            throw new IllegalArgumentException(e);
+        }
+    }
+
+    public static FunctionRegistry getInstance() {
+        if (INSTANCE == null) {
+            INSTANCE = new FunctionRegistry();
+        }
+        return INSTANCE;
+    }
+
+    private static class MethodAndObjectHolder {
+        private final Method method;
+        private final Object instance;
+
+        private MethodAndObjectHolder(Method method, Object instance) {
+            this.method = method;
+            this.instance = instance;
+        }
+
+        public Method getMethod() {
+            return method;
+        }
+
+        public Object getInstance() {
+            return instance;
+        }
+    }
+
+    private static class FunctionInvocationHolder {
+        private final String functionName;
+        private final Class[] parameterTypes;
+
+        private FunctionInvocationHolder(String functionName, Class[] parameterTypes) {
+            notNull(functionName);
+            notEmpty(parameterTypes);
+            this.functionName = functionName;
+            this.parameterTypes = parameterTypes;
+        }
+
+        public String getFunctionName() {
+            return functionName;
+        }
+
+        public Class[] getParameterTypes() {
+            return parameterTypes;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj == null) {
+                return false;
+            }
+            if (obj == this) {
+                return true;
+            }
+            if (obj.getClass() != getClass()) {
+                return false;
+            }
+            FunctionInvocationHolder functionInvocationHolder = (FunctionInvocationHolder) obj;
+            return new EqualsBuilder()
+                    .append(functionName, functionInvocationHolder.functionName)
+                    .append(parameterTypes, functionInvocationHolder.parameterTypes)
+                    .isEquals();
+        }
+
+        @Override
+        public int hashCode() {
+            return new HashCodeBuilder(5, 33).
+                    append(functionName).
+                    append(parameterTypes).
+                    toHashCode();
+        }
+    }
+
+
+}
