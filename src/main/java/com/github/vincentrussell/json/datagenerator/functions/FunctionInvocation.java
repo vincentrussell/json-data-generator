@@ -6,4 +6,4 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 @Documented
-@interface FunctionInvocation {}
+public @interface FunctionInvocation {}

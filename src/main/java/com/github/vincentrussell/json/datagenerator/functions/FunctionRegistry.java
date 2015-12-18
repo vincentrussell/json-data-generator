@@ -1,5 +1,6 @@
 package com.github.vincentrussell.json.datagenerator.functions;
 
+import com.github.vincentrussell.json.datagenerator.functions.impl.*;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import org.apache.commons.lang.builder.EqualsBuilder;
@@ -23,8 +24,33 @@ public class FunctionRegistry {
     private static FunctionRegistry INSTANCE;
 
     private final Map<FunctionInvocationHolder, MethodAndObjectHolder> functionInvocationHolderMethodConcurrentHashMap = new ConcurrentHashMap<FunctionInvocationHolder, MethodAndObjectHolder>();
+    private final Map<Method, Object> methodInstanceMap = new ConcurrentHashMap<Method, Object>();
 
     private FunctionRegistry() {
+        registerClass(RandomInteger.class);
+        registerClass(RandomDouble.class);
+        registerClass(RandomFloat.class);
+        registerClass(RandomLong.class);
+        registerClass(Random.class);
+        registerClass(UUID.class);
+        registerClass(Bool.class);
+        registerClass(Index.class);
+        registerClass(LoremIpsum.class);
+        registerClass(Concat.class);
+        registerClass(ToUpper.class);
+        registerClass(ToLower.class);
+        registerClass(Substring.class);
+        registerClass(Phone.class);
+        registerClass(Gender.class);
+        registerClass(Date.class);
+        registerClass(City.class);
+        registerClass(Company.class);
+        registerClass(Country.class);
+        registerClass(Email.class);
+        registerClass(FirstName.class);
+        registerClass(LastName.class);
+        registerClass(State.class);
+        registerClass(Street.class);
     }
 
     public void registerClass(Class clazz) {
@@ -37,6 +63,7 @@ public class FunctionRegistry {
                     checkMethodValidity(method);
                     MethodAndObjectHolder methodAndObjectHolder = new MethodAndObjectHolder(method, instance);
                     functionInvocationHolderMethodConcurrentHashMap.put(new FunctionInvocationHolder(annotation.name(), method.getParameterTypes()), methodAndObjectHolder);
+                    methodInstanceMap.put(method,instance);
                 }
             }
         } catch (InstantiationException e) {
@@ -59,19 +86,23 @@ public class FunctionRegistry {
             }
         }));
 
+        if (!String.class.isAssignableFrom(method.getReturnType())) {
+            throw new IllegalArgumentException("method " + method.getName() + " on class " + method.getDeclaringClass().getName()+ " must return type String");
+        }
+
         if ((stringClassesCount != method.getParameterTypes().length && method.getParameterTypes().length > 1)
                 || (stringArrayClassesCount != 1 && stringClassesCount == 0 && method.getParameterTypes().length == 1)) {
-            throw new IllegalArgumentException("method parameters need to be a String or a single String var-arg parameter");
+            throw new IllegalArgumentException("for method " + method.getName() + " on class " + method.getDeclaringClass().getName()+ ": all method parameters need to be a String or a single String var-arg parameter");
         }
     }
 
     private void checkClassValidity(Class clazz, Function annotation) {
         if (annotation == null) {
-            throw new IllegalArgumentException("class must be annotated with " + Function.class);
+            throw new IllegalArgumentException(clazz.getName() + " must be annotated with " + Function.class.getName());
         }
 
         if (isEmpty(annotation.name())) {
-            throw new IllegalArgumentException(Function.class + " annotation must have name attribute populated");
+            throw new IllegalArgumentException(Function.class.getName() +  "annotation on class" + clazz.getName() + " annotation must have name attribute populated");
         }
 
         int zeroArgConstructorCount = Iterables.size(Iterables.filter(Arrays.asList(clazz.getConstructors()), new Predicate<Constructor>() {
@@ -91,44 +122,57 @@ public class FunctionRegistry {
         }));
 
         if (validMethodCount == 0) {
-            throw new IllegalArgumentException("could not find any public methods annotated with " + FunctionInvocation.class);
+            throw new IllegalArgumentException(clazz.getName() + ": could not find any public methods annotated with " + FunctionInvocation.class.getName());
         }
     }
 
-    public Object execute(String functionName, String... arguments) throws IllegalArgumentException {
+    public String executeFunction(String functionName, String... arguments) throws InvocationTargetException, IllegalAccessException {
+        Method method = getMethod(functionName,arguments);
+        return executeMethod(method,arguments);
+    }
+
+    public String executeMethod(Method method, String... arguments) throws InvocationTargetException, IllegalAccessException {
+        Object instance = methodInstanceMap.get(method);
+        if (method.getParameterTypes().length==1 && method.getParameterTypes()[0].equals(String[].class)) {
+            return method.invoke(instance,new Object[]{arguments}).toString();
+        } else {
+            return method.invoke(instance, arguments).toString();
+        }
+
+    }
+
+    public Method getMethod(String functionName, String... arguments) throws IllegalArgumentException {
         final List<Class> classList = new ArrayList<Class>();
         if (arguments != null) {
             for (String argument : arguments) {
-                classList.add(argument.getClass());
+                if (argument!=null) {
+                    classList.add(argument.getClass());
+                }
             }
         }
 
-        MethodAndObjectHolder holder = functionInvocationHolderMethodConcurrentHashMap.get(new FunctionInvocationHolder(functionName, classList.toArray(new Class[classList.size()])));
-
-        if (holder == null) {
-            try {
-                holder = functionInvocationHolderMethodConcurrentHashMap.get(new FunctionInvocationHolder(functionName, new Class[]{String[].class}));
-                return holder.getMethod().invoke(holder.getInstance(), new Object[]{arguments});
-            } catch (InvocationTargetException e) {
-                throw new IllegalArgumentException(e);
-            } catch (IllegalAccessException e) {
-                throw new IllegalArgumentException(e);
-            } catch (NullPointerException e) {
-                //noop
-            }
+        MethodAndObjectHolder holder = null;
+        try {
+            holder = getHolder(functionName,classList);
+        } catch (IllegalAccessException e) {
+            throw new IllegalArgumentException(e);
         }
 
         if (holder == null) {
             throw new IllegalArgumentException("could not find method to invoke.");
         }
 
-        try {
-            return holder.getMethod().invoke(holder.getInstance(), arguments);
-        } catch (IllegalAccessException e) {
-            throw new IllegalArgumentException(e);
-        } catch (InvocationTargetException e) {
-            throw new IllegalArgumentException(e);
+        return holder.getMethod();
+    }
+
+    private MethodAndObjectHolder getHolder(String functionName, List<Class> classList) throws IllegalAccessException {
+        MethodAndObjectHolder holder = functionInvocationHolderMethodConcurrentHashMap.get(new FunctionInvocationHolder(functionName, classList.toArray(new Class[classList.size()])));
+
+        if (holder == null) {
+            holder = functionInvocationHolderMethodConcurrentHashMap.get(new FunctionInvocationHolder(functionName, new Class[]{String[].class}));
         }
+
+        return holder;
     }
 
     public static FunctionRegistry getInstance() {
@@ -161,8 +205,8 @@ public class FunctionRegistry {
         private final Class[] parameterTypes;
 
         private FunctionInvocationHolder(String functionName, Class[] parameterTypes) {
-            notNull(functionName);
-            notEmpty(parameterTypes);
+            notNull(functionName, "a function name must be provided");
+            notNull(parameterTypes, "parameter types must be provided");
             this.functionName = functionName;
             this.parameterTypes = parameterTypes;
         }

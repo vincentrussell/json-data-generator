@@ -6,7 +6,7 @@ import java.lang.annotation.*;
 @Inherited
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-@interface Function {
+public @interface Function {
 
     /**
      * Name of this function as it is called from the source json.

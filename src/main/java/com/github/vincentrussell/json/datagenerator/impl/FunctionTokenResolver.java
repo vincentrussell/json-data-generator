@@ -32,8 +32,6 @@ public class FunctionTokenResolver implements TokenResolver {
             }
 
         }
-
-
         return result;
     }
 
