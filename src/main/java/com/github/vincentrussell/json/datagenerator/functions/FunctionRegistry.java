@@ -1,6 +1,9 @@
 package com.github.vincentrussell.json.datagenerator.functions;
 
 import com.github.vincentrussell.json.datagenerator.functions.impl.*;
+import com.github.vincentrussell.json.datagenerator.functions.impl.Date;
+import com.github.vincentrussell.json.datagenerator.functions.impl.Random;
+import com.github.vincentrussell.json.datagenerator.functions.impl.UUID;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import org.apache.commons.lang.builder.EqualsBuilder;
@@ -9,10 +12,7 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static org.apache.commons.lang.StringUtils.isEmpty;
@@ -23,10 +23,12 @@ public class FunctionRegistry {
 
     private static FunctionRegistry INSTANCE;
 
-    private final Map<FunctionInvocationHolder, MethodAndObjectHolder> functionInvocationHolderMethodConcurrentHashMap = new ConcurrentHashMap<FunctionInvocationHolder, MethodAndObjectHolder>();
-    private final Map<Method, Object> methodInstanceMap = new ConcurrentHashMap<Method, Object>();
+    private final Map<FunctionInvocationHolder, MethodAndObjectHolder> functionInvocationHolderMethodConcurrentHashMap = new ConcurrentHashMap<>();
+    private final Map<Method, Object> methodInstanceMap = new ConcurrentHashMap<>();
+    private final Set<String> nonOverriableFunctionNames = new HashSet<>();
 
     private FunctionRegistry() {
+        registerClass(Repeat.class);
         registerClass(RandomInteger.class);
         registerClass(RandomDouble.class);
         registerClass(RandomFloat.class);
@@ -66,6 +68,9 @@ public class FunctionRegistry {
                     methodInstanceMap.put(method,instance);
                 }
             }
+            if (!annotation.overridable()) {
+                nonOverriableFunctionNames.add(annotation.name());
+            }
         } catch (InstantiationException e) {
             throw new IllegalArgumentException(e);
         } catch (IllegalAccessException e) {
@@ -103,6 +108,10 @@ public class FunctionRegistry {
 
         if (isEmpty(annotation.name())) {
             throw new IllegalArgumentException(Function.class.getName() +  "annotation on class" + clazz.getName() + " annotation must have name attribute populated");
+        }
+
+        if (nonOverriableFunctionNames.contains(annotation.name())) {
+            throw new IllegalArgumentException(clazz.getName() + " can not override existing function with the same annotation: " + annotation.name() + " because it does not allow overriding.");
         }
 
         int zeroArgConstructorCount = Iterables.size(Iterables.filter(Arrays.asList(clazz.getConstructors()), new Predicate<Constructor>() {

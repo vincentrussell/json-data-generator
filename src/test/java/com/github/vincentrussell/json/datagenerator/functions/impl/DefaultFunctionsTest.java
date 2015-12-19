@@ -245,6 +245,11 @@ public class DefaultFunctionsTest {
         assertTrue(Arrays.asList(args).indexOf(result) > -1);
     }
 
+    @Test
+    public void repeat() throws InvocationTargetException, IllegalAccessException {
+        assertEquals("2",functionRegistry.executeFunction("repeat", "2"));
+    }
+
     private List<String> getArrayAsListFromStaticField(Class clazz, String fieldName) throws IllegalAccessException, NoSuchFieldException {
         Field field = clazz.getDeclaredField(fieldName);
         field.setAccessible(true);

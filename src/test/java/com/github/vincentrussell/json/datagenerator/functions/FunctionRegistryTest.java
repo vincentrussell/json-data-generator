@@ -138,6 +138,14 @@ public class FunctionRegistryTest {
         assertEquals("varargs.length=4,index=1",functionRegistry.executeFunction("function6",args2));
     }
 
+    @Test
+    public void nonOverridableFunction() throws InvocationTargetException, IllegalAccessException {
+        thrownException.expect(IllegalArgumentException.class);
+        thrownException.expectMessage(TestNonOverrideableFunction2.class.getName() + " can not override existing function with the same annotation: function1 because it does not allow overriding.");
+        functionRegistry.registerClass(TestNonOverrideableFunction1.class);
+        functionRegistry.registerClass(TestNonOverrideableFunction2.class);
+    }
+
 
     @Function
     public static class TestFunctionClazzWithoutName {
@@ -241,6 +249,27 @@ public class FunctionRegistryTest {
 
         @FunctionInvocation
         public String invocation(String arg1, Object arg2) {
+            return "no args";
+        }
+
+
+    }
+
+    @Function(name = "function1", overridable = false)
+    public static class TestNonOverrideableFunction1 {
+
+        @FunctionInvocation
+        public String invocation(String arg1) {
+            return "no args";
+        }
+
+    }
+
+    @Function(name = "function1")
+    public static class TestNonOverrideableFunction2 {
+
+        @FunctionInvocation
+        public String invocation(String arg1) {
             return "no args";
         }
 

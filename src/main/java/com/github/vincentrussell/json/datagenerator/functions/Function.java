@@ -14,4 +14,10 @@ public @interface Function {
      */
     String name() default "";
 
+    /**
+     * This function cannot be overriden to a function with the same name;
+     * @return
+     */
+    boolean overridable() default true;
+
 }
