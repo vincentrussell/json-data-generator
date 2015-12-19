@@ -176,12 +176,6 @@ public class FunctionsTest {
     }
 
     @Test
-    public void randomString() {
-        String result = test("random(red,blue,green)");
-        assertTrue("red".equals(result) || "blue".equals(result) || "green".equals(result));
-    }
-
-    @Test
     public void randomStringWithQuotes() {
         String result = test("random(\"red\",\"blue\",\"green\")");
         assertTrue("red".equals(result) || "blue".equals(result) || "green".equals(result));
@@ -209,7 +203,7 @@ public class FunctionsTest {
 
     @Test
     public void loremParagraphs() {
-        String result = test("lorem(2,paragraphs)");
+        String result = test("lorem(2,\"paragraphs\")");
         assertTrue(result.startsWith("\tLorem ipsum "));
     }
 
@@ -268,7 +262,7 @@ public class FunctionsTest {
     public void dateWithFormat() throws ParseException {
         String dateFormatText = "MMM yyyy HH:mm:ss z";
         SimpleDateFormat dateFormat = new SimpleDateFormat(dateFormatText);
-        String result = test("date(" + dateFormatText + ")");
+        String result = test("date(\"" + dateFormatText + "\")");
         dateFormat.parse(result);
     }
 
@@ -276,7 +270,7 @@ public class FunctionsTest {
     public void dateWithinRange() throws ParseException {
         String dateFormatText = "EEE, d MMM yyyy HH:mm:ss z";
         SimpleDateFormat dateFormat = new SimpleDateFormat(dateFormatText);
-        String result = test("date(06-16-1956 12:00:00,06-16-1975 12:00:00)");
+        String result = test("date(\"06-16-1956 12:00:00\",\"06-16-1975 12:00:00\")");
         dateFormat.parse(result);
     }
 
@@ -284,7 +278,7 @@ public class FunctionsTest {
     public void dateWithinRangeWithFormat() throws ParseException {
         String dateFormatText = "MMM yyyy HH:mm:ss z";
         SimpleDateFormat dateFormat = new SimpleDateFormat(dateFormatText);
-        String result = test("date(06-16-1956 12:00:00,06-16-1975 12:00:00," + dateFormatText + ")");
+        String result = test("date(\"06-16-1956 12:00:00\",\"06-16-1975 12:00:00\",\"" + dateFormatText + "\")");
         dateFormat.parse(result);
     }
 

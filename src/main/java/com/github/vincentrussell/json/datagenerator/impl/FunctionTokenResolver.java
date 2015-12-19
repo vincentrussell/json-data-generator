@@ -1,38 +1,40 @@
 package com.github.vincentrussell.json.datagenerator.impl;
 
 
-import com.github.vincentrussell.json.datagenerator.Functions;
 import com.github.vincentrussell.json.datagenerator.TokenResolver;
-import com.google.common.collect.Iterables;
+import com.github.vincentrussell.json.datagenerator.functions.FunctionRegistry;
+import com.github.vincentrussell.json.datagenerator.functions.ObjectRegistry;
+import com.github.vincentrussell.json.datagenerator.parser.FunctionParser;
+import com.github.vincentrussell.json.datagenerator.parser.ParseException;
 
-import java.util.List;
+import java.io.ByteArrayInputStream;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class FunctionTokenResolver implements TokenResolver {
 
+    public static final Pattern FUNCTION_PATTERN = Pattern.compile("\\{\\{(.+)\\}\\}");
+
+    ObjectRegistry objectRegistry = ObjectRegistry.getInstance();
+
     @Override
     public String resolveToken(IndexHolder indexHolder, CharSequence s) {
-        Functions functions = new FunctionsImpl(indexHolder);
-        List<List<Object>> functionAndArgList = functions.getFunctionNameAndArguments(s);
-        if (functionAndArgList == null) {
-            return null;
-        }
-        String result = null;
-        for (List<Object> functionAndArgs : functionAndArgList) {
-            String functionName = (String) Iterables.get(functionAndArgs, 0);
-            List<Object> sublist = functionAndArgs.subList(1, functionAndArgs.size());
-            if (sublist.size() == 0 && result != null) {
-                result = functions.execute(functionName, result);
-            } else {
-                for (int i = 0; i < sublist.size(); i++) {
-                    if (FunctionsImpl.NESTED_RESULT.equals(Iterables.get(sublist, i)) && result != null) {
-                        sublist.set(i, result);
-                    }
+        objectRegistry.register(IndexHolder.class,indexHolder);
+
+        Matcher matcher = FUNCTION_PATTERN.matcher(s);
+
+            try {
+                if (matcher.matches()) {
+                    FunctionParser functionParser = new FunctionParser(new ByteArrayInputStream(matcher.group(1).getBytes()));
+                    return functionParser.Parse();
+                } else {
+                    FunctionParser functionParser = new FunctionParser(new ByteArrayInputStream(s.toString().getBytes()));
+                    return functionParser.Parse();
                 }
-                result = functions.execute(functionName, sublist.toArray());
+            } catch (ParseException e) {
+                throw new IllegalArgumentException(e);
             }
 
-        }
-        return result;
     }
 
 

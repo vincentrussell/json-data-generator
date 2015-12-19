@@ -71,6 +71,31 @@
             </plugin>
 
             <plugin>
+                <groupId>com.helger.maven</groupId>
+                <artifactId>ph-javacc-maven-plugin</artifactId>
+                <version>2.8.0</version>
+                <executions>
+                    <execution>
+                        <id>jjt1</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>jjtree-javacc</goal>
+                        </goals>
+                        <configuration>
+                            <jdkVersion>1.5</jdkVersion>
+                            <javadocFriendlyComments>true</javadocFriendlyComments>
+                            <packageName>com.github.vincentrussell.json.parser</packageName>
+                            <sourceDirectory>src/main/jjtree</sourceDirectory>
+                            <includes>
+                                <include>FunctionParser.jjt</include>
+                            </includes>
+                            <outputDirectory>${project.build.directory}/generated-sources/function-jjtree</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-site-plugin</artifactId>
                 <configuration>

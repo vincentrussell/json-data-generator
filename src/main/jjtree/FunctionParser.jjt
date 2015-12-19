@@ -1,0 +1,137 @@
+options {
+    STATIC = false;
+}
+
+PARSER_BEGIN(FunctionParser)
+
+package com.github.vincentrussell.json.datagenerator.parser;
+
+import java.util.List;
+import java.util.ArrayList;
+import com.github.vincentrussell.json.datagenerator.functions.FunctionRegistry;
+
+/** An Arithmetic Grammar. */
+public class FunctionParser {
+
+  /** Main entry point. */
+  public static void main(String args[]) {
+    System.out.println("Reading from standard input...");
+    FunctionParser t = new FunctionParser(System.in);
+    try {
+      SimpleNode n = t.Start();
+      n.dump("");
+      System.out.println("Thank you.");
+    } catch (Exception e) {
+      System.out.println("Oops.");
+      System.out.println(e.getMessage());
+      e.printStackTrace();
+    }
+  }
+}
+
+PARSER_END(FunctionParser)
+
+
+SKIP :
+{
+  " "
+| "\t"
+| "\n"
+| "\r"
+| <"//" (~["\n","\r"])* ("\n"|"\r"|"\r\n")>
+| <"/*" (~["*"])* "*" (~["/"] (~["*"])* "*")* "/">
+}
+
+/* TOKENS */
+TOKEN : {
+	  < STRING_LITERAL:
+          "\""
+          (   (~["\"","\\","\n","\r"])
+            | ("\\"
+                ( ["n","t","b","r","f","\\","'","\""]
+                | ["0"-"7"] ( ["0"-"7"] )?
+                | ["0"-"3"] ["0"-"7"] ["0"-"7"]
+                )
+              )
+          )*
+          "\""
+      >
+    | < IDENTIFIER: <LETTER> (<LETTER>|<DIGIT>)* >
+	| < TERM: <LETTER> (<LETTER>|<DIGIT>)* >
+	| < NUMBER: <INTEGER> (["L"])? | <FLOAT> >
+	| < INTEGER: ["0"-"9"] (["0"-"9"])* >
+	| < FLOAT: (["0"-"9"])+ "." (["0"-"9"])* >
+	| < DIGIT: ["0"-"9"] >
+	| < LETTER: ["_","-","a"-"z","A"-"Z"] >
+}
+
+
+/** Main production. */
+SimpleNode Start() : {}
+{
+  Function() <EOF>
+  { return jjtThis; }
+}
+
+String FunctionName() : {Token t=null;}
+{
+    t=<IDENTIFIER> {
+        return t.image;
+    }
+}
+
+/** An Integer. */
+void Integer() : {}
+{
+  <INTEGER>
+}
+
+String StringLiteral() : {Token t=null;}
+{
+    t=<STRING_LITERAL> {
+        return t.image.replaceAll("^\"|\"$", "");
+    }
+}
+
+String Number() : {Token t=null;}
+{
+    t=<NUMBER> {
+        final String value = t.image;
+        jjtThis.jjtSetValue(value);
+        return value;
+    }
+}
+
+void Function() :
+{}
+{
+  FunctionName() FormalParameters()
+}
+
+String Parse() : {
+    String functionName = null;
+    String[] parameters = null;
+}
+{
+    (functionName=FunctionName()) (parameters=FormalParameters()) {
+        return FunctionRegistry.getInstance().executeFunction(functionName,parameters.length == 0 ? null : parameters);
+    }
+}
+
+String[] FormalParameters() :
+{
+        String parameter;
+		List<String> parameters = new ArrayList<String>();
+}
+{
+  "(" [ (parameter=FormalParameter()) { parameters.add(parameter); } ( "," (parameter=FormalParameter()) { parameters.add(parameter); } )* ] ")"
+  { return parameters.toArray(new String[parameters.size()]);}
+}
+
+String FormalParameter() :
+{String t=null;}
+{
+  ( t=StringLiteral() | t=Number() | t=Parse() ) {
+        return t;
+  }
+}
