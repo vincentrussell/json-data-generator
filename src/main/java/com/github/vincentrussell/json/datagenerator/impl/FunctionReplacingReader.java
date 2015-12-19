@@ -69,7 +69,7 @@ public class FunctionReplacingReader extends Reader {
 
         try {
             this.tokenValue = this.tokenResolver
-                .resolveToken(integerStackForIndexFunction.peek(),"{{"+this.tokenNameBuffer.toString()+"}}");
+                .resolveToken(integerStackForIndexFunction.peek(),this.tokenNameBuffer.toString());
         } catch (IllegalArgumentException e) {
             this.tokenValue = null;
         }

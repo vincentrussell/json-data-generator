@@ -330,7 +330,7 @@ public class FunctionsTest {
 
     private String test(String string) {
         TokenResolver tokenResolver = new FunctionTokenResolver();
-        return tokenResolver.resolveToken(indexHolder, "{{" + string + "}}");
+        return tokenResolver.resolveToken(indexHolder, string );
     }
 
 }
