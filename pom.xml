@@ -59,6 +59,15 @@
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.3</version>
+                <configuration>
+                    <source>${jdkVersion}</source>
+                    <target>${jdkVersion}</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <executions>
                     <execution>
@@ -82,7 +91,7 @@
                             <goal>jjtree-javacc</goal>
                         </goals>
                         <configuration>
-                            <jdkVersion>1.5</jdkVersion>
+                            <jdkVersion>${jdkVersion}</jdkVersion>
                             <javadocFriendlyComments>true</javadocFriendlyComments>
                             <packageName>com.github.vincentrussell.json.parser</packageName>
                             <sourceDirectory>src/main/jjtree</sourceDirectory>

@@ -24,8 +24,8 @@ public class JsonDataGeneratorImpl implements JsonDataGenerator {
     @Override
     public void generateTestDataJson(String text, OutputStream outputStream) throws JsonDataGeneratorException {
         try {
-            processRepeatsAndFunctions(new ByteArrayInputStream(text.getBytes()), outputStream);
-        } catch (IOException e) {
+            generateTestDataJson(new ByteArrayInputStream(text.getBytes()), outputStream);
+        } catch (JsonDataGeneratorException e) {
             throw new JsonDataGeneratorException(e);
         }
     }
@@ -33,7 +33,7 @@ public class JsonDataGeneratorImpl implements JsonDataGenerator {
     @Override
     public void generateTestDataJson(URL classPathResource, OutputStream outputStream) throws JsonDataGeneratorException {
         try {
-            processRepeatsAndFunctions(classPathResource.openStream(), outputStream);
+            generateTestDataJson(classPathResource.openStream(), outputStream);
         } catch (IOException e) {
             throw new JsonDataGeneratorException(e);
         }
@@ -42,13 +42,14 @@ public class JsonDataGeneratorImpl implements JsonDataGenerator {
     @Override
     public void generateTestDataJson(File file, OutputStream outputStream) throws JsonDataGeneratorException {
         try {
-            processRepeatsAndFunctions(new FileInputStream(file), outputStream);
+            generateTestDataJson(new FileInputStream(file), outputStream);
         } catch (IOException e) {
             throw new JsonDataGeneratorException(e);
         }
     }
 
-    protected void processRepeatsAndFunctions(InputStream inputStream, OutputStream outputStream) throws IOException {
+    @Override
+    public void generateTestDataJson(InputStream inputStream, OutputStream outputStream) throws JsonDataGeneratorException {
         FileInputStream copyInputStream = null;
         FileOutputStream repeatsOutputStream = null;
         try {
@@ -59,17 +60,13 @@ public class JsonDataGeneratorImpl implements JsonDataGenerator {
             repeatsOutputStream.close();
             copyInputStream = new FileInputStream(repeatsFile);
             handleNestedFunctions(copyInputStream, outputStream);
+        } catch (IOException  e) {
+            throw new JsonDataGeneratorException(e);
         } finally {
-            if (copyInputStream!=null) {
-                copyInputStream.close();
-            }
-            if (repeatsOutputStream!=null) {
-                repeatsOutputStream.close();
-            }
+            IOUtils.closeQuietly(copyInputStream);
+            IOUtils.closeQuietly(repeatsOutputStream);
         }
-
     }
-
 
     protected void handleRepeats(InputStream inputStream, OutputStream outputStream) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(inputStream));
