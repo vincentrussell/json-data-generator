@@ -25,7 +25,7 @@ public class FunctionRegistry {
 
     private final Map<FunctionInvocationHolder, MethodAndObjectHolder> functionInvocationHolderMethodConcurrentHashMap = new ConcurrentHashMap<>();
     private final Map<Method, Object> methodInstanceMap = new ConcurrentHashMap<>();
-    private final Set<String> nonOverriableFunctionNames = new HashSet<>();
+    private final Set<String> nonOverridableFunctionNames = new HashSet<>();
 
     private FunctionRegistry() {
         registerClass(Repeat.class);
@@ -69,7 +69,7 @@ public class FunctionRegistry {
                 }
             }
             if (!annotation.overridable()) {
-                nonOverriableFunctionNames.add(annotation.name());
+                nonOverridableFunctionNames.add(annotation.name());
             }
         } catch (InstantiationException e) {
             throw new IllegalArgumentException(e);
@@ -110,7 +110,7 @@ public class FunctionRegistry {
             throw new IllegalArgumentException(Function.class.getName() +  "annotation on class" + clazz.getName() + " annotation must have name attribute populated");
         }
 
-        if (nonOverriableFunctionNames.contains(annotation.name())) {
+        if (nonOverridableFunctionNames.contains(annotation.name())) {
             throw new IllegalArgumentException(clazz.getName() + " can not override existing function with the same annotation: " + annotation.name() + " because it does not allow overriding.");
         }
 
