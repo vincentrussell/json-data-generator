@@ -15,7 +15,7 @@ public class FunctionReplacingReader extends Reader {
     protected StringBuilder tokenNameBuffer = new StringBuilder();
     protected String tokenValue = null;
     protected int tokenValueIndex = 0;
-    protected Stack<IndexHolder> integerStackForIndexFunction = new Stack<IndexHolder>();
+    protected Stack<IndexHolder> integerStackForIndexFunction = new Stack<>();
 
     public FunctionReplacingReader(Reader source, TokenResolver resolver) {
         pushbackReader = new PushbackReader(source, 80);
