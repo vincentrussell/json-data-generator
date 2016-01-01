@@ -51,21 +51,13 @@ public class JsonDataGeneratorImpl implements JsonDataGenerator {
 
     @Override
     public void generateTestDataJson(InputStream inputStream, OutputStream outputStream) throws JsonDataGeneratorException {
-        FileInputStream copyInputStream = null;
-        FileOutputStream repeatsOutputStream = null;
-        try {
-            File repeatsFile = File.createTempFile("repeats","json");
-            repeatsFile.deleteOnExit();
-            repeatsOutputStream = new FileOutputStream(repeatsFile);
-            handleRepeats(inputStream, repeatsOutputStream);
-            repeatsOutputStream.close();
-            copyInputStream = new FileInputStream(repeatsFile);
-            handleNestedFunctions(copyInputStream, outputStream);
+        try (ByteArrayBackupToFileOutputStream byteArrayBackupToFileOutputStream = new ByteArrayBackupToFileOutputStream()) {
+            handleRepeats(inputStream, byteArrayBackupToFileOutputStream);
+            try (InputStream copyInputStream = byteArrayBackupToFileOutputStream.getNewInputStream()) {
+                handleNestedFunctions(copyInputStream, outputStream);
+            }
         } catch (IOException  e) {
             throw new JsonDataGeneratorException(e);
-        } finally {
-            IOUtils.closeQuietly(copyInputStream);
-            IOUtils.closeQuietly(repeatsOutputStream);
         }
     }
 
@@ -88,53 +80,49 @@ public class JsonDataGeneratorImpl implements JsonDataGenerator {
                         } else if (Character.valueOf((char) i).equals("}".toCharArray()[0]) || (Character.valueOf((char) i).equals("]".toCharArray()[0])) && bracketCount==0 ) {
                             bracketCount--;
                             if (bracketCount == 0) {
-                                File newCopyFile = File.createTempFile("newCopy","json");
-                                newCopyFile.deleteOnExit();
-                                FileOutputStream newCopyFileStream = new FileOutputStream(newCopyFile);
-                                newCopyFileStream.write(String.valueOf(repeatBuffer).getBytes());
-                                for (int j = 1; j < repeatTimes; j++) {
-                                    newCopyFileStream.write(String.valueOf(",\n").getBytes());
-                                    newCopyFileStream.write(String.valueOf(repeatBuffer).getBytes());
+                                try (ByteArrayBackupToFileOutputStream newCopyOutputStram = new ByteArrayBackupToFileOutputStream()) {
+                                    newCopyOutputStram.write(String.valueOf(repeatBuffer).getBytes());
+                                    for (int j = 1; j < repeatTimes; j++) {
+                                        newCopyOutputStram.write(String.valueOf(",\n").getBytes());
+                                        newCopyOutputStram.write(String.valueOf(repeatBuffer).getBytes());
+                                    }
+                                    try (ByteArrayBackupToFileOutputStream recursiveOutputStream = new ByteArrayBackupToFileOutputStream()) {
+                                        try (InputStream inputStream1 = newCopyOutputStram.getNewInputStream()) {
+                                            handleRepeats(inputStream1, recursiveOutputStream);
+                                        }
+                                        StringBuilder builder = new StringBuilder();
+                                        try (InputStream inputStream1 = recursiveOutputStream.getNewInputStream()) {
+                                            builder.append(IOUtils.toString(inputStream1));
+                                            outputStream.write(String.valueOf(builder).getBytes());
+                                        }
+                                        repeatBuffer.setLength(0);
+                                        tempBuffer.setLength(0);
+                                        isRepeating = false;
+                                        bracketCount = 0;
+                                    }
                                 }
-                                File recursiveJsonObjectFile = File.createTempFile("recursive","json");
-                                recursiveJsonObjectFile.deleteOnExit();
-                                FileOutputStream recursiveOutputStream = new FileOutputStream(recursiveJsonObjectFile);
-                                handleRepeats(new FileInputStream(newCopyFile), recursiveOutputStream);
-                                recursiveOutputStream.close();
-                                StringBuilder builder = new StringBuilder();
-                                FileInputStream fileInputSteam = new FileInputStream(recursiveJsonObjectFile);
-                                builder.append(IOUtils.toString(fileInputSteam));
-                                outputStream.write(String.valueOf(builder).getBytes());
-                                fileInputSteam.close();
-                                repeatBuffer.setLength(0);
-                                tempBuffer.setLength(0);
-                                isRepeating = false;
-                                bracketCount = 0;
                             } else if (bracketCount==-1) {
-                                repeatBuffer.setLength(repeatBuffer.length() -1);
-                                File newCopyFile = File.createTempFile("newCopy","json");
-                                newCopyFile.deleteOnExit();
-                                FileOutputStream newCopyFileStream = new FileOutputStream(newCopyFile);
-                                newCopyFileStream.write(String.valueOf(repeatBuffer).getBytes());
-                                for (int j = 1; j < repeatTimes; j++) {
-                                    newCopyFileStream.write(String.valueOf(",\n").getBytes());
+                                repeatBuffer.setLength(repeatBuffer.length() - 1);
+                                try (ByteArrayBackupToFileOutputStream newCopyFileStream = new ByteArrayBackupToFileOutputStream()) {
                                     newCopyFileStream.write(String.valueOf(repeatBuffer).getBytes());
+                                    for (int j = 1; j < repeatTimes; j++) {
+                                        newCopyFileStream.write(String.valueOf(",\n").getBytes());
+                                        newCopyFileStream.write(String.valueOf(repeatBuffer).getBytes());
+                                    }
+                                    newCopyFileStream.write(String.valueOf("]").getBytes());
+                                    try (ByteArrayBackupToFileOutputStream recursiveOutputStream = new ByteArrayBackupToFileOutputStream()) {
+                                        try (InputStream inputStream1 = newCopyFileStream.getNewInputStream()) {
+                                            handleRepeats(inputStream1, recursiveOutputStream);
+                                        }
+                                        try (InputStream inputStream1 = recursiveOutputStream.getNewInputStream()) {
+                                            IOUtils.copy(inputStream1,outputStream);
+                                        }
+                                    }
+                                    repeatBuffer.setLength(0);
+                                    tempBuffer.setLength(0);
+                                    isRepeating = false;
+                                    bracketCount = 0;
                                 }
-                                newCopyFileStream.write(String.valueOf("]").getBytes());
-                                File recursiveJsonObjectFile = File.createTempFile("recursive","json");
-                                recursiveJsonObjectFile.deleteOnExit();
-                                FileOutputStream recursiveOutputStream = new FileOutputStream(recursiveJsonObjectFile);
-                                handleRepeats(new FileInputStream(newCopyFile), recursiveOutputStream);
-                                recursiveOutputStream.close();
-                                StringBuilder builder = new StringBuilder();
-                                FileInputStream fileInputSteam = new FileInputStream(recursiveJsonObjectFile);
-                                builder.append(IOUtils.toString(fileInputSteam));
-                                outputStream.write(String.valueOf(builder).getBytes());
-                                fileInputSteam.close();
-                                repeatBuffer.setLength(0);
-                                tempBuffer.setLength(0);
-                                isRepeating = false;
-                                bracketCount = 0;
                             }
                         }
                 } else {
