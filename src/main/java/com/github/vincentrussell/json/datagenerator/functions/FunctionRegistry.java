@@ -151,7 +151,7 @@ public class FunctionRegistry {
     }
 
     public Method getMethod(String functionName, String... arguments) throws IllegalArgumentException {
-        final List<Class> classList = new ArrayList<Class>();
+        final List<Class> classList = new ArrayList<>();
         if (arguments != null) {
             for (String argument : arguments) {
                 if (argument!=null) {
