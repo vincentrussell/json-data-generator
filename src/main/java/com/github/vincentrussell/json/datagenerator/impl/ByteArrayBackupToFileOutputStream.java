@@ -143,4 +143,33 @@ public class ByteArrayBackupToFileOutputStream extends OutputStream {
         }
     }
 
+    private void shrink(int newCapacity) {
+        buf = Arrays.copyOf(buf, newCapacity);
+        count = newCapacity;
+    }
+
+    public void setLength(long length) throws IOException {
+        if (buf != null) {
+            if (length > buf.length) {
+                throw new IllegalStateException("length: " + length + " is greater than buffer length");
+            }
+            shrink((int)length);
+        } else {
+            if (length > file.length()) {
+                throw new IllegalStateException("length: " + length + " is greater than file length");
+            }
+            RandomAccessFile randomAccessFile = new RandomAccessFile(file,"rw");
+            randomAccessFile.setLength(length);
+            fileOutputStream = new FileOutputStream(file,true);
+        }
+
+    }
+
+    public long getLength() {
+        if (buf != null) {
+            return count;
+        } else {
+            return file.length();
+        }
+    }
 }

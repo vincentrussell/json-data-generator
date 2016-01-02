@@ -178,4 +178,97 @@ public class ByteArrayBackupToFileOutputStreamTest {
         }
     }
 
+    @Test
+    public void getLength() throws IOException {
+        String testString1 = "what in the world is this?";
+        byte[] bytes1 = testString1.getBytes();
+        String testString2 = "what in the world is that?";
+        byte[] bytes2 = testString2.getBytes();
+
+        try (ByteArrayBackupToFileOutputStream byteArrayBackupToFileOutputStream = new ByteArrayBackupToFileOutputStream(5,bytes1.length)) {
+            for (int i = 0; i < bytes1.length; i++) {
+                byteArrayBackupToFileOutputStream.write(bytes1[i]);
+            }
+
+            assertEquals(testString1.length(),byteArrayBackupToFileOutputStream.getLength());
+
+            for (int i = 0; i < bytes2.length; i++) {
+                byteArrayBackupToFileOutputStream.write(bytes2[i]);
+            }
+            assertEquals(testString1.length() + testString1.length(),byteArrayBackupToFileOutputStream.getLength());
+        }
+    }
+
+    @Test
+    public void setLengthByteArray() throws IOException {
+        String testString1 = "what in the world is this?";
+        byte[] bytes1 = testString1.getBytes();
+
+        try (ByteArrayBackupToFileOutputStream byteArrayBackupToFileOutputStream = new ByteArrayBackupToFileOutputStream(5,bytes1.length)) {
+            for (int i = 0; i < bytes1.length; i++) {
+                byteArrayBackupToFileOutputStream.write(bytes1[i]);
+            }
+
+            int newLength = 5;
+            byteArrayBackupToFileOutputStream.setLength(newLength);
+
+            assertEquals(testString1.substring(0,newLength),byteArrayBackupToFileOutputStream.toString());
+            assertEquals(newLength,byteArrayBackupToFileOutputStream.getLength());
+
+            byteArrayBackupToFileOutputStream.write(bytes1[5]);
+            assertEquals(testString1.substring(0,newLength+1),byteArrayBackupToFileOutputStream.toString());
+            assertEquals(newLength+1,byteArrayBackupToFileOutputStream.getLength());
+
+        }
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void setLengthByteArrayGreaterThanBufferSize() throws IOException {
+        try (ByteArrayBackupToFileOutputStream byteArrayBackupToFileOutputStream = new ByteArrayBackupToFileOutputStream(5,10)) {
+            byteArrayBackupToFileOutputStream.setLength(1000);
+
+        }
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void setLengthByteArrayGreaterThanFileSize() throws IOException {
+        String testString1 = "what in the world is this?";
+        byte[] bytes1 = testString1.getBytes();
+
+        try (ByteArrayBackupToFileOutputStream byteArrayBackupToFileOutputStream = new ByteArrayBackupToFileOutputStream(5,testString1.length()-2)) {
+            for (int i = 0; i < bytes1.length; i++) {
+                byteArrayBackupToFileOutputStream.write(bytes1[i]);
+            }
+
+            byteArrayBackupToFileOutputStream.setLength(1000);
+
+        }
+    }
+
+    @Test
+    public void setLengthFile() throws IOException {
+        String testString1 = "what in the world is this?";
+        byte[] bytes1 = testString1.getBytes();
+        String testString2 = "what in the world is that?";
+        byte[] bytes2 = testString2.getBytes();
+
+        try (ByteArrayBackupToFileOutputStream byteArrayBackupToFileOutputStream = new ByteArrayBackupToFileOutputStream(5,bytes1.length)) {
+            for (int i = 0; i < bytes1.length; i++) {
+                byteArrayBackupToFileOutputStream.write(bytes1[i]);
+            }
+            for (int i = 0; i < bytes2.length; i++) {
+                byteArrayBackupToFileOutputStream.write(bytes2[i]);
+            }
+            int newLength = 5;
+            byteArrayBackupToFileOutputStream.setLength(newLength);
+
+            assertEquals(testString1.substring(0,newLength),byteArrayBackupToFileOutputStream.toString());
+            assertEquals(newLength,byteArrayBackupToFileOutputStream.getLength());
+
+            byteArrayBackupToFileOutputStream.write(bytes1[5]);
+            assertEquals(testString1.substring(0,newLength+1),byteArrayBackupToFileOutputStream.toString());
+            assertEquals(newLength+1,byteArrayBackupToFileOutputStream.getLength());
+        }
+    }
+
 }
