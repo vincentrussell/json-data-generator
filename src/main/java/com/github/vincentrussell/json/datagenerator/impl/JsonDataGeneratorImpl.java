@@ -14,6 +14,8 @@ import java.util.regex.Pattern;
 
 public class JsonDataGeneratorImpl implements JsonDataGenerator {
 
+    public static final String UTF_8 = "UTF-8";
+
     public JsonDataGeneratorImpl() {}
 
     public static int indexOf(Pattern pattern, CharSequence input) {
@@ -62,7 +64,7 @@ public class JsonDataGeneratorImpl implements JsonDataGenerator {
     }
 
     protected void handleRepeats(InputStream inputStream, OutputStream outputStream) throws IOException {
-        BufferedReader br = new BufferedReader(new InputStreamReader(inputStream));
+        BufferedReader br = new BufferedReader(new InputStreamReader(inputStream, UTF_8));
         StringBuilder tempBuffer = new StringBuilder();
         StringBuilder repeatBuffer = new StringBuilder();
         boolean isRepeating = false;
@@ -150,7 +152,7 @@ public class JsonDataGeneratorImpl implements JsonDataGenerator {
     }
 
     protected void handleNestedFunctions(InputStream inputStream, OutputStream outputStream) throws IOException {
-        Reader reader = new FunctionReplacingReader(new InputStreamReader(inputStream), new FunctionTokenResolver());
+        Reader reader = new FunctionReplacingReader(new InputStreamReader(inputStream, UTF_8), new FunctionTokenResolver());
 
         int data = 0;
         try {
