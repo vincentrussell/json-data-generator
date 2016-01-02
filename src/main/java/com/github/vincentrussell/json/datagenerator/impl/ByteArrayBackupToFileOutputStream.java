@@ -16,7 +16,7 @@ public class ByteArrayBackupToFileOutputStream extends OutputStream {
     protected FileOutputStream fileOutputStream = null;
 
     public ByteArrayBackupToFileOutputStream() {
-        this(1028,1024000);
+        this(1028, 1024000);
     }
 
     public ByteArrayBackupToFileOutputStream(int initialBufferSize, int sizeBeforeOverFlow) {
@@ -29,13 +29,13 @@ public class ByteArrayBackupToFileOutputStream extends OutputStream {
     }
 
     private void ensureCapacity(int minCapacity) throws IOException {
-        if (buf!=null && minCapacity - buf.length > 0 && minCapacity <= sizeBeforeOverFlow) {
+        if (buf != null && minCapacity - buf.length > 0 && minCapacity <= sizeBeforeOverFlow) {
             grow(minCapacity);
             return;
         }
 
         if (minCapacity > sizeBeforeOverFlow && file == null) {
-            file = File.createTempFile("temp","temp");
+            file = File.createTempFile("temp", "temp");
             fileOutputStream = new FileOutputStream(file);
             fileOutputStream.write(buf);
             buf = null;
@@ -63,7 +63,7 @@ public class ByteArrayBackupToFileOutputStream extends OutputStream {
     @Override
     public synchronized void write(int b) throws IOException {
         ensureCapacity(count + 1);
-        if (buf==null) {
+        if (buf == null) {
             fileOutputStream.write(b);
             return;
         }
@@ -75,14 +75,14 @@ public class ByteArrayBackupToFileOutputStream extends OutputStream {
         if (count == 0) {
             throw new IOException("Pushback buffer overflow");
         }
-        if (buf==null) {
-            RandomAccessFile randomAccessFile = new RandomAccessFile(file,"rw");
-            randomAccessFile.setLength(file.length()-1);
+        if (buf == null) {
+            RandomAccessFile randomAccessFile = new RandomAccessFile(file, "rw");
+            randomAccessFile.setLength(file.length() - 1);
             return;
         }
 
 
-        buf[--count] = (byte)0;
+        buf[--count] = (byte) 0;
     }
 
     public synchronized void write(byte b[], int off, int len) throws IOException {
@@ -91,7 +91,7 @@ public class ByteArrayBackupToFileOutputStream extends OutputStream {
             throw new IndexOutOfBoundsException();
         }
         ensureCapacity(count + len);
-        if (buf==null) {
+        if (buf == null) {
             fileOutputStream.write(b);
             return;
         }
@@ -105,7 +105,7 @@ public class ByteArrayBackupToFileOutputStream extends OutputStream {
 
     @Override
     public synchronized String toString() {
-        if (buf==null) {
+        if (buf == null) {
             try {
                 try (InputStream inputStream = new FileInputStream(file)) {
                     StringWriter writer = new StringWriter();
@@ -126,10 +126,10 @@ public class ByteArrayBackupToFileOutputStream extends OutputStream {
     }
 
     public void close() throws IOException {
-        if (fileOutputStream!=null) {
+        if (fileOutputStream != null) {
             fileOutputStream.close();
         }
-        if (file!=null) {
+        if (file != null) {
             FileUtils.forceDelete(file);
         }
     }
@@ -153,14 +153,14 @@ public class ByteArrayBackupToFileOutputStream extends OutputStream {
             if (length > buf.length) {
                 throw new IllegalStateException("length: " + length + " is greater than buffer length");
             }
-            shrink((int)length);
+            shrink((int) length);
         } else {
             if (length > file.length()) {
                 throw new IllegalStateException("length: " + length + " is greater than file length");
             }
-            RandomAccessFile randomAccessFile = new RandomAccessFile(file,"rw");
+            RandomAccessFile randomAccessFile = new RandomAccessFile(file, "rw");
             randomAccessFile.setLength(length);
-            fileOutputStream = new FileOutputStream(file,true);
+            fileOutputStream = new FileOutputStream(file, true);
         }
 
     }
