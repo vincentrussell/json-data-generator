@@ -14,6 +14,9 @@ import java.util.regex.Pattern;
 public class JsonDataGeneratorImpl implements JsonDataGenerator {
 
     public static final String UTF_8 = "UTF-8";
+    private static final String REPEAT_TEXT = "'{{repeat(";
+    private static final byte[] CLOSE_BRACKET_BYTE_ARRAY = "]".getBytes();
+    private static final byte[] COMMA_NEWLINE_BYTE_ARRAY = ",\n".getBytes();
 
     public JsonDataGeneratorImpl() {
     }
@@ -64,7 +67,7 @@ public class JsonDataGeneratorImpl implements JsonDataGenerator {
     }
 
     protected void handleRepeats(InputStream inputStream, OutputStream outputStream) throws IOException {
-        BufferedReader br = new BufferedReader(new InputStreamReader(inputStream, UTF_8));
+        final BufferedReader br = new BufferedReader(new InputStreamReader(inputStream, UTF_8));
         boolean isRepeating = false;
         int bracketCount = 0;
         int repeatTimes = 0;
@@ -76,25 +79,27 @@ public class JsonDataGeneratorImpl implements JsonDataGenerator {
                 if (i != -1) {
                     if (isRepeating) {
                         repeatBuffer.write((char) i);
-                        if (Character.valueOf((char) i).equals("{".toCharArray()[0])) {
+                        if ('{' == i) {
                             bracketCount++;
-                        } else if (Character.valueOf((char) i).equals("}".toCharArray()[0]) || (Character.valueOf((char) i).equals("]".toCharArray()[0])) && bracketCount == 0) {
+                        } else if ('}' == i || (']' == i) && bracketCount == 0) {
                             bracketCount--;
                             if (bracketCount == 0) {
-                                try (ByteArrayBackupToFileOutputStream newCopyOutputStram = new ByteArrayBackupToFileOutputStream()) {
-                                    newCopyOutputStram.write(String.valueOf(repeatBuffer).getBytes());
+                                try (ByteArrayBackupToFileOutputStream newCopyOutputStream = new ByteArrayBackupToFileOutputStream()) {
+                                    try (InputStream repeatBufferNewInputStream = repeatBuffer.getNewInputStream()) {
+                                        IOUtils.copy(repeatBufferNewInputStream, newCopyOutputStream);
+                                    }
                                     for (int j = 1; j < repeatTimes; j++) {
-                                        newCopyOutputStram.write(String.valueOf(",\n").getBytes());
-                                        newCopyOutputStram.write(String.valueOf(repeatBuffer).getBytes());
+                                        newCopyOutputStream.write(COMMA_NEWLINE_BYTE_ARRAY);
+                                        try (InputStream repeatBufferNewInputStream = repeatBuffer.getNewInputStream()) {
+                                            IOUtils.copy(repeatBufferNewInputStream, newCopyOutputStream);
+                                        }
                                     }
                                     try (ByteArrayBackupToFileOutputStream recursiveOutputStream = new ByteArrayBackupToFileOutputStream()) {
-                                        try (InputStream inputStream1 = newCopyOutputStram.getNewInputStream()) {
-                                            handleRepeats(inputStream1, recursiveOutputStream);
+                                        try (InputStream newCopyOutputStreamNewInputStream = newCopyOutputStream.getNewInputStream()) {
+                                            handleRepeats(newCopyOutputStreamNewInputStream, recursiveOutputStream);
                                         }
-                                        StringBuilder builder = new StringBuilder();
-                                        try (InputStream inputStream1 = recursiveOutputStream.getNewInputStream()) {
-                                            builder.append(IOUtils.toString(inputStream1));
-                                            outputStream.write(String.valueOf(builder).getBytes());
+                                        try (InputStream recursiveOutputStreamNewInputStream = recursiveOutputStream.getNewInputStream()) {
+                                            IOUtils.copy(recursiveOutputStreamNewInputStream, outputStream);
                                         }
                                         repeatBuffer.setLength(0);
                                         tempBuffer.setLength(0);
@@ -105,12 +110,16 @@ public class JsonDataGeneratorImpl implements JsonDataGenerator {
                             } else if (bracketCount == -1) {
                                 repeatBuffer.setLength(repeatBuffer.getLength() - 1);
                                 try (ByteArrayBackupToFileOutputStream newCopyFileStream = new ByteArrayBackupToFileOutputStream()) {
-                                    newCopyFileStream.write(String.valueOf(repeatBuffer).getBytes());
-                                    for (int j = 1; j < repeatTimes; j++) {
-                                        newCopyFileStream.write(String.valueOf(",\n").getBytes());
-                                        newCopyFileStream.write(String.valueOf(repeatBuffer).getBytes());
+                                    try (InputStream repeatBufferNewInputStream = repeatBuffer.getNewInputStream()) {
+                                        IOUtils.copy(repeatBufferNewInputStream, newCopyFileStream);
                                     }
-                                    newCopyFileStream.write(String.valueOf("]").getBytes());
+                                    for (int j = 1; j < repeatTimes; j++) {
+                                        newCopyFileStream.write(COMMA_NEWLINE_BYTE_ARRAY);
+                                        try (InputStream repeatBufferInputStream = repeatBuffer.getNewInputStream()) {
+                                            IOUtils.copy(repeatBufferInputStream, newCopyFileStream);
+                                        }
+                                    }
+                                    newCopyFileStream.write(CLOSE_BRACKET_BYTE_ARRAY);
                                     try (ByteArrayBackupToFileOutputStream recursiveOutputStream = new ByteArrayBackupToFileOutputStream()) {
                                         try (InputStream inputStream1 = newCopyFileStream.getNewInputStream()) {
                                             handleRepeats(inputStream1, recursiveOutputStream);
@@ -134,7 +143,9 @@ public class JsonDataGeneratorImpl implements JsonDataGenerator {
                         repeatTimes = Integer.parseInt(Iterables.get(FunctionTokenResolver.getRepeatFunctionNameAndArguments(tempBuffer.toString(UTF_8)), 1).toString());
                         int indexOfRepeat = indexOf(FunctionTokenResolver.REPEAT_FUNCTION_PATTERN, tempBuffer.toString(UTF_8));
                         tempBuffer.setLength(indexOfRepeat);
-                        outputStream.write(String.valueOf(tempBuffer).getBytes());
+                        try (InputStream tempBufferNewInputStream = tempBuffer.getNewInputStream()) {
+                            IOUtils.copy(tempBufferNewInputStream, outputStream);
+                        }
                         tempBuffer.setLength(0);
                         repeatBuffer.setLength(0);
                         isRepeating = true;
