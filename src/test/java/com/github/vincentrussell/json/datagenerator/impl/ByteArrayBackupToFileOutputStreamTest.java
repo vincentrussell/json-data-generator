@@ -271,4 +271,39 @@ public class ByteArrayBackupToFileOutputStreamTest {
         }
     }
 
+
+    @Test
+    public void markAndReset() throws IOException {
+        String testString1 = "what in the world is this?";
+        byte[] bytes1 = testString1.getBytes();
+        String testString2 = "what in the world is that?";
+        byte[] bytes2 = testString2.getBytes();
+
+        try (ByteArrayBackupToFileOutputStream byteArrayBackupToFileOutputStream = new ByteArrayBackupToFileOutputStream(5,bytes1.length)) {
+            for (int i = 0; i < bytes1.length; i++) {
+                byteArrayBackupToFileOutputStream.write(bytes1[i]);
+            }
+
+            byteArrayBackupToFileOutputStream.mark();
+
+            String markedString = byteArrayBackupToFileOutputStream.toString();
+
+            for (int i = 0; i < bytes2.length; i++) {
+                byteArrayBackupToFileOutputStream.write(bytes2[i]);
+            }
+            assertEquals(testString1+testString2,byteArrayBackupToFileOutputStream.toString());
+
+            byteArrayBackupToFileOutputStream.reset();
+
+            assertEquals(markedString,byteArrayBackupToFileOutputStream.toString());
+        }
+    }
+
+    @Test(expected = IOException.class)
+    public void resetWithoutMark() throws IOException {
+        try (ByteArrayBackupToFileOutputStream byteArrayBackupToFileOutputStream = new ByteArrayBackupToFileOutputStream(5,5)) {
+            byteArrayBackupToFileOutputStream.reset();
+        }
+    }
+
 }

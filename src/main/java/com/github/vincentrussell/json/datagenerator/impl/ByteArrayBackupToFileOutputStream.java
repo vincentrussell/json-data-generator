@@ -14,6 +14,7 @@ public class ByteArrayBackupToFileOutputStream extends OutputStream {
     protected final int sizeBeforeOverFlow;
     protected File file = null;
     protected FileOutputStream fileOutputStream = null;
+    private long lastMark = 0;
 
     public ByteArrayBackupToFileOutputStream() {
         this(1028, 1024000);
@@ -141,6 +142,17 @@ public class ByteArrayBackupToFileOutputStream extends OutputStream {
             fileOutputStream.flush();
             return new FileInputStream(file);
         }
+    }
+
+    public void mark() throws IOException {
+        lastMark = getLength();
+    }
+
+    public void reset() throws IOException {
+        if (lastMark <= 0) {
+            throw new IOException("mark has not been set yet.");
+        }
+        setLength(lastMark);
     }
 
     private void shrink(int newCapacity) {
