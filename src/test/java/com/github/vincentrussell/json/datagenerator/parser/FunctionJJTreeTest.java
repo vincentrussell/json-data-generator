@@ -24,28 +24,28 @@ public class FunctionJJTreeTest {
     public void testFunctionWithTwoStringsArgs() throws ParseException {
         FunctionParser functionParser = new FunctionParser(new ByteArrayInputStream("test-concat(\"a\",\"b\")".getBytes()));
         String result = functionParser.Parse();
-        assertEquals("ab",result);
+        assertEquals("ab", result);
     }
 
     @Test
     public void testFunctionWithTwoNumbersArgs() throws ParseException {
         FunctionParser functionParser = new FunctionParser(new ByteArrayInputStream("test-concat(1,23)".getBytes()));
         String result = functionParser.Parse();
-        assertEquals("123",result);
+        assertEquals("123", result);
     }
 
     @Test
     public void testFunctionWithOneStringOneNumberArgs() throws ParseException {
         FunctionParser functionParser = new FunctionParser(new ByteArrayInputStream("test-concat(\"a\",23)".getBytes()));
         String result = functionParser.Parse();
-        assertEquals("a23",result);
+        assertEquals("a23", result);
     }
 
     @Test
     public void testFunctionWithOneStringOneFloatArgs() throws ParseException {
         FunctionParser functionParser = new FunctionParser(new ByteArrayInputStream("test-concat(\"a\",21231.342342)".getBytes()));
         String result = functionParser.Parse();
-        assertEquals("a21231.342342",result);
+        assertEquals("a21231.342342", result);
     }
 
     @Test

@@ -70,24 +70,24 @@ public class JsonDataGeneratorTest {
 
     @Test
     public void copyJson() throws IOException, JsonDataGeneratorException {
-        classpathJsonTests("copyJson.json.results","copyJson.json");
+        classpathJsonTests("copyJson.json.results", "copyJson.json");
 
     }
 
     @Test
     public void copyDoubleNestedJson() throws IOException, JsonDataGeneratorException {
-        classpathJsonTests("copyDoubleNestedJson.json.results","copyDoubleNestedJson.json");
+        classpathJsonTests("copyDoubleNestedJson.json.results", "copyDoubleNestedJson.json");
 
     }
 
     @Test
     public void invalidFunction() throws IOException, JsonDataGeneratorException {
-        classpathJsonTests("invalidFunction.json.results","invalidFunction.json");
+        classpathJsonTests("invalidFunction.json.results", "invalidFunction.json");
     }
 
     @Test
     public void repeatNonFunctionJsonArray() throws IOException, JsonDataGeneratorException {
-        classpathJsonTests("repeatNonFunctionJsonArray.json.results","repeatNonFunctionJsonArray.json");
+        classpathJsonTests("repeatNonFunctionJsonArray.json.results", "repeatNonFunctionJsonArray.json");
     }
 
     @Test
@@ -113,17 +113,17 @@ public class JsonDataGeneratorTest {
     @Test
     public void repeatFunctionJsonArrayNoQuotes() throws IOException, JsonDataGeneratorException {
         parser.generateTestDataJson(this.getClass().getClassLoader().getResource("repeatFunctionJsonArrayNoQuotes.json"), outputStream);
-        String results  = new String(outputStream.toByteArray());
-        JsonObject obj = (JsonObject)new com.google.gson.JsonParser().parse(results);
+        String results = new String(outputStream.toByteArray());
+        JsonObject obj = (JsonObject) new com.google.gson.JsonParser().parse(results);
         JsonArray array = obj.getAsJsonArray("numbers");
-        assertEquals(3,array.size());
+        assertEquals(3, array.size());
     }
 
     @Test
     public void repeatFunctionJsonArrayQuotes() throws IOException, JsonDataGeneratorException {
         parser.generateTestDataJson(this.getClass().getClassLoader().getResource("repeatFunctionJsonArrayQuotes.json"), outputStream);
-        String results  = new String(outputStream.toByteArray());
-        JsonObject obj = (JsonObject)new com.google.gson.JsonParser().parse(results);
+        String results = new String(outputStream.toByteArray());
+        JsonObject obj = (JsonObject) new com.google.gson.JsonParser().parse(results);
         JsonArray array = obj.getAsJsonArray("colors");
         assertEquals(4, array.size());
     }
@@ -132,11 +132,11 @@ public class JsonDataGeneratorTest {
     @Test
     public void functionSimpleJson() throws IOException, JsonDataGeneratorException {
         parser.generateTestDataJson(this.getClass().getClassLoader().getResource("simple.json"), outputStream);
-        String results  = new String(outputStream.toByteArray());
+        String results = new String(outputStream.toByteArray());
         com.google.gson.JsonParser parser = new com.google.gson.JsonParser();
-        JsonObject obj = (JsonObject)parser.parse(results);
+        JsonObject obj = (JsonObject) parser.parse(results);
         assertEquals("A green door", obj.get("name").getAsString());
-        assertEquals(12.50,obj.get("price").getAsDouble(),0);
+        assertEquals(12.50, obj.get("price").getAsDouble(), 0);
     }
 
 }

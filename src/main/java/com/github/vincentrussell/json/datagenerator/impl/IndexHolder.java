@@ -6,10 +6,12 @@ package com.github.vincentrussell.json.datagenerator.impl;
 public class IndexHolder {
     int index = 0;
 
-    public IndexHolder() {}
+    public IndexHolder() {
+    }
 
     /**
      * get next index
+     *
      * @return the next index
      */
     public int getNextIndex() {

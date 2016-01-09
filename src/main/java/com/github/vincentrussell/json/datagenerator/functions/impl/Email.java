@@ -7,7 +7,7 @@ import com.github.vincentrussell.json.datagenerator.functions.FunctionInvocation
 public class Email {
 
     private static final FirstName FIRST_NAME = new FirstName();
-    private static final  LastName LAST_NAME = new LastName();
+    private static final LastName LAST_NAME = new LastName();
     private static final Company COMPANY = new Company();
 
     @FunctionInvocation

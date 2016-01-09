@@ -16,7 +16,7 @@ public class LoremIpsum {
 
     @FunctionInvocation
     public String getLorem(String amountOfLoremIpsum, String type) {
-        return getLorem(Integer.valueOf(amountOfLoremIpsum),type);
+        return getLorem(Integer.valueOf(amountOfLoremIpsum), type);
     }
 
     private String getLorem(Integer amountOfLoremIpsum, String type) {

@@ -8,7 +8,7 @@ import org.junit.runner.RunWith;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 
-@RunWith( ClassLoaderPerTestRunner.class )
+@RunWith(ClassLoaderPerTestRunner.class)
 public class ObjectRegistryTest {
 
     ObjectRegistry objectRegistry;
@@ -19,7 +19,7 @@ public class ObjectRegistryTest {
         IndexHolder indexHolder = new IndexHolder();
         objectRegistry.register(IndexHolder.class, indexHolder);
         IndexHolder indexHolder1 = objectRegistry.getInstance(IndexHolder.class);
-        assertSame(indexHolder,indexHolder1);
+        assertSame(indexHolder, indexHolder1);
     }
 
     @Test

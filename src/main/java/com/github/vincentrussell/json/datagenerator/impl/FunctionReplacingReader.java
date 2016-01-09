@@ -30,11 +30,11 @@ public class FunctionReplacingReader extends Reader {
 
     @Override
     public int read() throws IOException {
-        if(this.tokenValue != null){
-            if(this.tokenValueIndex < this.tokenValue.length()){
+        if (this.tokenValue != null) {
+            if (this.tokenValueIndex < this.tokenValue.length()) {
                 return this.tokenValue.charAt(this.tokenValueIndex++);
             }
-            if(this.tokenValueIndex == this.tokenValue.length()){
+            if (this.tokenValueIndex == this.tokenValue.length()) {
                 this.tokenValue = null;
                 this.tokenValueIndex = 0;
             }
@@ -42,17 +42,17 @@ public class FunctionReplacingReader extends Reader {
 
         int data = this.pushbackReader.read();
 
-        if(data == ']') {
+        if (data == ']') {
             integerStackForIndexFunction.pop();
         }
         if (data == '[') {
             integerStackForIndexFunction.push(new IndexHolder());
         }
 
-        if(data != '{') return data;
+        if (data != '{') return data;
 
         data = this.pushbackReader.read();
-        if(data != '{'){
+        if (data != '{') {
             this.pushbackReader.unread(data);
             return '{';
         }
@@ -60,7 +60,7 @@ public class FunctionReplacingReader extends Reader {
         this.tokenNameBuffer.delete(0, this.tokenNameBuffer.length());
 
         data = this.pushbackReader.read();
-        while(data != '}'){
+        while (data != '}') {
             this.tokenNameBuffer.append((char) data);
             data = this.pushbackReader.read();
         }
@@ -68,13 +68,13 @@ public class FunctionReplacingReader extends Reader {
         data = this.pushbackReader.read();
 
         //not a valid function no second '}'
-        if(data != '}'){
+        if (data != '}') {
             this.pushbackReader.unread(data);
             this.pushbackReader.unread('}');
 
             char[] chars = tokenNameBuffer.toString().toCharArray();
 
-            for (int i = chars.length-1; i >=0; i--) {
+            for (int i = chars.length - 1; i >= 0; i--) {
                 this.pushbackReader.unread(chars[i]);
             }
 
@@ -85,16 +85,16 @@ public class FunctionReplacingReader extends Reader {
 
         try {
             this.tokenValue = this.tokenResolver
-                .resolveToken(integerStackForIndexFunction.peek(),this.tokenNameBuffer.toString());
+                    .resolveToken(integerStackForIndexFunction.peek(), this.tokenNameBuffer.toString());
         } catch (IllegalArgumentException e) {
             this.tokenValue = null;
         }
 
-        if(this.tokenValue == null){
-            this.tokenValue = "{{"+ this.tokenNameBuffer.toString() + "}}";
+        if (this.tokenValue == null) {
+            this.tokenValue = "{{" + this.tokenNameBuffer.toString() + "}}";
         }
 
-        if(this.tokenValue.length() == 0){
+        if (this.tokenValue.length() == 0) {
             return read();
         }
         return this.tokenValue.charAt(this.tokenValueIndex++);

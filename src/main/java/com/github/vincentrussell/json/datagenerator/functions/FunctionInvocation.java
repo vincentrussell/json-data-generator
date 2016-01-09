@@ -2,8 +2,9 @@ package com.github.vincentrussell.json.datagenerator.functions;
 
 import java.lang.annotation.*;
 
-@Target({ ElementType.METHOD})
+@Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 @Documented
-public @interface FunctionInvocation {}
+public @interface FunctionInvocation {
+}

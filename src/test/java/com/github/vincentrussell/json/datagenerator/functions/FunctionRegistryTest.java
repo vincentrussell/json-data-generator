@@ -13,7 +13,7 @@ import java.lang.reflect.InvocationTargetException;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-@RunWith( ClassLoaderPerTestRunner.class )
+@RunWith(ClassLoaderPerTestRunner.class)
 public class FunctionRegistryTest {
 
     @Rule
@@ -52,28 +52,28 @@ public class FunctionRegistryTest {
     @Test
     public void registerFunctionClassAnnotatedWithFunctionInvocationAndExecuteMethod() throws InvocationTargetException, IllegalAccessException {
         functionRegistry.registerClass(TestFunctionClazzWithFunctionInvocation.class);
-        String[] args = new String[]{"arg1","arg2"};
-        String[] args2 = new String[]{"arg1","arg2","arg3","arg4"};
-        assertEquals("arg1=arg1,arg2=arg2",functionRegistry.executeFunction("function",args));
-        assertEquals("varargs.length=4",functionRegistry.executeFunction("function",args2));
+        String[] args = new String[]{"arg1", "arg2"};
+        String[] args2 = new String[]{"arg1", "arg2", "arg3", "arg4"};
+        assertEquals("arg1=arg1,arg2=arg2", functionRegistry.executeFunction("function", args));
+        assertEquals("varargs.length=4", functionRegistry.executeFunction("function", args2));
     }
 
     @Test
     public void registerFunctionAndGetMethod() throws InvocationTargetException, IllegalAccessException {
         functionRegistry.registerClass(TestFunctionClazzWithFunctionInvocation.class);
-        String[] args = new String[]{"arg1","arg2"};
-        String[] args2 = new String[]{"arg1","arg2","arg3","arg4"};
-        assertNotNull(functionRegistry.getMethod("function",args));
-        assertNotNull(functionRegistry.getMethod("function",args2));
+        String[] args = new String[]{"arg1", "arg2"};
+        String[] args2 = new String[]{"arg1", "arg2", "arg3", "arg4"};
+        assertNotNull(functionRegistry.getMethod("function", args));
+        assertNotNull(functionRegistry.getMethod("function", args2));
     }
 
     @Test
     public void registerFunctionClassAnnotatedWithFunctionInvocationAndExecuteFunctionByName() throws InvocationTargetException, IllegalAccessException {
         functionRegistry.registerClass(TestFunctionClazzWithFunctionInvocation.class);
-        String[] args = new String[]{"arg1","arg2"};
-        String[] args2 = new String[]{"arg1","arg2","arg3","arg4"};
-        assertEquals("arg1=arg1,arg2=arg2",functionRegistry.executeFunction("function",args));
-        assertEquals("varargs.length=4",functionRegistry.executeFunction("function",args2));
+        String[] args = new String[]{"arg1", "arg2"};
+        String[] args2 = new String[]{"arg1", "arg2", "arg3", "arg4"};
+        assertEquals("arg1=arg1,arg2=arg2", functionRegistry.executeFunction("function", args));
+        assertEquals("varargs.length=4", functionRegistry.executeFunction("function", args2));
     }
 
     @Test
@@ -81,7 +81,7 @@ public class FunctionRegistryTest {
         thrownException.expect(IllegalArgumentException.class);
         thrownException.expectMessage("could not find method to invoke.");
         functionRegistry.registerClass(TestFunctionClazzWithFunctionInvocation.class);
-        functionRegistry.getMethod("notFound","arg1","arg2");
+        functionRegistry.getMethod("notFound", "arg1", "arg2");
     }
 
     @Test
@@ -116,26 +116,26 @@ public class FunctionRegistryTest {
     @Test
     public void registerFunctionClassAnnotationThatDoestReturnString() {
         thrownException.expect(IllegalArgumentException.class);
-        thrownException.expectMessage("method invocation on class "+TestFunctionClazzMethodDoesntReturnString.class.getName()+" must return type String");
+        thrownException.expectMessage("method invocation on class " + TestFunctionClazzMethodDoesntReturnString.class.getName() + " must return type String");
         functionRegistry.registerClass(TestFunctionClazzMethodDoesntReturnString.class);
     }
 
     @Test
     public void registerFunctionClassAnnotatedWithFunctionMethodWithNoArgs() throws InvocationTargetException, IllegalAccessException {
         functionRegistry.registerClass(TestFunctionClazzWithNoArgsMethod.class);
-        assertEquals("no args",functionRegistry.executeFunction("function7",null));
-        assertEquals("no args",functionRegistry.executeFunction("function7"));
+        assertEquals("no args", functionRegistry.executeFunction("function7", null));
+        assertEquals("no args", functionRegistry.executeFunction("function7"));
     }
 
     @Test
     public void objectRegistry() throws InvocationTargetException, IllegalAccessException {
         IndexHolder indexHolder = new IndexHolder();
-        String[] args = new String[]{"arg1","arg2"};
-        String[] args2 = new String[]{"arg1","arg2","arg3","arg4"};
+        String[] args = new String[]{"arg1", "arg2"};
+        String[] args2 = new String[]{"arg1", "arg2", "arg3", "arg4"};
         functionRegistry.registerClass(TestFunctionObjectRegistry.class);
-        objectRegistry.register(IndexHolder.class,indexHolder);
-        assertEquals("arg1=arg1,arg2=arg2,index=0",functionRegistry.executeFunction("function6",args));
-        assertEquals("varargs.length=4,index=1",functionRegistry.executeFunction("function6",args2));
+        objectRegistry.register(IndexHolder.class, indexHolder);
+        assertEquals("arg1=arg1,arg2=arg2,index=0", functionRegistry.executeFunction("function6", args));
+        assertEquals("varargs.length=4,index=1", functionRegistry.executeFunction("function6", args2));
     }
 
     @Test
@@ -157,7 +157,7 @@ public class FunctionRegistryTest {
 
         @FunctionInvocation
         public String invocation(String arg1, String arg2) {
-            return "arg1=" + arg1 + ",arg2=" +  arg2 ;
+            return "arg1=" + arg1 + ",arg2=" + arg2;
         }
 
         @FunctionInvocation
@@ -175,7 +175,8 @@ public class FunctionRegistryTest {
     @Function(name = "function3")
     public static class TestFunctionClazzWithFunctionInvocationWithoutNoArgConstructor {
 
-        public TestFunctionClazzWithFunctionInvocationWithoutNoArgConstructor(Object object) {}
+        public TestFunctionClazzWithFunctionInvocationWithoutNoArgConstructor(Object object) {
+        }
 
         @FunctionInvocation
         public String invocation(String arg1, String arg2) {
@@ -190,7 +191,7 @@ public class FunctionRegistryTest {
 
         @FunctionInvocation
         public String invocation(Object arg1, Object arg2) {
-            return "arg1=" + arg1 + ",arg2=" +  arg2 ;
+            return "arg1=" + arg1 + ",arg2=" + arg2;
         }
 
     }
@@ -212,12 +213,12 @@ public class FunctionRegistryTest {
 
         @FunctionInvocation
         public String invocation(String arg1, String arg2) {
-            return "arg1=" + arg1 + ",arg2=" +  arg2 + ",index=" + objectRegistry.getInstance(IndexHolder.class).getNextIndex();
+            return "arg1=" + arg1 + ",arg2=" + arg2 + ",index=" + objectRegistry.getInstance(IndexHolder.class).getNextIndex();
         }
 
         @FunctionInvocation
         public String invocation(String[] args) {
-            return "varargs.length=" + args.length+ ",index=" + objectRegistry.getInstance(IndexHolder.class).getNextIndex();
+            return "varargs.length=" + args.length + ",index=" + objectRegistry.getInstance(IndexHolder.class).getNextIndex();
         }
 
     }
@@ -275,8 +276,6 @@ public class FunctionRegistryTest {
 
 
     }
-
-
 
 
 }

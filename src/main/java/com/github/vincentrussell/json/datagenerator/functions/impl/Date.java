@@ -21,12 +21,12 @@ public class Date {
     }
 
     @FunctionInvocation
-    public  String date(String format) {
+    public String date(String format) {
         return new SimpleDateFormat(format).format(new java.util.Date());
     }
 
     @FunctionInvocation
-    public  String date(String beginDate, String endDate, String format) {
+    public String date(String beginDate, String endDate, String format) {
         try {
             DateFormat formatter = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
             SimpleDateFormat dateFormat = new SimpleDateFormat(format);
@@ -45,7 +45,7 @@ public class Date {
     }
 
     @FunctionInvocation
-    public  String date(String beginDate, String endDate) {
+    public String date(String beginDate, String endDate) {
         return date(beginDate, endDate, DEFAULT_DATE_STRING);
     }
 
