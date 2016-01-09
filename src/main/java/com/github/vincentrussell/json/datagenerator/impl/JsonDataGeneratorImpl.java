@@ -12,7 +12,8 @@ import java.net.URL;
 public class JsonDataGeneratorImpl implements JsonDataGenerator {
 
     public static final String UTF_8 = "UTF-8";
-    private static final String REPEAT_TEXT = "'{{repeat(";
+    public static final String REPEAT = "'{{repeat(";
+    private static final String REPEAT_TEXT = REPEAT;
     private static final byte[] CLOSE_BRACKET_BYTE_ARRAY = "]".getBytes();
     private static final byte[] COMMA_NEWLINE_BYTE_ARRAY = ",\n".getBytes();
 
@@ -129,32 +130,53 @@ public class JsonDataGeneratorImpl implements JsonDataGenerator {
                         tempBuffer.write((char) i);
                         lastCharQueue.add((char) i);
                     }
-                    if ((lastCharQueue.peek() != null && lastCharQueue.peek().equals('\'')) && "'{{repeat(".equals(readAsString(lastCharQueue))) {
-                        i = br.read();
-                        tempBuffer.write((char) i);
-                        String numRepeats = "";
-                        while (i != ')') {
-                            numRepeats = numRepeats + Character.toString((char) i);
-                            i = br.read();
-                            if (i != ')') {
+                    if ((lastCharQueue.peek() != null && lastCharQueue.peek().equals('\'')) && REPEAT.equals(readAsString(lastCharQueue))) {
+                            tempBuffer.mark();
+                            br.mark(1000);
+                            try {
+                                i = br.read();
                                 tempBuffer.write((char) i);
+                                String numRepeats = "";
+                                while (i != ')') {
+                                    numRepeats = numRepeats + Character.toString((char) i);
+                                    i = br.read();
+                                    if (i != ')') {
+                                        tempBuffer.write((char) i);
+                                    }
+                                }
+                                //)}}'
+                                tempBuffer.write((char) i);
+                                tempBuffer.write((char) (i = br.read()));
+                                if (i != '}') {
+                                    throw new IllegalStateException();
+                                }
+                                tempBuffer.write((char) (i = br.read()));
+                                if (i != '}') {
+                                    throw new IllegalStateException();
+                                }
+                                tempBuffer.write((char) (i = br.read()));
+                                if (i != '\'') {
+                                    throw new IllegalStateException();
+                                }
+                                tempBuffer.write((char) (i = br.read()));
+                                if (i != ',') {
+                                    throw new IllegalStateException();
+                                }
+                                repeatTimes = Integer.parseInt(numRepeats);
+                                tempBuffer.setLength(tempBuffer.getLength() - numRepeats.length() - lastCharQueue.size() - 5);
+                                try (InputStream tempBufferNewInputStream = tempBuffer.getNewInputStream()) {
+                                    IOUtils.copy(tempBufferNewInputStream, outputStream);
+                                }
+                                tempBuffer.setLength(0);
+                                repeatBuffer.setLength(0);
+                                isRepeating = true;
+                                bracketCount = 0;
+                                lastCharQueue.clear();
+                            } catch (IllegalStateException e) {
+                                setQueueCharacters(lastCharQueue, REPEAT);
+                                br.reset();
+                                tempBuffer.reset();
                             }
-                        }
-                        tempBuffer.write((char) i);
-                        tempBuffer.write((char) (i = br.read()));
-                        tempBuffer.write((char) (i = br.read()));
-                        tempBuffer.write((char) (i = br.read()));
-                        tempBuffer.write((char) (i = br.read()));
-                        repeatTimes = Integer.parseInt(numRepeats);
-                        tempBuffer.setLength(tempBuffer.getLength() - numRepeats.length() - lastCharQueue.size() - 5);
-                        try (InputStream tempBufferNewInputStream = tempBuffer.getNewInputStream()) {
-                            IOUtils.copy(tempBufferNewInputStream, outputStream);
-                        }
-                        tempBuffer.setLength(0);
-                        repeatBuffer.setLength(0);
-                        isRepeating = true;
-                        bracketCount = 0;
-                        lastCharQueue.clear();
                     }
                 }
             } while (i != -1);
@@ -173,6 +195,14 @@ public class JsonDataGeneratorImpl implements JsonDataGenerator {
             charArray[i] = characters.get(i);
         }
         return new String(charArray);
+    }
+
+    private void setQueueCharacters(CircularFifoQueue<Character> characters,String string) {
+        characters.clear();
+        char[] charArray = string.toCharArray();
+        for (int i = 0; i < charArray.length; i++) {
+            characters.add(charArray[i]);
+        }
     }
 
     protected void handleNestedFunctions(InputStream inputStream, OutputStream outputStream) throws IOException {

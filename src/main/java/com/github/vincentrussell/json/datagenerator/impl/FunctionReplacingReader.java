@@ -67,6 +67,22 @@ public class FunctionReplacingReader extends Reader {
 
         data = this.pushbackReader.read();
 
+        //not a valid function no second '}'
+        if(data != '}'){
+            this.pushbackReader.unread(data);
+            this.pushbackReader.unread('}');
+
+            char[] chars = tokenNameBuffer.toString().toCharArray();
+
+            for (int i = chars.length-1; i >=0; i--) {
+                this.pushbackReader.unread(chars[i]);
+            }
+
+            this.pushbackReader.unread('{');
+            this.tokenNameBuffer.delete(0, this.tokenNameBuffer.length());
+            return '{';
+        }
+
         try {
             this.tokenValue = this.tokenResolver
                 .resolveToken(integerStackForIndexFunction.peek(),this.tokenNameBuffer.toString());

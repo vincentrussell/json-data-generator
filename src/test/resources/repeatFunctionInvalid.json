@@ -1,0 +1,8 @@
+{
+    "id": "dfasf235345345",
+    "name": "A green door",
+    "age": 23,
+    "price": 12.50,
+    "numbers": ['{{repeat(3)},
+             {{integer(1,100)}}]
+}

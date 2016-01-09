@@ -16,7 +16,6 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static org.apache.commons.lang.StringUtils.isEmpty;
-import static org.apache.commons.lang.Validate.notEmpty;
 import static org.apache.commons.lang.Validate.notNull;
 
 public class FunctionRegistry {
@@ -28,7 +27,6 @@ public class FunctionRegistry {
     private final Set<String> nonOverridableFunctionNames = new HashSet<>();
 
     private FunctionRegistry() {
-        registerClass(Repeat.class);
         registerClass(RandomInteger.class);
         registerClass(RandomDouble.class);
         registerClass(RandomFloat.class);
@@ -65,7 +63,7 @@ public class FunctionRegistry {
                     checkMethodValidity(method);
                     MethodAndObjectHolder methodAndObjectHolder = new MethodAndObjectHolder(method, instance);
                     functionInvocationHolderMethodConcurrentHashMap.put(new FunctionInvocationHolder(annotation.name(), method.getParameterTypes()), methodAndObjectHolder);
-                    methodInstanceMap.put(method,instance);
+                    methodInstanceMap.put(method, instance);
                 }
             }
             if (!annotation.overridable()) {
@@ -92,12 +90,12 @@ public class FunctionRegistry {
         }));
 
         if (!String.class.isAssignableFrom(method.getReturnType())) {
-            throw new IllegalArgumentException("method " + method.getName() + " on class " + method.getDeclaringClass().getName()+ " must return type String");
+            throw new IllegalArgumentException("method " + method.getName() + " on class " + method.getDeclaringClass().getName() + " must return type String");
         }
 
         if ((stringClassesCount != method.getParameterTypes().length && method.getParameterTypes().length > 1)
                 || (stringArrayClassesCount != 1 && stringClassesCount == 0 && method.getParameterTypes().length == 1)) {
-            throw new IllegalArgumentException("for method " + method.getName() + " on class " + method.getDeclaringClass().getName()+ ": all method parameters need to be a String or a single String var-arg parameter");
+            throw new IllegalArgumentException("for method " + method.getName() + " on class " + method.getDeclaringClass().getName() + ": all method parameters need to be a String or a single String var-arg parameter");
         }
     }
 
@@ -107,7 +105,7 @@ public class FunctionRegistry {
         }
 
         if (isEmpty(annotation.name())) {
-            throw new IllegalArgumentException(Function.class.getName() +  "annotation on class" + clazz.getName() + " annotation must have name attribute populated");
+            throw new IllegalArgumentException(Function.class.getName() + "annotation on class" + clazz.getName() + " annotation must have name attribute populated");
         }
 
         if (nonOverridableFunctionNames.contains(annotation.name())) {
@@ -136,14 +134,14 @@ public class FunctionRegistry {
     }
 
     public String executeFunction(String functionName, String... arguments) throws InvocationTargetException, IllegalAccessException {
-        Method method = getMethod(functionName,arguments);
-        return executeMethod(method,arguments);
+        Method method = getMethod(functionName, arguments);
+        return executeMethod(method, arguments);
     }
 
     public String executeMethod(Method method, String... arguments) throws InvocationTargetException, IllegalAccessException {
         Object instance = methodInstanceMap.get(method);
-        if (method.getParameterTypes().length==1 && method.getParameterTypes()[0].equals(String[].class)) {
-            return method.invoke(instance,new Object[]{arguments}).toString();
+        if (method.getParameterTypes().length == 1 && method.getParameterTypes()[0].equals(String[].class)) {
+            return method.invoke(instance, new Object[]{arguments}).toString();
         } else {
             return method.invoke(instance, arguments).toString();
         }
@@ -154,7 +152,7 @@ public class FunctionRegistry {
         final List<Class> classList = new ArrayList<>();
         if (arguments != null) {
             for (String argument : arguments) {
-                if (argument!=null) {
+                if (argument != null) {
                     classList.add(argument.getClass());
                 }
             }
@@ -162,7 +160,7 @@ public class FunctionRegistry {
 
         MethodAndObjectHolder holder = null;
         try {
-            holder = getHolder(functionName,classList);
+            holder = getHolder(functionName, classList);
         } catch (IllegalAccessException e) {
             throw new IllegalArgumentException(e);
         }

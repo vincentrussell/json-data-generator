@@ -4,6 +4,7 @@ import com.github.vincentrussell.json.datagenerator.impl.JsonDataGeneratorImpl;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonSyntaxException;
 import org.apache.commons.io.IOUtils;
 import org.junit.After;
 import org.junit.Before;
@@ -12,8 +13,11 @@ import org.junit.Test;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringWriter;
+import java.util.regex.Pattern;
 
-import static org.junit.Assert.*;
+import static junit.framework.TestCase.assertTrue;
+import static org.junit.Assert.assertEquals;
 
 
 public class JsonDataGeneratorTest {
@@ -37,17 +41,30 @@ public class JsonDataGeneratorTest {
 
 
     private void classpathJsonTests(String expected, String source) throws IOException, JsonDataGeneratorException {
-        InputStream resultsStream = this.getClass().getClassLoader().getResourceAsStream(expected);
-        parser.generateTestDataJson(this.getClass().getClassLoader().getResource(source), outputStream);
-        String results  = new String(outputStream.toByteArray());
+        try (InputStream resultsStream = this.getClass().getClassLoader().getResourceAsStream(expected)) {
+            parser.generateTestDataJson(this.getClass().getClassLoader().getResource(source), outputStream);
+            String results = new String(outputStream.toByteArray());
 
-        assertEquals(remoteWhiteSpaceFromJson(IOUtils.toString(resultsStream)),
-                          remoteWhiteSpaceFromJson(results));
+            assertEquals(remoteWhiteSpaceFromJson(IOUtils.toString(resultsStream)),
+                    remoteWhiteSpaceFromJson(results));
+        }
+    }
+
+    private String getClasspathFileAsString(String source) throws IOException {
+        try (InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream(source)) {
+            StringWriter writer = new StringWriter();
+            IOUtils.copy(inputStream, writer, "UTF-8");
+            return writer.toString();
+        }
     }
 
     private String remoteWhiteSpaceFromJson(String json) {
-        JsonElement jsonObject = new com.google.gson.JsonParser().parse(json);
-        return jsonObject.toString();
+        try {
+            JsonElement jsonObject = new com.google.gson.JsonParser().parse(json);
+            return jsonObject.toString();
+        } catch (JsonSyntaxException e) {
+            return json.trim();
+        }
     }
 
 
@@ -64,7 +81,7 @@ public class JsonDataGeneratorTest {
     }
 
     @Test
-    public void invallidFunction() throws IOException, JsonDataGeneratorException {
+    public void invalidFunction() throws IOException, JsonDataGeneratorException {
         classpathJsonTests("invalidFunction.json.results","invalidFunction.json");
     }
 
@@ -76,6 +93,21 @@ public class JsonDataGeneratorTest {
     @Test
     public void indexFunctionTest() throws IOException, JsonDataGeneratorException {
         classpathJsonTests("indexFunctionSimple.json.results", "indexFunctionSimple.json");
+    }
+
+    @Test
+    public void repeatFunctionInvalid() throws IOException, JsonDataGeneratorException {
+        parser.generateTestDataJson(this.getClass().getClassLoader().getResource("repeatFunctionInvalid.json"), outputStream);
+        String result = outputStream.toString();
+        Pattern pattern = Pattern.compile("\\{\n" +
+                "    \"id\": \"dfasf235345345\",\n" +
+                "    \"name\": \"A green door\",\n" +
+                "    \"age\": 23,\n" +
+                "    \"price\": 12\\.50,\n" +
+                "    \"numbers\": \\['\\{\\{repeat\\(3\\)},\n" +
+                "             \\d+]\n" +
+                "}", Pattern.MULTILINE);
+        assertTrue(pattern.matcher(result).find());
     }
 
     @Test
