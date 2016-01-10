@@ -19,9 +19,9 @@ public class JsonDataGeneratorImpl implements JsonDataGenerator {
 
     @Override
     public void generateTestDataJson(String text, OutputStream outputStream) throws JsonDataGeneratorException {
-        try {
-            generateTestDataJson(new ByteArrayInputStream(text.getBytes()), outputStream);
-        } catch (JsonDataGeneratorException e) {
+        try (ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(text.getBytes())) {
+            generateTestDataJson(byteArrayInputStream, outputStream);
+        } catch (JsonDataGeneratorException | IOException e) {
             throw new JsonDataGeneratorException(e);
         }
     }
@@ -37,8 +37,8 @@ public class JsonDataGeneratorImpl implements JsonDataGenerator {
 
     @Override
     public void generateTestDataJson(File file, OutputStream outputStream) throws JsonDataGeneratorException {
-        try {
-            generateTestDataJson(new FileInputStream(file), outputStream);
+        try (FileInputStream fileInputStream = new FileInputStream(file)) {
+            generateTestDataJson(fileInputStream, outputStream);
         } catch (IOException e) {
             throw new JsonDataGeneratorException(e);
         }
