@@ -146,6 +146,41 @@ public class DefaultFunctionsTest {
     }
 
     @Test
+    public void ssn() throws InvocationTargetException, IllegalAccessException {
+        String result = functionRegistry.executeFunction("ssn", null);
+        Pattern pattern = Pattern.compile("[0-9]{3}-[0-9]{2}-[0-9]{4}");
+        assertTrue(pattern.matcher(result).matches());
+    }
+
+    @Test
+    public void ipv4() throws InvocationTargetException, IllegalAccessException {
+        String result = functionRegistry.executeFunction("ipv4", null);
+        Pattern pattern = Pattern.compile("[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+");
+        assertTrue(pattern.matcher(result).matches());
+    }
+
+    @Test
+    public void ipv6Lower() throws InvocationTargetException, IllegalAccessException {
+        String result = functionRegistry.executeFunction("ipv6", "lower");
+        Pattern pattern = Pattern.compile("^(?:[0-9a-f]{1,4}:){7}[0-9a-f]{1,4}$");
+        assertTrue(pattern.matcher(result).matches());
+    }
+
+    @Test
+    public void ipv6DefaultLower() throws InvocationTargetException, IllegalAccessException {
+        String result = functionRegistry.executeFunction("ipv6", null);
+        Pattern pattern = Pattern.compile("^(?:[0-9a-f]{1,4}:){7}[0-9a-f]{1,4}$");
+        assertTrue(pattern.matcher(result).matches());
+    }
+
+    @Test
+    public void ipv6Upper() throws InvocationTargetException, IllegalAccessException {
+        String result = functionRegistry.executeFunction("ipv6", "upper");
+        Pattern pattern = Pattern.compile("^(?:[0-9A-F]{1,4}:){7}[0-9A-F]{1,4}$");
+        assertTrue(pattern.matcher(result).matches());
+    }
+
+    @Test
     public void gender() throws InvocationTargetException, IllegalAccessException {
         String result = functionRegistry.executeFunction("gender", null);
         Pattern pattern = Pattern.compile("male|female");

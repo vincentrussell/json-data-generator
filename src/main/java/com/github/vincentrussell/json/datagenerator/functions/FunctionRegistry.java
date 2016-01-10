@@ -51,6 +51,9 @@ public class FunctionRegistry {
         registerClass(LastName.class);
         registerClass(State.class);
         registerClass(Street.class);
+        registerClass(Ssn.class);
+        registerClass(Ipv4.class);
+        registerClass(Ipv6.class);
     }
 
     public void registerClass(Class clazz) {
