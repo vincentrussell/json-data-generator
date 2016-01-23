@@ -24,7 +24,12 @@
     <properties>
         <jdkVersion>1.7</jdkVersion>
         <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
+        <maven.version>3.0.4</maven.version>
     </properties>
+
+    <prerequisites>
+        <maven>${maven.version}</maven>
+    </prerequisites>
 
 
     <developers>
@@ -115,7 +120,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.3</version>
+                <version>3.5</version>
                 <configuration>
                     <source>${jdkVersion}</source>
                     <target>${jdkVersion}</target>
@@ -137,7 +142,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>2.4.2</version>
+                <version>2.4.3</version>
                 <executions>
                     <execution>
                         <goals>
@@ -301,7 +306,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
-                        <version>1.5</version>
+                        <version>1.6</version>
                         <executions>
                             <execution>
                                 <id>sign-artifacts</id>
