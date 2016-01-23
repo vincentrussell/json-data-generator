@@ -152,7 +152,7 @@
                         <configuration>
                             <createDependencyReducedPom>true</createDependencyReducedPom>
                             <shadedArtifactAttached>true</shadedArtifactAttached>
-                            <shadedClassifierName>shaded</shadedClassifierName>
+                            <shadedClassifierName>standalone</shadedClassifierName>
                             <filters>
                                 <filter>
                                     <artifact>*:*</artifact>
