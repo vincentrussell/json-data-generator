@@ -227,8 +227,8 @@ public class DefaultFunctionsTest {
         assertFunctionRandomFromField("city", City.class, "CITIES");
     }
 
-    private void assertFunctionRandomFromField(String functioName, Class clazz, String... fieldNames) throws NoSuchFieldException, IllegalAccessException, InvocationTargetException {
-        String result = functionRegistry.executeFunction(functioName, null);
+    private void assertFunctionRandomFromField(String functionName, Class clazz, String... fieldNames) throws NoSuchFieldException, IllegalAccessException, InvocationTargetException {
+        String result = functionRegistry.executeFunction(functionName, null);
         List<String> values = new ArrayList<String>();
         for (String fieldName : fieldNames) {
             values.addAll(getArrayAsListFromStaticField(clazz, fieldName));
