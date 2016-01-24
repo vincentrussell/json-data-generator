@@ -16,37 +16,14 @@ JsonDataGeneratorImpl parser = new JsonDataGeneratorImpl();
 parser.generateTestDataJson(URL classPathResource, OutputStream outputStream);
 ```
 
+or
+
 ```
 JsonDataGeneratorImpl parser = new JsonDataGeneratorImpl();
 parser.generateTestDataJson(File file, OutputStream outputStream);
 ```
 ##Repeats
-
-You can repeat sections of json to make big amounts of json.
-
-##How to use it
-
-```
-JsonDataGeneratorImpl parser = new JsonDataGeneratorImpl();
-parser.generateTestDataJson(String text, OutputStream outputStream);
-```
-
-or
-
-```
-JsonDataGeneratorImpl parser = new JsonDataGeneratorImpl();
-parser.generateTestDataJson(URL classPathResource, OutputStream outputStream);
-```
-
-or
-
-```
-JsonDataGeneratorImpl parser = new JsonDataGeneratorImpl();
-parser.generateTestDataJson(File file, OutputStream outputStream);
-```
-
-
-##Repeat sections of json
+You can repeat sections of json to make repeating json objects.
 
 For instance you can do repeats like this:
 ```
