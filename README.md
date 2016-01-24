@@ -106,7 +106,7 @@ random phone number:
 {{phone()}}
 ```
 
-random gender:
+random gender (male or female):
 ```
 {{gender()}}
 ```
@@ -156,7 +156,7 @@ random lastname:
 {{lastName()}}
 ```
 
-rnadom first name:
+random first name:
 ```
 {{firstName()}}
 ```
@@ -165,3 +165,65 @@ random email:
 ```
 {{email()}}
 ```
+
+random social security number:
+```
+{{ssn()}}
+```
+
+random ipv4:
+```
+{{ipv4()}}
+```
+
+random ipv6:
+```
+{{ipv6()}}
+```
+
+random ipv6 (uppercase):
+```
+{{ipv6("upper")}}
+```
+
+random ipv6 (lowercase):
+```
+{{ipv6("lower")}}
+```
+
+concat (var arg):
+```
+{{concat("A","B","C","D")}}
+```
+
+substring:
+```
+{{substring("word",3)}}
+```
+
+```
+{{substring("long word", 1, 6)}}
+```
+
+random item from list:
+```
+{{random("red","yellow","green")}}
+```
+
+
+##Nesting functions
+
+jason-data-generator supports nesting functions as well.
+
+For example, if you wanted to create results that looked like dollar amounts you could do something like:
+
+```
+{{concat("$",float(0.90310, 5.3421, "%.2f"))}}
+```
+
+or something like this if you wanted a capitalized F or M:
+
+```
+{{toUpperCase(substring(gender(),0,1))}}
+```
+
