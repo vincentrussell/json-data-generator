@@ -5,28 +5,37 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
+import org.junit.rules.TemporaryFolder;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringWriter;
+import java.io.*;
 import java.util.regex.Pattern;
 
 import static junit.framework.TestCase.assertTrue;
+import static org.hamcrest.CoreMatchers.isA;
 import static org.junit.Assert.assertEquals;
 
 
 public class JsonDataGeneratorTest {
 
-    private JsonDataGeneratorImpl parser = new JsonDataGeneratorImpl();
+    private JsonDataGeneratorImpl parser;
     ByteArrayOutputStream outputStream;
+
+    @Rule
+    public ExpectedException expectedException = ExpectedException.none();
+
+    @Rule
+    public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
     @Before
     public void setUp() {
+        parser = new JsonDataGeneratorImpl();
         outputStream = new ByteArrayOutputStream();
     }
 
@@ -65,6 +74,27 @@ public class JsonDataGeneratorTest {
         } catch (JsonSyntaxException e) {
             return json.trim();
         }
+    }
+
+    @Test
+    public void sourceFileNotFound() throws JsonDataGeneratorException {
+        expectedException.expect(JsonDataGeneratorException.class);
+        expectedException.expectCause(isA(FileNotFoundException.class));
+        parser.generateTestDataJson(new File("notfound"),new File("notfound"));
+    }
+
+    @Test
+    public void destinationFileExists() throws JsonDataGeneratorException, IOException {
+        File inputFile = temporaryFolder.newFile();
+        File outputFile = temporaryFolder.newFile();
+        try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("simple.json");
+        FileOutputStream fileOutputStream = new FileOutputStream(inputFile)) {
+            IOUtils.copy(inputStream,fileOutputStream);
+        }
+
+        expectedException.expect(IllegalArgumentException.class);
+        expectedException.expectMessage("outputFile can not exist");
+        parser.generateTestDataJson(inputFile,outputFile);
     }
 
 

@@ -5,9 +5,13 @@ import com.github.vincentrussell.json.datagenerator.JsonDataGenerator;
 import com.github.vincentrussell.json.datagenerator.JsonDataGeneratorException;
 import org.apache.commons.collections4.queue.CircularFifoQueue;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.Validate;
 
 import java.io.*;
 import java.net.URL;
+
+import static org.apache.commons.lang.Validate.isTrue;
+import static org.apache.commons.lang.Validate.notNull;
 
 public class JsonDataGeneratorImpl implements JsonDataGenerator {
 
@@ -37,8 +41,22 @@ public class JsonDataGeneratorImpl implements JsonDataGenerator {
 
     @Override
     public void generateTestDataJson(File file, OutputStream outputStream) throws JsonDataGeneratorException {
+        notNull(file,"file can not be null");
         try (FileInputStream fileInputStream = new FileInputStream(file)) {
             generateTestDataJson(fileInputStream, outputStream);
+        } catch (IOException e) {
+            throw new JsonDataGeneratorException(e);
+        }
+    }
+
+    @Override
+    public void generateTestDataJson(File file, File outputFile) throws JsonDataGeneratorException {
+        notNull(file,"file can not be null");
+        notNull(outputFile,"outputFile can not be null");
+        isTrue(!outputFile.exists(),"outputFile can not exist");
+        try (FileInputStream fileInputStream = new FileInputStream(file);
+        FileOutputStream fileOutputStream = new FileOutputStream(outputFile)) {
+            generateTestDataJson(fileInputStream, fileOutputStream);
         } catch (IOException e) {
             throw new JsonDataGeneratorException(e);
         }

@@ -36,7 +36,7 @@ public class CLIMain {
         try {
             cmd = parser.parse(options, args);
         } catch (ParseException e) {
-            System.out.println(e.getMessage());
+            System.err.println(e.getMessage());
             help.printHelp(CLIMain.class.getName(), options, true);
             throw e;
         }
@@ -56,11 +56,7 @@ public class CLIMain {
         }
 
         JsonDataGenerator jsonDataGenerator = new JsonDataGeneratorImpl();
-        try (FileInputStream fileInputStream = new FileInputStream(sourceFile);
-             FileOutputStream fileOutputStream = new FileOutputStream(destinationFile)) {
-            jsonDataGenerator.generateTestDataJson(fileInputStream, fileOutputStream);
-        }
-
+        jsonDataGenerator.generateTestDataJson(sourceFile, destinationFile);
 
     }
 

@@ -39,6 +39,16 @@ public interface JsonDataGenerator {
     /**
      * Generate json test data
      *
+     * @param file         file of source json text
+     * @param outputFile file to write the test data to.
+     * @throws JsonDataGeneratorException
+     */
+    public void generateTestDataJson(File file, File outputFile) throws JsonDataGeneratorException;
+
+
+    /**
+     * Generate json test data
+     *
      * @param inputStream  inputstream source json text. You are responsible for closing your own InputStream.
      * @param outputStream stream to write the test data to. You are responsible for closing your own OutputStream.
      * @throws JsonDataGeneratorException
