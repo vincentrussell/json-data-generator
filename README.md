@@ -53,6 +53,25 @@ random integer in range:
 {{integer(min,max)}}
 ```
 
+random float in range (with optional format):
+```
+{{float(min,max)}}
+```
+
+```
+{{float(min,max,"%.2f")}}
+```
+
+random double in range:
+```
+{{double(min,max)}}
+```
+
+random long in range:
+```
+{{long(min,max)}}
+```
+
 uuid:
 ```
 {{uuid()}}
@@ -63,7 +82,7 @@ random boolean:
 {{bool()}}
 ```
 
-an incrementing index integer (identity)
+an incrementing index integer (will be a different index based on levels of nesting of json)
 ```
 {{index()}
 ```
