@@ -22,6 +22,13 @@ or
 JsonDataGeneratorImpl parser = new JsonDataGeneratorImpl();
 parser.generateTestDataJson(File file, OutputStream outputStream);
 ```
+
+or you can run the standalone jar on a source json file:
+
+```
+java -jar json-data-generator-1.0-standalone.jar -s source.json -d destination.json
+```
+
 ##Repeats
 You can repeat sections of json to make repeating json objects.
 
