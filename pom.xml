@@ -100,6 +100,11 @@
                 <artifactId>gson</artifactId>
                 <version>2.2.4</version>
             </dependency>
+            <dependency>
+                <groupId>com.github.stefanbirkner</groupId>
+                <artifactId>system-rules</artifactId>
+                <version>1.16.0</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -290,6 +295,11 @@
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.github.stefanbirkner</groupId>
+            <artifactId>system-rules</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>
