@@ -11,15 +11,15 @@ public @interface Function {
     /**
      * Name of this function as it is called from the source json.
      *
-     * @return
+     * @return the name
      */
     String name() default "";
 
     /**
      * This function cannot be overriden to a function with the same name;
      *
-     * @return
+     * @return if overridable or not
      */
-    boolean overridable() default true;
+    boolean overridable() default false;
 
 }
