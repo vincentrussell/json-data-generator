@@ -35,6 +35,13 @@ JsonDataGeneratorImpl parser = new JsonDataGeneratorImpl();
 parser.generateTestDataJson(File file, OutputStream outputStream);
 ```
 
+or
+
+```
+JsonDataGeneratorImpl parser = new JsonDataGeneratorImpl();
+parser.generateTestDataJson(InputStream inputStream, OutputStream outputStream);
+```
+
 or you can run the standalone jar on a source json file:
 
 ```
