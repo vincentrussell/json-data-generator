@@ -2,7 +2,19 @@
 
 json-data-generator helps you build json data that you need for test data purposes.   It has a lot of nice features that you can use to build as much test data as you need.
 
-##How to use it
+## Maven
+
+Add a dependency to `com.github.vincentrussell:json-data-generator`. 
+
+```
+<dependency>
+   <groupId>com.github.vincentrussell</groupId>
+   <artifactId>json-data-generator</artifactId>
+   <version>1.0</version>
+</dependency>
+```
+
+## How to use it
 
 ```
 JsonDataGeneratorImpl parser = new JsonDataGeneratorImpl();
