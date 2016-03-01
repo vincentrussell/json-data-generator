@@ -230,3 +230,41 @@ or something like this if you wanted a capitalized F or M:
 {{toUpperCase(substring(gender(),0,1))}}
 ```
 
+##Creating Custom Functions
+
+You can also create new functions if you create the classes and register the function with the function registry.
+
+-When you create Functions you must annotate the class with the @Function annotation and you must specify a name for the function.
+-Use the @FunctionInvocation annotation to indicate the method that will be executed when the function is called.  The arguments of the function must be strings (or a Vararg String argument) and the method must return a string.
+
+```
+package my.package;
+
+import com.github.vincentrussell.json.datagenerator.functions.Function;
+import com.github.vincentrussell.json.datagenerator.functions.FunctionInvocation;
+
+import java.util.Random;
+
+@Function(name = "new-function")
+public class NewFunction {
+
+    private static final Random RANDOM = new Random();
+
+    @FunctionInvocation
+    public String getRandomInteger(String min, String max) {
+        return getRandomInteger(Integer.parseInt(min), Integer.parseInt(max));
+    }
+
+    private String getRandomInteger(Integer min, Integer max) {
+        int randomNumber = RANDOM.nextInt(max - min) + min;
+        return Integer.toString(randomNumber);
+    }
+}
+
+```
+
+then you can put the jar that you have created on the classpath with the the standalone jar (-f registers one or more classes with the Function Registry):
+
+```
+java -cp json-data-generator-1.0-standalone.jar:yourfunctions.jar com.github.vincentrussell.json.datagenerator.CLIMain -s source.json -d destination.json -f my.package.NewFunction
+```
