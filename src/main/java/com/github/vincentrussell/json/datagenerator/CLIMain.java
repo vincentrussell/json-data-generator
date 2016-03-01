@@ -1,5 +1,6 @@
 package com.github.vincentrussell.json.datagenerator;
 
+import com.github.vincentrussell.json.datagenerator.functions.FunctionRegistry;
 import com.github.vincentrussell.json.datagenerator.impl.JsonDataGeneratorImpl;
 import org.apache.commons.cli.*;
 
@@ -21,16 +22,22 @@ public class CLIMain {
         o.setRequired(true);
         options.addOption(o);
 
+        o = new Option("f", "functionClasses", true, "additional function classes that are on the classpath " +
+                "and should be loaded");
+        o.setRequired(false);
+        o.setArgs(Option.UNLIMITED_VALUES);
+        options.addOption(o);
+
         return options;
     }
 
-    public static void main(String[] args) throws IOException, JsonDataGeneratorException, ParseException {
+    public static void main(String[] args) throws IOException, JsonDataGeneratorException, ParseException, ClassNotFoundException {
         Options options = buildOptions();
 
 
         CommandLineParser parser = new DefaultParser();
         HelpFormatter help = new HelpFormatter();
-        help.setOptionComparator(new OptionComparator(Arrays.asList("s", "d")));
+        help.setOptionComparator(new OptionComparator(Arrays.asList("s", "d", "f")));
 
         CommandLine cmd = null;
         try {
@@ -43,6 +50,7 @@ public class CLIMain {
 
         String source = cmd.getOptionValue("s");
         String destination = cmd.getOptionValue("d");
+        String[] functionClasses = cmd.getOptionValues("f");
 
         File sourceFile = new File(source);
         File destinationFile = new File(destination);
@@ -53,6 +61,12 @@ public class CLIMain {
 
         if (destinationFile.exists()) {
             throw new IOException(destination + " already exists");
+        }
+
+        if (functionClasses!=null) {
+            for (String functionClass : functionClasses) {
+                FunctionRegistry.getInstance().registerClass(Class.forName(functionClass));
+            }
         }
 
         JsonDataGenerator jsonDataGenerator = new JsonDataGeneratorImpl();

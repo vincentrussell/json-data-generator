@@ -1,6 +1,10 @@
 package com.github.vincentrussell.json.datagenerator;
 
+import com.github.vincentrussell.json.datagenerator.functions.Function;
+import com.github.vincentrussell.json.datagenerator.functions.FunctionInvocation;
+import junit.framework.Assert;
 import org.apache.commons.cli.ParseException;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Rule;
@@ -40,7 +44,7 @@ public class CLIMainTest {
 
 
     @Test
-    public void missingArgumentsThrowsExceptionAndPrintsHelp() throws IOException, JsonDataGeneratorException, ParseException {
+    public void missingArgumentsThrowsExceptionAndPrintsHelp() throws IOException, JsonDataGeneratorException, ParseException, ClassNotFoundException {
         exception.expect(ParseException.class);
         exception.expectMessage("Missing required options: s, d");
         try {
@@ -51,18 +55,18 @@ public class CLIMainTest {
     }
 
     @Test(expected = FileNotFoundException.class)
-    public void sourceFileNotFound() throws IOException, JsonDataGeneratorException, ParseException {
+    public void sourceFileNotFound() throws IOException, JsonDataGeneratorException, ParseException, ClassNotFoundException {
         sourceFile.delete();
         CLIMain.main(new String[]{"-s", sourceFile.getAbsolutePath(), "-d", destinationFile.getAbsolutePath()});
     }
 
     @Test(expected = IOException.class)
-    public void destinationExists() throws IOException, JsonDataGeneratorException, ParseException {
+    public void destinationExists() throws IOException, JsonDataGeneratorException, ParseException, ClassNotFoundException {
         CLIMain.main(new String[]{"-s", sourceFile.getAbsolutePath(), "-d", destinationFile.getAbsolutePath()});
     }
 
     @Test
-    public void successfulRun() throws IOException, JsonDataGeneratorException, ParseException {
+    public void successfulRun() throws IOException, JsonDataGeneratorException, ParseException, ClassNotFoundException {
         destinationFile.delete();
         try (FileOutputStream fileOutputStream = new FileOutputStream(sourceFile)) {
             IOUtils.write("{\n" +
@@ -80,6 +84,47 @@ public class CLIMainTest {
             }
 
         }
+    }
+
+    @Test
+    public void registerAdditionalFunction() throws IOException, JsonDataGeneratorException, ParseException, ClassNotFoundException {
+        destinationFile.delete();
+        try (FileOutputStream fileOutputStream = new FileOutputStream(sourceFile)) {
+            IOUtils.write("{\n" +
+                    "    \"test-function\": \"{{test-function()}},\"\n" +
+                    "    \"test-function2\": \"{{test-function2()}}\"\n" +
+                    "}", fileOutputStream);
+            CLIMain.main(new String[]{"-s", sourceFile.getAbsolutePath(), "-d", destinationFile.getAbsolutePath(),
+                    "-f", TestFunctionClazzWithNoArgsMethod.class.getName(), TestFunctionClazzWithNoArgsMethod2.class.getName()});
+            assertTrue(destinationFile.exists());
+            String result = FileUtils.readFileToString(destinationFile);
+            assertEquals("{\n" +
+                    "    \"test-function\": \"ran successfully,\"\n" +
+                    "    \"test-function2\": \"ran successfully 2\"\n" +
+                    "}",result);
+            }
+    }
+
+    @Function(name = "test-function")
+    public static class TestFunctionClazzWithNoArgsMethod {
+
+        @FunctionInvocation
+        public String invocation() {
+            return "ran successfully";
+        }
+
+
+    }
+
+    @Function(name = "test-function2")
+    public static class TestFunctionClazzWithNoArgsMethod2 {
+
+        @FunctionInvocation
+        public String invocation() {
+            return "ran successfully 2";
+        }
+
+
     }
 
 }
