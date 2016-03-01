@@ -48,7 +48,19 @@ or you can run the standalone jar on a source json file:
 java -jar json-data-generator-1.0-standalone.jar -s source.json -d destination.json
 ```
 
-##Repeats
+### Example
+
+```
+{
+    "id": "{{uuid()}}",
+    "name": "A green door",
+    "age": {{integer(1,50)}},
+    "price": 12.50,
+    "tags": ["home", "green"]
+}
+```
+
+###Repeats
 You can repeat sections of json to make repeating json objects.
 
 For instance you can do repeats like this:
