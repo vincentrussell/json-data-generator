@@ -37,13 +37,13 @@ For instance you can do repeats like this:
 [
     '{{repeat(2)}}',
     {
-        "id": 1,
+        "id": "{{uuid()}}",
         "name": "Test",
         "attributes": [
             '{{repeat(2)}}',
             {
-                "shirt": "red",
-                "pants": "blue"
+                "shirt": "{{random("red","yellow","green")}}",
+                "pants": "{{random("blue","black","orange")}}"
             }
         ]
 
