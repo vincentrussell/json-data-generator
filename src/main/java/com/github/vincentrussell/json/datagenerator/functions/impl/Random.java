@@ -8,7 +8,7 @@ public class Random {
 
     @FunctionInvocation
     public String random(String... strings) {
-        int randomNum = 0 + (int) (Math.random() * strings.length);
+        int randomNum = (int) (Math.random() * strings.length);
         return strings[randomNum];
     }
 
