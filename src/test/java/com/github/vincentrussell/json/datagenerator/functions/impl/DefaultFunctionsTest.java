@@ -55,6 +55,13 @@ public class DefaultFunctionsTest {
     }
 
     @Test
+    public void randomFloatNegativeNumbers() throws InvocationTargetException, IllegalAccessException {
+        String[] args = new String[]{"-90.000001", "90"};
+        Float flo = Float.valueOf(functionRegistry.executeFunction("float", args));
+        assertTrue(flo >= -90.000001 && flo <= 90);
+    }
+
+    @Test
     public void randomFloating() throws InvocationTargetException, IllegalAccessException {
         String[] args = new String[]{"0.90310", "1.3421"};
         Float flo = Float.valueOf(functionRegistry.executeFunction("floating", args));
@@ -85,6 +92,13 @@ public class DefaultFunctionsTest {
     @Test
     public void uuid() throws InvocationTargetException, IllegalAccessException {
         String result = functionRegistry.executeFunction("uuid", null);
+        Pattern pattern = Pattern.compile("[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}");
+        assertTrue(pattern.matcher(result).matches());
+    }
+
+    @Test
+    public void guid() throws InvocationTargetException, IllegalAccessException {
+        String result = functionRegistry.executeFunction("guid", null);
         Pattern pattern = Pattern.compile("[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}");
         assertTrue(pattern.matcher(result).matches());
     }
