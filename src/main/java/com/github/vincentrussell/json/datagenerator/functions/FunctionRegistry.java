@@ -61,17 +61,19 @@ public class FunctionRegistry {
         Function annotation = (Function) clazz.getAnnotation(Function.class);
         checkClassValidity(clazz, annotation);
         try {
-            Object instance = clazz.newInstance();
-            for (final Method method : clazz.getDeclaredMethods()) {
-                if (method.isAnnotationPresent(FunctionInvocation.class)) {
-                    checkMethodValidity(method);
-                    MethodAndObjectHolder methodAndObjectHolder = new MethodAndObjectHolder(method, instance);
-                    functionInvocationHolderMethodConcurrentHashMap.put(new FunctionInvocationHolder(annotation.name(), method.getParameterTypes()), methodAndObjectHolder);
-                    methodInstanceMap.put(method, instance);
+            for (String annotationName : annotation.name()) {
+                Object instance = clazz.newInstance();
+                for (final Method method : clazz.getDeclaredMethods()) {
+                    if (method.isAnnotationPresent(FunctionInvocation.class)) {
+                        checkMethodValidity(method);
+                        MethodAndObjectHolder methodAndObjectHolder = new MethodAndObjectHolder(method, instance);
+                        functionInvocationHolderMethodConcurrentHashMap.put(new FunctionInvocationHolder(annotationName, method.getParameterTypes()), methodAndObjectHolder);
+                        methodInstanceMap.put(method, instance);
+                    }
                 }
-            }
-            if (!annotation.overridable()) {
-                nonOverridableFunctionNames.add(annotation.name());
+                if (!annotation.overridable()) {
+                    nonOverridableFunctionNames.add(annotationName);
+                }
             }
         } catch (InstantiationException e) {
             throw new IllegalArgumentException(e);
@@ -108,12 +110,14 @@ public class FunctionRegistry {
             throw new IllegalArgumentException(clazz.getName() + " must be annotated with " + Function.class.getName());
         }
 
-        if (isEmpty(annotation.name())) {
-            throw new IllegalArgumentException(Function.class.getName() + "annotation on class" + clazz.getName() + " annotation must have name attribute populated");
-        }
+        for (String annotationName : annotation.name()){
+            if (isEmpty(annotationName)) {
+                throw new IllegalArgumentException(Function.class.getName() + "annotation on class" + clazz.getName() + " annotation must have name attribute populated");
+            }
 
-        if (nonOverridableFunctionNames.contains(annotation.name())) {
-            throw new IllegalArgumentException(clazz.getName() + " can not override existing function with the same annotation: " + annotation.name() + " because it does not allow overriding.");
+            if (nonOverridableFunctionNames.contains(annotationName)) {
+                throw new IllegalArgumentException(clazz.getName() + " can not override existing function with the same annotation: " + annotationName + " because it does not allow overriding.");
+            }
         }
 
         int zeroArgConstructorCount = Iterables.size(Iterables.filter(Arrays.asList(clazz.getConstructors()), new Predicate<Constructor>() {

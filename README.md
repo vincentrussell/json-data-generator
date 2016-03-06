@@ -270,7 +270,7 @@ or something like this if you wanted a capitalized F or M:
 
 You can also create new functions if you create the classes and register the function with the function registry.
 
--When you create Functions you must annotate the class with the @Function annotation and you must specify a name for the function.
+-When you create Functions you must annotate the class with the @Function annotation and you must specify one or more names for the function.
 -Use the @FunctionInvocation annotation to indicate the method that will be executed when the function is called.  The arguments of the function must be strings (or a Vararg String argument) and the method must return a string.
 
 ```

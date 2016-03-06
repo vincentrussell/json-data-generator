@@ -5,7 +5,7 @@ import com.github.vincentrussell.json.datagenerator.functions.FunctionInvocation
 
 import java.util.Random;
 
-@Function(name = "float")
+@Function(name = {"float", "floating"})
 public class RandomFloat {
 
     private static final Random RANDOM = new Random();

@@ -9,11 +9,11 @@ import java.lang.annotation.*;
 public @interface Function {
 
     /**
-     * Name of this function as it is called from the source json.
+     * Name or names for this function as it is called from the source json.
      *
      * @return the name
      */
-    String name() default "";
+    String[] name() default "";
 
     /**
      * This function cannot be overriden to a function with the same name;

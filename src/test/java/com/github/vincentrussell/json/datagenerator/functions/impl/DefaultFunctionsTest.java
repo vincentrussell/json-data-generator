@@ -55,6 +55,13 @@ public class DefaultFunctionsTest {
     }
 
     @Test
+    public void randomFloating() throws InvocationTargetException, IllegalAccessException {
+        String[] args = new String[]{"0.90310", "1.3421"};
+        Float flo = Float.valueOf(functionRegistry.executeFunction("floating", args));
+        assertTrue(flo >= 0.90310 && flo <= 1.3421);
+    }
+
+    @Test
     public void randomFloatWithFormat() throws InvocationTargetException, IllegalAccessException {
         String[] args = new String[]{"0.90310", "1.3421", "%.2f"};
         String result = functionRegistry.executeFunction("float", args);
@@ -266,6 +273,11 @@ public class DefaultFunctionsTest {
     @Test
     public void lastName() throws InvocationTargetException, IllegalAccessException, NoSuchFieldException {
         assertFunctionRandomFromField("lastName", LastName.class, "LAST_NAMES");
+    }
+
+    @Test
+    public void surname() throws InvocationTargetException, IllegalAccessException, NoSuchFieldException {
+        assertFunctionRandomFromField("surname", LastName.class, "LAST_NAMES");
     }
 
     @Test

@@ -59,6 +59,13 @@ public class FunctionRegistryTest {
     }
 
     @Test
+    public void multipleRegisterFunctionWithMultipleNames() throws InvocationTargetException, IllegalAccessException {
+        functionRegistry.registerClass(MultipleNamesFunction.class);
+        assertEquals("some value", functionRegistry.executeFunction("function8", null));
+        assertEquals("some value", functionRegistry.executeFunction("function8-copy", null));
+    }
+
+    @Test
     public void registerFunctionAndGetMethod() throws InvocationTargetException, IllegalAccessException {
         functionRegistry.registerClass(TestFunctionClazzWithFunctionInvocation.class);
         String[] args = new String[]{"arg1", "arg2"};
@@ -272,6 +279,17 @@ public class FunctionRegistryTest {
         @FunctionInvocation
         public String invocation(String arg1) {
             return "no args";
+        }
+
+
+    }
+
+    @Function(name = {"function8", "function8-copy"})
+    public static class MultipleNamesFunction {
+
+        @FunctionInvocation
+        public String invocation() {
+            return "some value";
         }
 
 
