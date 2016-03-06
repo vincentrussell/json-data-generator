@@ -82,6 +82,12 @@ For instance you can do repeats like this:
 ]
 ```
 
+You can also get a random repeat within a range like this: 
+
+```
+'{{repeat(2,9)}}',
+```
+
 ##Available functions
 
 You can do a lot of cool functions in your puesdo json that that help you randomize your test data.

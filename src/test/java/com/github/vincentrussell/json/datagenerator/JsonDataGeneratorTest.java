@@ -7,10 +7,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 
@@ -123,6 +120,44 @@ public class JsonDataGeneratorTest {
     @Test
     public void indexFunctionTest() throws IOException, JsonDataGeneratorException {
         classpathJsonTests("indexFunctionSimple.json.results", "indexFunctionSimple.json");
+    }
+
+    @Test
+    public void repeatFunctionRangeJsonArrayNoQuotes() throws IOException, JsonDataGeneratorException {
+        parser.generateTestDataJson(this.getClass().getClassLoader().getResource("repeatFunctionRangeJsonArrayNoQuotes.json"), outputStream);
+        String results = new String(outputStream.toByteArray());
+        JsonObject obj = (JsonObject) new com.google.gson.JsonParser().parse(results);
+        int numberSize = obj.getAsJsonArray("numbers").size();
+        Assert.assertTrue(numberSize >= 3 && numberSize <= 10);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void repeatFunctionInvalidRange() throws IOException, JsonDataGeneratorException {
+        parser.generateTestDataJson("{\n" +
+                "    \"id\": \"dfasf235345345\",\n" +
+                "    \"name\": \"A green door\",\n" +
+                "    \"age\": 23,\n" +
+                "    \"price\": 12.50,\n" +
+                "    \"numbers\": ['{{repeat(10,3)}}',\n" +
+                "             {{integer(1,100)}}]\n" +
+                "}", outputStream);
+    }
+
+
+    @Test
+    public void repeatFunctionRangeEqual() throws IOException, JsonDataGeneratorException {
+        parser.generateTestDataJson("{\n" +
+                "    \"id\": \"dfasf235345345\",\n" +
+                "    \"name\": \"A green door\",\n" +
+                "    \"age\": 23,\n" +
+                "    \"price\": 12.50,\n" +
+                "    \"numbers\": ['{{repeat(10,10)}}',\n" +
+                "             {{integer(1,100)}}]\n" +
+                "}", outputStream);
+        String results = new String(outputStream.toByteArray());
+        JsonObject obj = (JsonObject) new com.google.gson.JsonParser().parse(results);
+        int numberSize = obj.getAsJsonArray("numbers").size();
+        assertEquals(10,numberSize);
     }
 
     @Test

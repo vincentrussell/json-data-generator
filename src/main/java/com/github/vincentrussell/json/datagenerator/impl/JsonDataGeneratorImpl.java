@@ -9,6 +9,9 @@ import org.apache.commons.lang.Validate;
 
 import java.io.*;
 import java.net.URL;
+import java.util.Random;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static org.apache.commons.lang.Validate.isTrue;
 import static org.apache.commons.lang.Validate.notNull;
@@ -20,6 +23,9 @@ public class JsonDataGeneratorImpl implements JsonDataGenerator {
     private static final String REPEAT_TEXT = REPEAT;
     private static final byte[] CLOSE_BRACKET_BYTE_ARRAY = "]".getBytes();
     private static final byte[] COMMA_NEWLINE_BYTE_ARRAY = ",\n".getBytes();
+    private static Pattern REPEAT_PARAMETERS_PATTERN = Pattern.compile("^(\\d+),*\\s*(\\d+)*$");
+
+    private static final Random RANDOM = new Random();
 
     @Override
     public void generateTestDataJson(String text, OutputStream outputStream) throws JsonDataGeneratorException {
@@ -180,7 +186,7 @@ public class JsonDataGeneratorImpl implements JsonDataGenerator {
                             if (i != ',') {
                                 throw new IllegalStateException();
                             }
-                            repeatTimes = Integer.parseInt(numRepeats);
+                            repeatTimes = parseRepeats(numRepeats);
                             tempBuffer.setLength(tempBuffer.getLength() - numRepeats.length() - lastCharQueue.size() - 5);
                             try (InputStream tempBufferNewInputStream = tempBuffer.getNewInputStream()) {
                                 IOUtils.copy(tempBufferNewInputStream, outputStream);
@@ -205,6 +211,27 @@ public class JsonDataGeneratorImpl implements JsonDataGenerator {
         } finally {
             br.close();
         }
+    }
+
+    private int parseRepeats(String repeatArguments) {
+        final Matcher matcher = REPEAT_PARAMETERS_PATTERN.matcher(repeatArguments);
+        if (matcher.find()) {
+            Integer integer = Integer.parseInt(matcher.group(1));
+            Integer integer2 = Integer.parseInt(matcher.group(1));
+            if (matcher.group(2)!=null) {
+                integer2 = Integer.parseInt(matcher.group(2));
+            } else if (integer >= integer2 && !integer.equals(integer2)) {
+                throw new IllegalArgumentException("the second number must be greater than the first number" + repeatArguments);
+            } else {
+                return integer;
+            }
+            if (integer.equals(integer2)) {
+                return integer;
+            } else {
+                return new Random().nextInt(integer2 - integer) + integer;
+            }
+        }
+        throw new IllegalArgumentException("invalid arguments for repeat function: " + repeatArguments);
     }
 
     private String readAsString(CircularFifoQueue<Character> characters) {
