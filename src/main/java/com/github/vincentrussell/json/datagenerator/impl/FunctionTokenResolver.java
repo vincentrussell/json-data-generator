@@ -19,8 +19,8 @@ public class FunctionTokenResolver implements TokenResolver {
         try {
             FunctionParser functionParser = new FunctionParser(new ByteArrayInputStream(s.toString().getBytes()));
             return functionParser.Parse();
-        } catch (ParseException e) {
-            throw new IllegalArgumentException(e);
+        } catch (Throwable e) {
+            throw new IllegalArgumentException(new StringBuilder("cannot parse function: ").append(s).toString(),e);
         }
 
     }
