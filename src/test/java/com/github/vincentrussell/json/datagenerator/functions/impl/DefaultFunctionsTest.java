@@ -83,6 +83,13 @@ public class DefaultFunctionsTest {
     }
 
     @Test
+    public void objectId() throws InvocationTargetException, IllegalAccessException {
+        String result = functionRegistry.executeFunction("objectId", null);
+        Pattern pattern = Pattern.compile("[0-9a-f]{24}");
+        assertTrue(pattern.matcher(result).matches());
+    }
+
+    @Test
     public void bool() throws InvocationTargetException, IllegalAccessException {
         String result = functionRegistry.executeFunction("bool", null);
         Pattern pattern = Pattern.compile("true|false");

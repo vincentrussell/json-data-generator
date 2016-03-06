@@ -54,6 +54,7 @@ public class FunctionRegistry {
         registerClass(Ssn.class);
         registerClass(Ipv4.class);
         registerClass(Ipv6.class);
+        registerClass(ObjectId.class);
     }
 
     public void registerClass(Class clazz) {

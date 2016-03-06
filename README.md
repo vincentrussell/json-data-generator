@@ -115,6 +115,11 @@ uuid:
 {{uuid()}}
 ```
 
+objectId (12 byte hex string):
+```
+{{objectId()}}
+```
+
 random boolean:
 ```
 {{bool()}}
