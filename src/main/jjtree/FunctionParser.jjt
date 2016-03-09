@@ -56,12 +56,18 @@ TOKEN : {
           )*
           "\""
       >
-    | < IDENTIFIER: <LETTER> (<LETTER>|<DIGIT>)* >
-	| < TERM: <LETTER> (<LETTER>|<DIGIT>)* >
-	| < NUMBER: <INTEGER> (["L"])? | <FLOAT> >
-	| < INTEGER: ["0"-"9"] (["0"-"9"])* >
-	| < FLOAT: (["0"-"9"])+ "." (["0"-"9"])* >
+	| < NUMBER: <INTEGER> (["L"])? | <FLOATING_POINT_LITERAL>  >
+	| < FLOATING_POINT_LITERAL:
+             ("-")? (["0"-"9"])+ "." (["0"-"9"])* (<EXPONENT>)? (["f","F","d","D"])?
+            | ("-")? "." (["0"-"9"])+ (<EXPONENT>)? (["f","F","d","D"])?
+            | ("-")? (["0"-"9"])+ <EXPONENT> (["f","F","d","D"])?
+            | ("-")? (["0"-"9"])+ (<EXPONENT>)? ["f","F","d","D"]
+        >
+    | < #EXPONENT: ["e","E"] (["+","-"])? (["0"-"9"])+ >
+	| < INTEGER: "0" | ("-")? ["1" - "9"] (["0" - "9"])*>
 	| < DIGIT: ["0"-"9"] >
+	| < IDENTIFIER: <LETTER> (<LETTER>|<DIGIT>)* >
+    | < TERM: <LETTER> (<LETTER>|<DIGIT>)* >
 	| < LETTER: ["_","-","a"-"z","A"-"Z"] >
 }
 
@@ -78,12 +84,6 @@ String FunctionName() : {Token t=null;}
     t=<IDENTIFIER> {
         return t.image;
     }
-}
-
-/** An Integer. */
-void Integer() : {}
-{
-  <INTEGER>
 }
 
 String StringLiteral() : {Token t=null;}

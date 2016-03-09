@@ -7,6 +7,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
+import java.util.Random;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -17,6 +18,8 @@ public class FunctionJJTreeTest {
     public static void beforeClass() {
         FunctionRegistry.getInstance().registerClass(TestConcat.class);
         FunctionRegistry.getInstance().registerClass(TestGender.class);
+        FunctionRegistry.getInstance().registerClass(TestRandomFloat.class);
+        FunctionRegistry.getInstance().registerClass(TestRandomInteger.class);
     }
 
 
@@ -69,6 +72,30 @@ public class FunctionJJTreeTest {
         assertTrue("a male is cool".equals(result) || "a female is cool".equals(result));
     }
 
+    @Test
+    public void canParseFloatingPointNumbers() throws ParseException {
+        FunctionParser functionParser = new FunctionParser(new ByteArrayInputStream("test-floating(1.232,2.543)".getBytes()));
+        String result = functionParser.Parse();
+        Float flo = Float.valueOf(result);
+        assertTrue(flo >= 1.232 && flo <= 2.543);
+    }
+
+    @Test
+    public void canParseNegativeFloatingPointNumbers() throws ParseException {
+        FunctionParser functionParser = new FunctionParser(new ByteArrayInputStream("test-floating(-3.543,-2.543)".getBytes()));
+        String result = functionParser.Parse();
+        Float flo = Float.valueOf(result);
+        assertTrue(flo >= -3.543 && flo <= -2.543);
+    }
+
+    @Test
+    public void canParseNegativeIntegers() throws ParseException {
+        FunctionParser functionParser = new FunctionParser(new ByteArrayInputStream("test-integer(-20,-10)".getBytes()));
+        String result = functionParser.Parse();
+        Integer integer = Integer.valueOf(result);
+        assertTrue(integer >= -20 && integer <= -10);
+    }
+
     @Function(name = "test-concat")
     public static class TestConcat {
         @FunctionInvocation
@@ -87,6 +114,52 @@ public class FunctionJJTreeTest {
         @FunctionInvocation
         public String gender() {
             return (Math.random() < 0.5) ? "male" : "female";
+        }
+    }
+
+    @Function(name = {"test-float", "test-floating"})
+    public static class TestRandomFloat {
+
+        private static final Random RANDOM = new Random();
+
+        private String getRandomFloat(Float min, Float max, String format) {
+            float randomNumber = min + (max - min) * RANDOM.nextFloat();
+
+            if (format != null) {
+                return String.format(format, randomNumber);
+            }
+            return Float.toString(randomNumber);
+        }
+
+        private String getRandomFloat(Float min, Float max) {
+            return getRandomFloat(min, max, null);
+        }
+
+        @FunctionInvocation
+        public String getRandomFloat(String min, String max) {
+            return getRandomFloat(min, max, null);
+        }
+
+        @FunctionInvocation
+        public String getRandomFloat(String min, String max, String format) {
+            return getRandomFloat(Float.parseFloat(min), Float.parseFloat(max), format);
+        }
+
+    }
+
+    @Function(name = "test-integer")
+    public static class TestRandomInteger {
+
+        private static final Random RANDOM = new Random();
+
+        @FunctionInvocation
+        public String getRandomInteger(String min, String max) {
+            return getRandomInteger(Integer.parseInt(min), Integer.parseInt(max));
+        }
+
+        private String getRandomInteger(Integer min, Integer max) {
+            int randomNumber = RANDOM.nextInt(max - min) + min;
+            return Integer.toString(randomNumber);
         }
     }
 
