@@ -81,7 +81,7 @@ public class JsonDataGeneratorImpl implements JsonDataGenerator {
     }
 
     protected void handleRepeats(InputStream inputStream, OutputStream outputStream) throws IOException {
-        final BufferedReader br = new BufferedReader(new InputStreamReader(inputStream, UTF_8));
+        final BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, UTF_8));
         final CircularFifoQueue<Character> lastCharQueue = new CircularFifoQueue<>(REPEAT_TEXT.length());
         boolean isRepeating = false;
         int bracketCount = 0;
@@ -90,7 +90,7 @@ public class JsonDataGeneratorImpl implements JsonDataGenerator {
              ByteArrayBackupToFileOutputStream repeatBuffer = new ByteArrayBackupToFileOutputStream()) {
             int i;
             do {
-                i = br.read();
+                i = bufferedReader.read();
                 if (i != -1) {
                     if (isRepeating) {
                         repeatBuffer.write((char) i);
@@ -156,33 +156,33 @@ public class JsonDataGeneratorImpl implements JsonDataGenerator {
                     }
                     if ((lastCharQueue.peek() != null && lastCharQueue.peek().equals('\'')) && REPEAT.equals(readAsString(lastCharQueue))) {
                         tempBuffer.mark();
-                        br.mark(1000);
+                        bufferedReader.mark(1000);
                         try {
-                            i = br.read();
+                            i = bufferedReader.read();
                             tempBuffer.write((char) i);
                             String numRepeats = "";
                             while (i != ')') {
                                 numRepeats = numRepeats + Character.toString((char) i);
-                                i = br.read();
+                                i = bufferedReader.read();
                                 if (i != ')') {
                                     tempBuffer.write((char) i);
                                 }
                             }
                             //)}}'
                             tempBuffer.write((char) i);
-                            tempBuffer.write((char) (i = br.read()));
+                            tempBuffer.write((char) (i = bufferedReader.read()));
                             if (i != '}') {
                                 throw new IllegalStateException();
                             }
-                            tempBuffer.write((char) (i = br.read()));
+                            tempBuffer.write((char) (i = bufferedReader.read()));
                             if (i != '}') {
                                 throw new IllegalStateException();
                             }
-                            tempBuffer.write((char) (i = br.read()));
+                            tempBuffer.write((char) (i = bufferedReader.read()));
                             if (i != '\'') {
                                 throw new IllegalStateException();
                             }
-                            tempBuffer.write((char) (i = br.read()));
+                            tempBuffer.write((char) (i = bufferedReader.read()));
                             if (i != ',') {
                                 throw new IllegalStateException();
                             }
@@ -198,18 +198,18 @@ public class JsonDataGeneratorImpl implements JsonDataGenerator {
                             lastCharQueue.clear();
                         } catch (IllegalStateException e) {
                             setQueueCharacters(lastCharQueue, REPEAT);
-                            br.reset();
+                            bufferedReader.reset();
                             tempBuffer.reset();
                         }
                     }
                 }
             } while (i != -1);
-            br.close();
+            bufferedReader.close();
             try (InputStream inputStream1 = tempBuffer.getNewInputStream()) {
                 IOUtils.copy(inputStream1, outputStream);
             }
         } finally {
-            br.close();
+            bufferedReader.close();
         }
     }
 
