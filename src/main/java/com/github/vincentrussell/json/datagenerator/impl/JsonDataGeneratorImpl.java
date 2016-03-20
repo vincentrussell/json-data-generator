@@ -86,6 +86,7 @@ public class JsonDataGeneratorImpl implements JsonDataGenerator {
         boolean isRepeating = false;
         int bracketCount = 0;
         int repeatTimes = 0;
+        int firstNonWhitespaceCharacter = -1;
         try (ByteArrayBackupToFileOutputStream tempBuffer = new ByteArrayBackupToFileOutputStream();
              ByteArrayBackupToFileOutputStream repeatBuffer = new ByteArrayBackupToFileOutputStream()) {
             int i;
@@ -94,11 +95,24 @@ public class JsonDataGeneratorImpl implements JsonDataGenerator {
                 if (i != -1) {
                     if (isRepeating) {
                         repeatBuffer.write((char) i);
+
+                        if (!Character.isWhitespace(i) && firstNonWhitespaceCharacter==-1) {
+                            firstNonWhitespaceCharacter = i;
+                        }
+
                         if ('{' == i) {
                             bracketCount++;
                         } else if ('}' == i || (']' == i) && bracketCount == 0) {
                             bracketCount--;
                             if (bracketCount == 0) {
+                                bufferedReader.mark(1);
+                                i = bufferedReader.read();
+                                if (i==firstNonWhitespaceCharacter) {
+                                    repeatBuffer.write((char) i);
+                                } else {
+                                    bufferedReader.reset();
+                                }
+
                                 try (ByteArrayBackupToFileOutputStream newCopyOutputStream = new ByteArrayBackupToFileOutputStream()) {
                                     try (InputStream repeatBufferNewInputStream = repeatBuffer.getNewInputStream()) {
                                         IOUtils.copy(repeatBufferNewInputStream, newCopyOutputStream);

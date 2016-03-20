@@ -1,10 +1,7 @@
 package com.github.vincentrussell.json.datagenerator;
 
 import com.github.vincentrussell.json.datagenerator.impl.JsonDataGeneratorImpl;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonSyntaxException;
+import com.google.gson.*;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.junit.*;
@@ -158,6 +155,53 @@ public class JsonDataGeneratorTest {
         JsonObject obj = (JsonObject) new com.google.gson.JsonParser().parse(results);
         int numberSize = obj.getAsJsonArray("numbers").size();
         assertEquals(10,numberSize);
+    }
+
+    @Test
+    public void floatingRepeatsWithQuotes() throws IOException, JsonDataGeneratorException {
+        parser.generateTestDataJson("[\n" +
+                "  '{{repeat(1, 1)}}',\n" +
+                "  {\n" +
+                "    _id: '{{objectId()}}',\n" +
+                "    index: '{{index()}}',\n" +
+                "    guid: '{{guid()}}',\n" +
+                "    isActive: '{{bool()}}',\n" +
+                "    balance: '{{floating(1000, 4000)}}',\n" +
+                "    picture: 'http://placehold.it/32x32',\n" +
+                "    age: '{{integer(20, 40)}}',\n" +
+                "    eyeColor: '{{random(\"blue\", \"brown\", \"green\")}}',\n" +
+                "    name: '{{firstName()}} {{surname()}}',\n" +
+                "    gender: '{{gender()}}',\n" +
+                "    company: '{{company().toUpperCase()}}',\n" +
+                "    email: '{{email()}}',\n" +
+                "    phone: '+1 {{phone()}}',\n" +
+                "    address: '{{integer(100, 999)}} {{street()}}, {{city()}}, {{state()}}, {{integer(100, 10000)}}',\n" +
+                "    about: '{{lorem(1, \"paragraphs\")}}',\n" +
+                "    registered: '{{date()}}',\n" +
+                "    latitude: '{{floating(-90.000001, 90)}}',\n" +
+                "    longitude: '{{floating(-180.000001, 180)}}',\n" +
+                "    tags: [\n" +
+                "      '{{repeat(7)}}',\n" +
+                "      '{{lorem(1, \"words\")}}'\n" +
+                "    ],\n" +
+                "    friends: [\n" +
+                "      '{{repeat(3)}}',\n" +
+                "      {\n" +
+                "        id: '{{index()}}',\n" +
+                "        name: '{{firstName()}} {{surname()}}'\n" +
+                "      }\n" +
+                "    ]\n" +
+                "  }\n" +
+                "]", outputStream);
+        String results = new String(outputStream.toByteArray());
+        JsonObject obj = (JsonObject) ((JsonArray) new com.google.gson.JsonParser().parse(results)).get(0);
+        int numberSize = obj.getAsJsonArray("tags").size();
+        assertEquals(7,numberSize);
+
+        for (JsonElement tagElement : obj.getAsJsonArray("tags")) {
+            JsonPrimitive primitive = tagElement.getAsJsonPrimitive();
+            assertTrue(primitive.isString());
+        }
     }
 
     @Test
