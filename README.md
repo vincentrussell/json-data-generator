@@ -10,9 +10,13 @@ Add a dependency to `com.github.vincentrussell:json-data-generator`.
 <dependency>
    <groupId>com.github.vincentrussell</groupId>
    <artifactId>json-data-generator</artifactId>
-   <version>1.0</version>
+   <version>1.1</version>
 </dependency>
 ```
+
+## Requirements
+- JDK 1.7 or higher
+- Apache Maven 3.1.0 or higher
 
 ## How to use it
 
@@ -310,3 +314,17 @@ then you can put the jar that you have created on the classpath with the the sta
 ```
 java -cp json-data-generator-1.0-standalone.jar:yourfunctions.jar com.github.vincentrussell.json.datagenerator.CLIMain -s source.json -d destination.json -f my.package.NewFunction
 ```
+# Change Log
+
+## [1.1](https://github.com/vincentrussell/json-data-generator/tree/json-data-generator-1.1) (2016-03-20)
+
+**Improvements:**
+
+- Repeats can be randomized between a range of two integers
+- Multiple names can be used in the @Function annotation provide multiple functions in the json mapping to the same name
+- Created objectId (12 byte hex string) function
+
+**Bugs:**
+
+- Floating point numbers can be parsed and used in fuctions
+- Repeats can be used with functions surrounded in strings, like '{{lorem(1, "words")}}'
