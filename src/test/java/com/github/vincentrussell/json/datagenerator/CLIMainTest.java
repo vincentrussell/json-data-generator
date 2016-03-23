@@ -2,6 +2,8 @@ package com.github.vincentrussell.json.datagenerator;
 
 import com.github.vincentrussell.json.datagenerator.functions.Function;
 import com.github.vincentrussell.json.datagenerator.functions.FunctionInvocation;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import junit.framework.Assert;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.io.FileUtils;
@@ -46,7 +48,7 @@ public class CLIMainTest {
     @Test
     public void missingArgumentsThrowsExceptionAndPrintsHelp() throws IOException, JsonDataGeneratorException, ParseException, ClassNotFoundException {
         exception.expect(ParseException.class);
-        exception.expectMessage("Missing required options: s, d");
+        exception.expectMessage("Missing required option: s");
         try {
             CLIMain.main(new String[]{""});
         } finally {
@@ -83,6 +85,24 @@ public class CLIMainTest {
                 assertEquals(7, list.size());
             }
 
+        }
+    }
+
+    @Test
+    public void successfulRunSystemOut() throws IOException, JsonDataGeneratorException, ParseException, ClassNotFoundException {
+        destinationFile.delete();
+        try (FileOutputStream fileOutputStream = new FileOutputStream(sourceFile)) {
+            String name = "A green door";
+            IOUtils.write("{\n" +
+                    "    \"id\": \"{{uuid()}}\",\n" +
+                    "    \"name\": \"" + name + "\",\n" +
+                    "    \"age\": {{integer(1,50)}},\n" +
+                    "    \"price\": 12.50,\n" +
+                    "    \"tags\": [\"home\", \"green\"]\n" +
+                    "}", fileOutputStream);
+            CLIMain.main(new String[]{"-s", sourceFile.getAbsolutePath()});
+            JsonObject obj = (JsonObject)new com.google.gson.JsonParser().parse(systemOutRule.getLog());
+            assertEquals(name,obj.get("name").getAsString());
         }
     }
 

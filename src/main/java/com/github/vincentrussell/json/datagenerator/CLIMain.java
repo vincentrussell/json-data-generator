@@ -2,6 +2,7 @@ package com.github.vincentrussell.json.datagenerator;
 
 import com.github.vincentrussell.json.datagenerator.functions.FunctionRegistry;
 import com.github.vincentrussell.json.datagenerator.impl.JsonDataGeneratorImpl;
+import com.github.vincentrussell.json.datagenerator.impl.NonCloseableBufferedOutputStream;
 import org.apache.commons.cli.*;
 
 import java.io.*;
@@ -18,8 +19,8 @@ public class CLIMain {
         o.setRequired(true);
         options.addOption(o);
 
-        o = new Option("d", "destinationFile", true, "the destination file.");
-        o.setRequired(true);
+        o = new Option("d", "destinationFile", true, "the destination file.  Defaults to System.out");
+        o.setRequired(false);
         options.addOption(o);
 
         o = new Option("f", "functionClasses", true, "additional function classes that are on the classpath " +
@@ -53,24 +54,28 @@ public class CLIMain {
         String[] functionClasses = cmd.getOptionValues("f");
 
         File sourceFile = new File(source);
-        File destinationFile = new File(destination);
+        File destinationFile = destination != null ? new File(destination) : null;
 
         if (!sourceFile.exists()) {
             throw new FileNotFoundException(source + " cannot be found");
         }
 
-        if (destinationFile.exists()) {
+        if (destination != null && destinationFile.exists()) {
             throw new IOException(destination + " already exists");
         }
 
-        if (functionClasses!=null) {
+        if (functionClasses != null) {
             for (String functionClass : functionClasses) {
                 FunctionRegistry.getInstance().registerClass(Class.forName(functionClass));
             }
         }
 
         JsonDataGenerator jsonDataGenerator = new JsonDataGeneratorImpl();
-        jsonDataGenerator.generateTestDataJson(sourceFile, destinationFile);
+        try (InputStream inputStream = new FileInputStream(sourceFile);
+            OutputStream outputStream = destinationFile != null
+                    ? new FileOutputStream(destinationFile) : new NonCloseableBufferedOutputStream(System.out)) {
+            jsonDataGenerator.generateTestDataJson(inputStream, outputStream);
+        }
 
     }
 
