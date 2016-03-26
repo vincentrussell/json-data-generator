@@ -2,26 +2,29 @@ package com.github.vincentrussell.json.datagenerator;
 
 import com.github.vincentrussell.json.datagenerator.functions.Function;
 import com.github.vincentrussell.json.datagenerator.functions.FunctionInvocation;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import junit.framework.Assert;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.contrib.java.lang.system.ExpectedSystemExit;
 import org.junit.contrib.java.lang.system.SystemOutRule;
+import org.junit.contrib.java.lang.system.TextFromStandardInputStream;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 
 import java.io.*;
+import java.security.Permission;
 import java.util.List;
 
+import static com.github.vincentrussell.json.datagenerator.CLIMain.ENTER_JSON_TEXT;
 import static junit.framework.TestCase.assertTrue;
 import static org.hamcrest.core.StringStartsWith.startsWith;
+import static org.hamcrest.junit.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
+import static org.junit.contrib.java.lang.system.TextFromStandardInputStream.emptyStandardInputStream;
 
 public class CLIMainTest {
 
@@ -34,6 +37,12 @@ public class CLIMainTest {
     @Rule
     public SystemOutRule systemOutRule = new SystemOutRule().enableLog();
 
+    @Rule
+    public final TextFromStandardInputStream systemInMock = emptyStandardInputStream();
+
+    @Rule
+    public final ExpectedSystemExit exit = ExpectedSystemExit.none();
+
     File sourceFile;
     File destinationFile;
 
@@ -44,15 +53,33 @@ public class CLIMainTest {
         destinationFile = temporaryFolder.newFile();
     }
 
+    @Test
+    public void missingArgumentsThrowsExceptionAndPrintsHelp() throws ClassNotFoundException, JsonDataGeneratorException, ParseException, IOException {
+        exception.expect(ParseException.class);
+        exception.expectMessage("Missing required option: s or i");
+        CLIMain.main(new String[0]);
+    }
 
     @Test
-    public void missingArgumentsThrowsExceptionAndPrintsHelp() throws IOException, JsonDataGeneratorException, ParseException, ClassNotFoundException {
-        exception.expect(ParseException.class);
-        exception.expectMessage("Missing required option: s");
+    public void interactiveMode() throws IOException, JsonDataGeneratorException, ParseException, ClassNotFoundException, InterruptedException {
+        String name = "A green door";
+        exit.expectSystemExitWithStatus(0);
+        systemInMock.provideLines("{\n" +
+                "    \"id\": \"{{uuid()}}\",\n" +
+                "    \"name\": \"" + name + "\",\n" +
+                "    \"age\": {{integer(1,50)}},\n" +
+                "    \"price\": 12.50,\n" +
+                "    \"tags\": [\"home\", \"green\"]\n" +
+                "}");
         try {
-            CLIMain.main(new String[]{""});
+            CLIMain.main(new String[]{"-i"});
         } finally {
-            assertThat(systemOutRule.getLog(), startsWith("usage: " + CLIMain.class.getName()));
+            Thread.sleep(1000);
+            assertThat(systemOutRule.getLog(),startsWith(ENTER_JSON_TEXT));
+            String result = systemOutRule.getLog().replaceAll(ENTER_JSON_TEXT,"");
+            JsonObject obj = (JsonObject)new com.google.gson.JsonParser().parse(result);
+            assertEquals(name,obj.get("name").getAsString());
+
         }
     }
 
@@ -145,6 +172,24 @@ public class CLIMainTest {
         }
 
 
+    }
+
+    private static class NoExitSecurityManager extends SecurityManager
+    {
+        @Override
+        public void checkPermission(Permission perm)
+        {
+            // allow anything.
+        }
+        @Override
+        public void checkPermission(Permission perm, Object context)
+        {
+            // allow anything.
+        }
+        @Override
+        public void checkExit(int status) {
+            super.checkExit(status);
+        }
     }
 
 }
