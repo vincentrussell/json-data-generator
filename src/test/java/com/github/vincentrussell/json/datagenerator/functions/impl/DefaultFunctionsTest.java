@@ -215,6 +215,7 @@ public class DefaultFunctionsTest {
         assertTrue(pattern.matcher(result).matches());
     }
 
+
     @Test
     public void date() throws InvocationTargetException, IllegalAccessException, ParseException {
         String result = functionRegistry.executeFunction("date", null);
@@ -248,6 +249,24 @@ public class DefaultFunctionsTest {
         String result = functionRegistry.executeFunction("date", "06-16-1956 12:00:00", "06-16-1975 12:00:00", dateFormatText);
         java.util.Date date = dateFormat.parse(result);
         assertNotNull(date);
+    }
+
+    @Test
+    public void timestamp() throws InvocationTargetException, IllegalAccessException, ParseException {
+        String result = functionRegistry.executeFunction("timestamp", null);
+        java.util.Date date = new java.util.Date();
+        date.setTime(Long.parseLong(result));
+        assertNotNull(date);
+        assertTrue(Long.parseLong(result) > 0);
+    }
+
+    @Test
+    public void timestampWithinRangeWithFormat() throws ParseException, InvocationTargetException, IllegalAccessException {
+        String result = functionRegistry.executeFunction("timestamp", "06-16-2012 12:00:00", "06-16-2015 12:00:00");
+        java.util.Date date = new java.util.Date();
+        date.setTime(Long.parseLong(result));
+        assertNotNull(date);
+        assertTrue(Long.parseLong(result) > 0);
     }
 
     @Test

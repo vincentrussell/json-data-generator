@@ -12,6 +12,7 @@ import java.util.Calendar;
 public class Date {
 
     public static final String DEFAULT_DATE_STRING = "EEE, d MMM yyyy HH:mm:ss z";
+    public static final String DEFAULT_INPUT_FORMAT = "dd-MM-yyyy HH:mm:ss";
 
     @FunctionInvocation
     public String date() {
@@ -26,7 +27,7 @@ public class Date {
     @FunctionInvocation
     public String date(String beginDate, String endDate, String format) {
         try {
-            DateFormat formatter = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+            DateFormat formatter = new SimpleDateFormat(DEFAULT_INPUT_FORMAT);
             SimpleDateFormat dateFormat = new SimpleDateFormat(format);
             Calendar cal = Calendar.getInstance();
             cal.setTime(formatter.parse(beginDate));

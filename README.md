@@ -194,6 +194,17 @@ random date between two dates with default format (your input must be in this fo
 {{date("begin-date","end-date"}}
 ```
 
+current timestamp (milliseconds, between the current time and midnight, January 1, 1970 UTC):
+```
+{{timestamp()}}
+```
+
+random timestamp (milliseconds since midnight, January 1, 1970 UTC) between two dates with default format (your input must be in this format EEE, d MMM yyyy HH:mm:ss z):
+```
+{{timestamp("begin-date","end-date"}}
+```
+
+
 random country:
 ```
 {{country()}}
@@ -329,6 +340,14 @@ then you can put the jar that you have created on the classpath with the the sta
 java -cp json-data-generator-1.0-standalone.jar:yourfunctions.jar com.github.vincentrussell.json.datagenerator.CLIMain -s source.json -d destination.json -f my.package.NewFunction
 ```
 # Change Log
+
+## [1.2](https://github.com/vincentrussell/json-data-generator/tree/json-data-generator-1.2) (####-##-##)
+
+**Improvements:**
+
+- Standalone interactive mode
+- The ability to specify a timezone in standalone mode
+- New timestamp function
 
 ## [1.1](https://github.com/vincentrussell/json-data-generator/tree/json-data-generator-1.1) (2016-03-20)
 

@@ -43,6 +43,7 @@ public class FunctionRegistry {
         registerClass(Phone.class);
         registerClass(Gender.class);
         registerClass(Date.class);
+        registerClass(Timestamp.class);
         registerClass(City.class);
         registerClass(Company.class);
         registerClass(Country.class);
