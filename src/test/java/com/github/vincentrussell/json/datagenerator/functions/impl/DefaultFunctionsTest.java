@@ -218,7 +218,7 @@ public class DefaultFunctionsTest {
     @Test
     public void date() throws InvocationTargetException, IllegalAccessException, ParseException {
         String result = functionRegistry.executeFunction("date", null);
-        DateFormat dateFormat = Date.DEFAULT_DATE_FORMAT;
+        DateFormat dateFormat = new SimpleDateFormat(Date.DEFAULT_DATE_STRING);
         java.util.Date date = dateFormat.parse(result);
         assertNotNull(date);
     }

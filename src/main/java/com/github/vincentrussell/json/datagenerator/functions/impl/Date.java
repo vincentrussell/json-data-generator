@@ -12,12 +12,10 @@ import java.util.Calendar;
 public class Date {
 
     public static final String DEFAULT_DATE_STRING = "EEE, d MMM yyyy HH:mm:ss z";
-    public static final DateFormat DEFAULT_DATE_FORMAT = new SimpleDateFormat(DEFAULT_DATE_STRING);
-
 
     @FunctionInvocation
     public String date() {
-        return DEFAULT_DATE_FORMAT.format(new java.util.Date());
+        return getSimpleDateFormat().format(new java.util.Date());
     }
 
     @FunctionInvocation
@@ -48,6 +46,11 @@ public class Date {
     public String date(String beginDate, String endDate) {
         return date(beginDate, endDate, DEFAULT_DATE_STRING);
     }
+
+    private SimpleDateFormat getSimpleDateFormat() {
+        return new SimpleDateFormat(DEFAULT_DATE_STRING);
+    }
+
 
 
 }

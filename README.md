@@ -10,7 +10,7 @@ Add a dependency to `com.github.vincentrussell:json-data-generator`.
 <dependency>
    <groupId>com.github.vincentrussell</groupId>
    <artifactId>json-data-generator</artifactId>
-   <version>1.1</version>
+   <version>1.2</version>
 </dependency>
 ```
 
@@ -18,7 +18,7 @@ Add a dependency to `com.github.vincentrussell:json-data-generator`.
 - JDK 1.7 or higher
 - Apache Maven 3.1.0 or higher
 
-## How to use it
+## Running it from Java
 
 ```
 JsonDataGeneratorImpl parser = new JsonDataGeneratorImpl();
@@ -46,11 +46,25 @@ JsonDataGeneratorImpl parser = new JsonDataGeneratorImpl();
 parser.generateTestDataJson(InputStream inputStream, OutputStream outputStream);
 ```
 
-or you can run the standalone jar on a source json file:
+## Running it as a standalone jar
 
 ```
-java -jar json-data-generator-1.0-standalone.jar -s source.json -d destination.json
+java -jar json-data-generator-1.2-standalone.jar -s source.json -d destination.json
 ```
+### Options
+
+```
+usage: [-s <arg>] [-d
+       <arg>] [-f <arg>] [-i] [-t <arg>]
+ -s,--sourceFile <arg>        the source file.
+ -d,--destinationFile <arg>   the destination file.  Defaults to
+                              System.out
+ -f,--functionClasses <arg>   additional function classes that are on the
+                              classpath and should be loaded
+ -i,--interactiveMode         interactive mode
+ -t,--timeZone <arg>          default time zone to use when dealing with dates
+```
+
 
 ### Example
 

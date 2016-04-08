@@ -152,6 +152,58 @@ public class CLIMainTest {
             }
     }
 
+    @Test
+    public void setTimezoneAsGMTPlus() throws IOException, JsonDataGeneratorException, ParseException, ClassNotFoundException {
+        timezoneTest("GMT+10:00", new ValidatorTrue() {
+            @Override
+            public boolean isTrue(JsonObject obj) {
+                return obj.get("date").getAsString().endsWith("GMT+10:00");
+            }
+        });
+    }
+
+    @Test
+    public void setTimezoneAsCity() throws IOException, JsonDataGeneratorException, ParseException, ClassNotFoundException {
+        timezoneTest("Europe/Paris", new ValidatorTrue() {
+            @Override
+            public boolean isTrue(JsonObject obj) {
+                return obj.get("date").getAsString().endsWith("CEST");
+            }
+        });
+    }
+
+    @Test
+    public void setTimezoneAsGMT() throws IOException, JsonDataGeneratorException, ParseException, ClassNotFoundException {
+        timezoneTest("GMT", new ValidatorTrue() {
+            @Override
+            public boolean isTrue(JsonObject obj) {
+                return obj.get("date").getAsString().endsWith("GMT");
+            }
+        });
+    }
+
+    private void timezoneTest(String timeZone, ValidatorTrue validatorTrue) throws IOException, ParseException, JsonDataGeneratorException, ClassNotFoundException {
+        destinationFile.delete();
+        try (FileOutputStream fileOutputStream = new FileOutputStream(sourceFile)) {
+            IOUtils.write("{\n" +
+                    "    \"date\": \"{{date()}}\"\n" +
+                    "}", fileOutputStream);
+            CLIMain.main(new String[]{"-s", sourceFile.getAbsolutePath(), "-d", destinationFile.getAbsolutePath(),"-t",timeZone});
+            assertTrue(destinationFile.exists());
+            try (FileInputStream fileInputStream = new FileInputStream(destinationFile)) {
+                StringWriter stringWriter = new StringWriter();
+                IOUtils.copy(fileInputStream,stringWriter);
+                JsonObject obj = (JsonObject)new com.google.gson.JsonParser().parse(stringWriter.toString());
+                assertTrue(validatorTrue.isTrue(obj));
+            }
+
+        }
+    }
+
+    private static interface ValidatorTrue {
+        public boolean isTrue(JsonObject obj);
+    }
+
     @Function(name = "test-function")
     public static class TestFunctionClazzWithNoArgsMethod {
 
