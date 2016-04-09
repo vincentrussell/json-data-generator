@@ -44,6 +44,8 @@ public class FunctionRegistry {
         registerClass(Gender.class);
         registerClass(Date.class);
         registerClass(Timestamp.class);
+        registerClass(Alpha.class);
+        registerClass(AlphaNumeric.class);
         registerClass(City.class);
         registerClass(Company.class);
         registerClass(Country.class);

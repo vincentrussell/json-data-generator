@@ -332,6 +332,60 @@ public class DefaultFunctionsTest {
         assertTrue(Arrays.asList(args).indexOf(result) > -1);
     }
 
+    @Test
+    public void alphaWithMinAndMax() throws InvocationTargetException, IllegalAccessException {
+        String result = functionRegistry.executeFunction("alpha", new String[]{"10", "20"});
+        int size = result.length();
+        assertTrue(size >= 10 && size <= 20);
+        Pattern pattern = Pattern.compile("[a-zA-Z]{10,20}");
+        assertTrue(pattern.matcher(result).matches());
+    }
+
+    @Test
+    public void alphaWithLength() throws InvocationTargetException, IllegalAccessException {
+        String result = functionRegistry.executeFunction("alpha", new String[]{"50"});
+        int size = result.length();
+        assertEquals(50,size);
+        Pattern pattern = Pattern.compile("[a-zA-Z]{50}");
+        assertTrue(pattern.matcher(result).matches());
+    }
+
+    @Test
+    public void alpha() throws InvocationTargetException, IllegalAccessException {
+        String result = functionRegistry.executeFunction("alpha");
+        int size = result.length();
+        assertTrue(size >= 10 && size <= 20);
+        Pattern pattern = Pattern.compile("[a-zA-Z]{10,20}");
+        assertTrue(pattern.matcher(result).matches());
+    }
+
+    @Test
+    public void alphaNumericWithMinAndMax() throws InvocationTargetException, IllegalAccessException {
+        String result = functionRegistry.executeFunction("alphaNumeric", new String[]{"10", "20"});
+        int size = result.length();
+        assertTrue(size >= 10 && size <= 20);
+        Pattern pattern = Pattern.compile("[0-9a-zA-Z]{10,20}");
+        assertTrue(pattern.matcher(result).matches());
+    }
+
+    @Test
+    public void alphaNumericWithLength() throws InvocationTargetException, IllegalAccessException {
+        String result = functionRegistry.executeFunction("alphaNumeric", new String[]{"50"});
+        int size = result.length();
+        assertEquals(50,size);
+        Pattern pattern = Pattern.compile("[0-9a-zA-Z]{50}");
+        assertTrue(pattern.matcher(result).matches());
+    }
+
+    @Test
+    public void alphaNumeric() throws InvocationTargetException, IllegalAccessException {
+        String result = functionRegistry.executeFunction("alphaNumeric");
+        int size = result.length();
+        assertTrue(size >= 10 && size <= 20);
+        Pattern pattern = Pattern.compile("[0-9a-zA-Z]{10,20}");
+        assertTrue(pattern.matcher(result).matches());
+    }
+
     private List<String> getArrayAsListFromStaticField(Class clazz, String fieldName) throws IllegalAccessException, NoSuchFieldException {
         Field field = clazz.getDeclaredField(fieldName);
         field.setAccessible(true);

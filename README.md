@@ -204,7 +204,6 @@ random timestamp (milliseconds since midnight, January 1, 1970 UTC) between two 
 {{timestamp("begin-date","end-date"}}
 ```
 
-
 random country:
 ```
 {{country()}}
@@ -284,6 +283,31 @@ random item from list:
 {{random("red","yellow","green")}}
 ```
 
+random string with alphabetic characters (defaults to between 10 and 20 characters):
+```
+{{alpha()}}
+```
+
+```
+{{alpha(min,max)}}
+```
+
+```
+{{alpha(length)}}
+```
+
+random string with alpha-numeric characters (defaults to between 10 and 20 characters):
+```
+{{alphaNumeric()}}
+```
+
+```
+{{alphaNumeric(min,max)}}
+```
+
+```
+{{alphaNumeric(length)}}
+```
 
 ##Nesting functions
 
@@ -348,6 +372,8 @@ java -cp json-data-generator-1.0-standalone.jar:yourfunctions.jar com.github.vin
 - Standalone interactive mode
 - The ability to specify a timezone in standalone mode
 - New timestamp function
+- New alpha function
+- New alphaNumeric function
 
 ## [1.1](https://github.com/vincentrussell/json-data-generator/tree/json-data-generator-1.1) (2016-03-20)
 
