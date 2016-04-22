@@ -10,7 +10,7 @@ Add a dependency to `com.github.vincentrussell:json-data-generator`.
 <dependency>
    <groupId>com.github.vincentrussell</groupId>
    <artifactId>json-data-generator</artifactId>
-   <version>1.3</version>
+   <version>1.2</version>
 </dependency>
 ```
 
