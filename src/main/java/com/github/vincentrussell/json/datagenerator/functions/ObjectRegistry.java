@@ -5,7 +5,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class ObjectRegistry {
 
-    private Map<Class, Object> objectMap = new ConcurrentHashMap<Class, Object>();
+    private Map<Class, Object> objectMap = new ConcurrentHashMap<>();
 
     private static ObjectRegistry INSTANCE;
 
