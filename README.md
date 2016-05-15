@@ -154,9 +154,19 @@ an incrementing index integer
 {{index()}
 ```
 
-an named incrementing index integer
+a named incrementing index integer
 ```
 {{index("index-name")}
+```
+
+an incrementing index integer with a specific starting point
+```
+{{index(78)}
+```
+
+an incrementing index integer with a name and a specific starting point
+```
+{{index("index-name",78)}
 ```
 
 lorem ipsum words:
@@ -376,6 +386,7 @@ java -cp json-data-generator-1.3-standalone.jar:yourfunctions.jar com.github.vin
 **Improvements:**
 
 - Changed index function to be based on a String key not it's level of nesting to reduce complexity
+- Changed index function to allow for an integer to start at.
 
 
 # Change Log

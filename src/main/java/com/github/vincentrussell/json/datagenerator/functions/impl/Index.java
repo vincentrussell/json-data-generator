@@ -22,14 +22,31 @@ public class Index {
 
     @FunctionInvocation
     public String getIndex(String indexName) {
-        return "" + getIndexHolder(indexName).getNextIndex();
+        try {
+            return getIndex(DEFAULT,Integer.parseInt(indexName));
+        } catch (NumberFormatException e) {
+            return "" + getIndexHolder(indexName).getNextIndex();
+        }
+    }
+
+    @FunctionInvocation
+    public String getIndex(String indexName, String startingPoint) {
+        return getIndex(indexName,Integer.parseInt(startingPoint));
+    }
+
+    private String getIndex(String indexName, int startingPoint) {
+        return "" + getIndexHolder(indexName,startingPoint).getNextIndex();
     }
 
     private IndexHolder getIndexHolder(String indexName) {
+        return getIndexHolder(indexName,0);
+    }
+
+    private IndexHolder getIndexHolder(String indexName, int startingPoint) {
         if (stringIndexHolderMap.containsKey(indexName)) {
             return stringIndexHolderMap.get(indexName);
         }
-        IndexHolder indexHolder = new IndexHolder();
+        IndexHolder indexHolder = new IndexHolder(startingPoint);
         stringIndexHolderMap.put(indexName, indexHolder);
         return indexHolder;
     }

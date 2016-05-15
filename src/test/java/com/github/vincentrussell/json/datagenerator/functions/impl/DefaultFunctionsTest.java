@@ -131,6 +131,35 @@ public class DefaultFunctionsTest {
     }
 
     @Test
+    public void indexWithStartingPoint() throws InvocationTargetException, IllegalAccessException {
+        assertEquals("45", functionRegistry.executeFunction("index", "45"));
+        assertEquals("46", functionRegistry.executeFunction("index", "45"));
+        assertEquals("47", functionRegistry.executeFunction("index", "45"));
+    }
+
+    @Test
+    public void indexWithStartingPointIgnoreAdditionalChangesInNumber() throws InvocationTargetException, IllegalAccessException {
+        assertEquals("45", functionRegistry.executeFunction("index", "45"));
+        assertEquals("46", functionRegistry.executeFunction("index", "47"));
+        assertEquals("47", functionRegistry.executeFunction("index", "49"));
+    }
+
+    @Test
+    public void indexWithNameAndStartingPoint() throws InvocationTargetException, IllegalAccessException {
+        assertEquals("45", functionRegistry.executeFunction("index", "name1", "45"));
+        assertEquals("46", functionRegistry.executeFunction("index", "name1", "45"));
+        assertEquals("47", functionRegistry.executeFunction("index", "name1", "45"));
+    }
+
+    @Test
+    public void indexWithNameAndStartingPointIgnoreAdditionalChangesInNumbe() throws InvocationTargetException, IllegalAccessException {
+        assertEquals("45", functionRegistry.executeFunction("index", "name1", "45"));
+        assertEquals("46", functionRegistry.executeFunction("index", "name1", "47"));
+        assertEquals("47", functionRegistry.executeFunction("index", "name1", "49"));
+    }
+
+
+    @Test
     public void loremWords() throws InvocationTargetException, IllegalAccessException {
         String[] args = new String[]{"3", "words"};
         String result = functionRegistry.executeFunction("lorem", args);
