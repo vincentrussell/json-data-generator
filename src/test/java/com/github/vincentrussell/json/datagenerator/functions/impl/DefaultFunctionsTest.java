@@ -1,8 +1,6 @@
 package com.github.vincentrussell.json.datagenerator.functions.impl;
 
 import com.github.vincentrussell.json.datagenerator.functions.FunctionRegistry;
-import com.github.vincentrussell.json.datagenerator.functions.ObjectRegistry;
-import com.github.vincentrussell.json.datagenerator.impl.IndexHolder;
 import com.google.common.base.Splitter;
 import org.bitstrings.test.junit.runner.ClassLoaderPerTestRunner;
 import org.junit.Before;
@@ -25,11 +23,9 @@ import static org.junit.Assert.*;
 public class DefaultFunctionsTest {
 
     FunctionRegistry functionRegistry;
-    ObjectRegistry objectRegistry;
 
     @Before
     public void registerClasses() {
-        objectRegistry = ObjectRegistry.getInstance();
         functionRegistry = FunctionRegistry.getInstance();
     }
 
@@ -119,11 +115,19 @@ public class DefaultFunctionsTest {
 
     @Test
     public void index() throws InvocationTargetException, IllegalAccessException {
-        IndexHolder indexHolder = new IndexHolder();
-        objectRegistry.register(IndexHolder.class, indexHolder);
         assertEquals("0", functionRegistry.executeFunction("index", null));
         assertEquals("1", functionRegistry.executeFunction("index", null));
         assertEquals("2", functionRegistry.executeFunction("index", null));
+    }
+
+    @Test
+    public void indexNamed() throws InvocationTargetException, IllegalAccessException {
+        assertEquals("0", functionRegistry.executeFunction("index", "name1"));
+        assertEquals("0", functionRegistry.executeFunction("index", "name2"));
+        assertEquals("1", functionRegistry.executeFunction("index", "name1"));
+        assertEquals("1", functionRegistry.executeFunction("index", "name2"));
+        assertEquals("2", functionRegistry.executeFunction("index", "name1"));
+        assertEquals("2", functionRegistry.executeFunction("index", "name2"));
     }
 
     @Test

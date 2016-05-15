@@ -15,12 +15,10 @@ public class FunctionReplacingReader extends Reader {
     protected StringBuilder tokenNameBuffer = new StringBuilder();
     protected String tokenValue = null;
     protected int tokenValueIndex = 0;
-    protected Stack<IndexHolder> integerStackForIndexFunction = new Stack<>();
 
     public FunctionReplacingReader(Reader source, TokenResolver resolver) {
         pushbackReader = new PushbackReader(source, 80);
         tokenResolver = resolver;
-        integerStackForIndexFunction.push(new IndexHolder());
     }
 
     @Override
@@ -41,13 +39,6 @@ public class FunctionReplacingReader extends Reader {
         }
 
         int data = this.pushbackReader.read();
-
-        if (data == ']') {
-            integerStackForIndexFunction.pop();
-        }
-        if (data == '[') {
-            integerStackForIndexFunction.push(new IndexHolder());
-        }
 
         if (data != '{') return data;
 
@@ -85,7 +76,7 @@ public class FunctionReplacingReader extends Reader {
 
         try {
             this.tokenValue = this.tokenResolver
-                    .resolveToken(integerStackForIndexFunction.peek(), this.tokenNameBuffer.toString());
+                    .resolveToken(this.tokenNameBuffer.toString());
         } catch (IllegalArgumentException e) {
             this.tokenValue = null;
         }

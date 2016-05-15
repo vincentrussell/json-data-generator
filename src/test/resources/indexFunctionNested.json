@@ -2,16 +2,16 @@
     {
         id: {{index()}}
         list: [
-            {id: {{index()}}},
-            {id: {{index()}}}
+            {id: {{index("list1")}}},
+            {id: {{index("list1")}}}
 
         ]
     },
     {
         id: {{index()}},
         list: [
-                    {id: {{index()}}},
-                    {id: {{index()}}},
+                    {id: {{index("list2")}}},
+                    {id: {{index("list2")}}},
 
                 ]
 

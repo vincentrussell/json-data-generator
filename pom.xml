@@ -217,6 +217,12 @@
             <artifactId>commons-cli</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+            <version>4.2.6.RELEASE</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>org.bitstrings.test</groupId>
             <artifactId>junit-clptr</artifactId>
             <scope>test</scope>

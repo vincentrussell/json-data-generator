@@ -149,9 +149,14 @@ random boolean:
 {{bool()}}
 ```
 
-an incrementing index integer (will be a different index based on levels of nesting of json)
+an incrementing index integer
 ```
 {{index()}
+```
+
+an named incrementing index integer
+```
+{{index("index-name")}
 ```
 
 lorem ipsum words:
@@ -363,6 +368,16 @@ then you can put the jar that you have created on the classpath with the the sta
 ```
 java -cp json-data-generator-1.3-standalone.jar:yourfunctions.jar com.github.vincentrussell.json.datagenerator.CLIMain -s source.json -d destination.json -f my.package.NewFunction
 ```
+
+# Change Log
+
+## [1.3](https://github.com/vincentrussell/json-data-generator/tree/json-data-generator-1.3) (2016-XX-XX)
+
+**Improvements:**
+
+- Changed index function to be based on a String key not it's level of nesting to reduce complexity
+
+
 # Change Log
 
 ## [1.2](https://github.com/vincentrussell/json-data-generator/tree/json-data-generator-1.2) (2016-04-10)

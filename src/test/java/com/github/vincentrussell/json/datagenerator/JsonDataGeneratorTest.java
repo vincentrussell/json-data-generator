@@ -1,14 +1,16 @@
 package com.github.vincentrussell.json.datagenerator;
 
+import com.github.vincentrussell.json.datagenerator.functions.impl.Index;
 import com.github.vincentrussell.json.datagenerator.impl.JsonDataGeneratorImpl;
 import com.google.gson.*;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.junit.*;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.io.*;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 import static junit.framework.TestCase.assertTrue;
@@ -31,6 +33,7 @@ public class JsonDataGeneratorTest {
     public void setUp() {
         parser = new JsonDataGeneratorImpl();
         outputStream = new ByteArrayOutputStream();
+        ((Map)ReflectionTestUtils.getField(Index.class,"stringIndexHolderMap")).clear();
     }
 
     @After
@@ -117,6 +120,11 @@ public class JsonDataGeneratorTest {
     @Test
     public void indexFunctionTest() throws IOException, JsonDataGeneratorException {
         classpathJsonTests("indexFunctionSimple.json.results", "indexFunctionSimple.json");
+    }
+
+    @Test
+    public void indexFunctionWithNamesTest() throws IOException, JsonDataGeneratorException {
+        classpathJsonTests("indexFunctionNested.json.results", "indexFunctionNested.json");
     }
 
     @Test

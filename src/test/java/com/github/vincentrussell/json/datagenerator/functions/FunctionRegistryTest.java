@@ -1,6 +1,5 @@
 package com.github.vincentrussell.json.datagenerator.functions;
 
-import com.github.vincentrussell.json.datagenerator.impl.IndexHolder;
 import org.bitstrings.test.junit.runner.ClassLoaderPerTestRunner;
 import org.junit.Before;
 import org.junit.Rule;
@@ -20,12 +19,10 @@ public class FunctionRegistryTest {
     public ExpectedException thrownException = ExpectedException.none();
 
     FunctionRegistry functionRegistry;
-    ObjectRegistry objectRegistry;
 
     @Before
     public void loadFunctionRegistry() {
         functionRegistry = FunctionRegistry.getInstance();
-        objectRegistry = ObjectRegistry.getInstance();
     }
 
     @Test
@@ -135,17 +132,6 @@ public class FunctionRegistryTest {
     }
 
     @Test
-    public void objectRegistry() throws InvocationTargetException, IllegalAccessException {
-        IndexHolder indexHolder = new IndexHolder();
-        String[] args = new String[]{"arg1", "arg2"};
-        String[] args2 = new String[]{"arg1", "arg2", "arg3", "arg4"};
-        functionRegistry.registerClass(TestFunctionObjectRegistry.class);
-        objectRegistry.register(IndexHolder.class, indexHolder);
-        assertEquals("arg1=arg1,arg2=arg2,index=0", functionRegistry.executeFunction("function6", args));
-        assertEquals("varargs.length=4,index=1", functionRegistry.executeFunction("function6", args2));
-    }
-
-    @Test
     public void nonOverridableFunction() throws InvocationTargetException, IllegalAccessException {
         thrownException.expect(IllegalArgumentException.class);
         thrownException.expectMessage(TestNonOverrideableFunction2.class.getName() + " can not override existing function with the same annotation: function1 because it does not allow overriding.");
@@ -209,23 +195,6 @@ public class FunctionRegistryTest {
         @FunctionInvocation
         public String invocation(Object[] args) {
             return "varargs.length=" + args.length;
-        }
-
-    }
-
-    @Function(name = "function6")
-    public static class TestFunctionObjectRegistry {
-
-        private ObjectRegistry objectRegistry = ObjectRegistry.getInstance();
-
-        @FunctionInvocation
-        public String invocation(String arg1, String arg2) {
-            return "arg1=" + arg1 + ",arg2=" + arg2 + ",index=" + objectRegistry.getInstance(IndexHolder.class).getNextIndex();
-        }
-
-        @FunctionInvocation
-        public String invocation(String[] args) {
-            return "varargs.length=" + args.length + ",index=" + objectRegistry.getInstance(IndexHolder.class).getNextIndex();
         }
 
     }
