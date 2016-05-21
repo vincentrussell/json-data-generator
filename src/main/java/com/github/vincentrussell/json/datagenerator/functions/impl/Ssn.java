@@ -9,12 +9,13 @@ import java.util.Random;
 @Function(name = "ssn")
 public class Ssn {
 
+    private static final Random RANDOM = new Random();
+
     @FunctionInvocation
     public String ssn() {
-        Random rand = new Random();
-        int num1 = rand.nextInt(799-1) + 1;
-        int num2 = rand.nextInt(99-1) + 1;
-        int num3 = rand.nextInt(9999-1) + 1;
+        int num1 = RANDOM.nextInt(799-1) + 1;
+        int num2 = RANDOM.nextInt(99-1) + 1;
+        int num3 = RANDOM.nextInt(9999-1) + 1;
 
         DecimalFormat df1 = new DecimalFormat("000");
         DecimalFormat df2 = new DecimalFormat("00");
