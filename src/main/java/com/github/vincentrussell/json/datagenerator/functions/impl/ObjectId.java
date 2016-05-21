@@ -7,7 +7,7 @@ import com.github.vincentrussell.json.datagenerator.functions.FunctionInvocation
 public class ObjectId {
 
     private static final java.util.Random RANDOM = new java.util.Random();
-    final protected static char[] hexArray = "0123456789abcdef".toCharArray();
+    private static final char[] hexArray = "0123456789abcdef".toCharArray();
 
     @FunctionInvocation
     public String getObjectId() {
