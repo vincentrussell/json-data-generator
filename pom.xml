@@ -113,6 +113,11 @@
                 <artifactId>mockito-all</artifactId>
                 <version>1.10.19</version>
             </dependency>
+            <dependency>
+                <groupId>com.github.nikolavp</groupId>
+                <artifactId>approval-core</artifactId>
+                <version>0.3</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -230,6 +235,11 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.github.nikolavp</groupId>
+            <artifactId>approval-core</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>

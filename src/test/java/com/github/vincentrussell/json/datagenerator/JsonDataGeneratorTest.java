@@ -1,5 +1,7 @@
 package com.github.vincentrussell.json.datagenerator;
 
+import com.github.approval.Approvals;
+import com.github.approval.reporters.Reporters;
 import com.github.vincentrussell.json.datagenerator.functions.impl.Index;
 import com.github.vincentrussell.json.datagenerator.impl.JsonDataGeneratorImpl;
 import com.google.gson.*;
@@ -10,6 +12,8 @@ import org.junit.rules.TemporaryFolder;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.io.*;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Map;
 import java.util.regex.Pattern;
 
@@ -34,6 +38,7 @@ public class JsonDataGeneratorTest {
         parser = new JsonDataGeneratorImpl();
         outputStream = new ByteArrayOutputStream();
         ((Map)ReflectionTestUtils.getField(Index.class,"stringIndexHolderMap")).clear();
+        Approvals.setReporter(Reporters.console());
     }
 
     @After
@@ -46,14 +51,8 @@ public class JsonDataGeneratorTest {
     }
 
 
-    private void classpathJsonTests(String expected, String source) throws IOException, JsonDataGeneratorException {
-        try (InputStream resultsStream = this.getClass().getClassLoader().getResourceAsStream(expected)) {
-            parser.generateTestDataJson(this.getClass().getClassLoader().getResource(source), outputStream);
-            String results = new String(outputStream.toByteArray());
-
-            assertEquals(remoteWhiteSpaceFromJson(IOUtils.toString(resultsStream)),
-                    remoteWhiteSpaceFromJson(results));
-        }
+    private void classpathJsonTests(String source) throws IOException, JsonDataGeneratorException {
+        Approvals.verify(getClasspathFileAsString(source), getApprovalPath(source));
     }
 
     private String getClasspathFileAsString(String source) throws IOException {
@@ -94,37 +93,40 @@ public class JsonDataGeneratorTest {
         parser.generateTestDataJson(inputFile,outputFile);
     }
 
+    private Path getApprovalPath(String testName) {
+        final String basePath = Paths.get("src", "test", "resources", "approvals", JsonDataGeneratorTest.class.getSimpleName()).toString();
+        return Paths.get(basePath, testName);
+    }
+
 
     @Test
     public void copyJson() throws IOException, JsonDataGeneratorException {
-        classpathJsonTests("copyJson.json.results", "copyJson.json");
-
+        classpathJsonTests("copyJson.json");
     }
 
     @Test
     public void copyDoubleNestedJson() throws IOException, JsonDataGeneratorException {
-        classpathJsonTests("copyDoubleNestedJson.json.results", "copyDoubleNestedJson.json");
-
+        classpathJsonTests("copyDoubleNestedJson.json");
     }
 
     @Test
     public void invalidFunction() throws IOException, JsonDataGeneratorException {
-        classpathJsonTests("invalidFunction.json.results", "invalidFunction.json");
+        classpathJsonTests("invalidFunction.json");
     }
 
     @Test
     public void repeatNonFunctionJsonArray() throws IOException, JsonDataGeneratorException {
-        classpathJsonTests("repeatNonFunctionJsonArray.json.results", "repeatNonFunctionJsonArray.json");
+        classpathJsonTests("repeatNonFunctionJsonArray.json");
     }
 
     @Test
     public void indexFunctionTest() throws IOException, JsonDataGeneratorException {
-        classpathJsonTests("indexFunctionSimple.json.results", "indexFunctionSimple.json");
+        classpathJsonTests("indexFunctionSimple.json");
     }
 
     @Test
     public void indexFunctionWithNamesTest() throws IOException, JsonDataGeneratorException {
-        classpathJsonTests("indexFunctionNested.json.results", "indexFunctionNested.json");
+        classpathJsonTests("indexFunctionNested.json");
     }
 
     @Test

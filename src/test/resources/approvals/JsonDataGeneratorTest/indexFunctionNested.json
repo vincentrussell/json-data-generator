@@ -1,0 +1,20 @@
+[
+    {
+        id: {{index()}}
+        list: [
+            {id: {{index("list1")}}},
+            {id: {{index("list1")}}}
+
+        ]
+    },
+    {
+        id: {{index()}},
+        list: [
+                    {id: {{index("list2")}}},
+                    {id: {{index("list2")}}},
+
+                ]
+
+    }
+]
+
