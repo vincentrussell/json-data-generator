@@ -381,7 +381,7 @@ java -cp json-data-generator-1.3-standalone.jar:yourfunctions.jar com.github.vin
 
 # Change Log
 
-## [1.3](https://github.com/vincentrussell/json-data-generator/tree/json-data-generator-1.3) (2016-XX-XX)
+## [1.3](https://github.com/vincentrussell/json-data-generator/tree/json-data-generator-1.3) (2017-02-04)
 
 **Improvements:**
 
