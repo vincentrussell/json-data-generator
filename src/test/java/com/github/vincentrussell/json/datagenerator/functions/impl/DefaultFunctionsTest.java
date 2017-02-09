@@ -359,6 +359,17 @@ public class DefaultFunctionsTest {
     }
 
     @Test
+    public void username() throws InvocationTargetException, IllegalAccessException {
+        String result = functionRegistry.executeFunction("username", null);
+        assertTrue(result.length() > 1);
+        assertLowercase(result);
+    }
+
+    private void assertLowercase(String result) {
+        assertTrue(result.equals(result.toLowerCase()));
+    }
+
+    @Test
     public void random() throws InvocationTargetException, IllegalAccessException {
         String[] args = new String[]{"A", "B", "C"};
         String result = functionRegistry.executeFunction("random", args);

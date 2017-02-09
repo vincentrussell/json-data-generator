@@ -52,6 +52,7 @@ public class FunctionRegistry {
         registerClass(Email.class);
         registerClass(FirstName.class);
         registerClass(LastName.class);
+        registerClass(Username.class);
         registerClass(State.class);
         registerClass(Street.class);
         registerClass(Ssn.class);

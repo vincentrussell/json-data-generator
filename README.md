@@ -249,6 +249,11 @@ random first name:
 {{firstName()}}
 ```
 
+random username based on first initial from rnadom first name and lastname lowercased:
+```
+{{username()}}
+```
+
 random email:
 ```
 {{email()}}
@@ -378,6 +383,15 @@ then you can put the jar that you have created on the classpath with the the sta
 ```
 java -cp json-data-generator-1.3-standalone.jar:yourfunctions.jar com.github.vincentrussell.json.datagenerator.CLIMain -s source.json -d destination.json -f my.package.NewFunction
 ```
+
+# Change Log
+
+## [1.4](https://github.com/vincentrussell/json-data-generator/tree/json-data-generator-1.4) (2017-02-09)
+
+**Improvements:**
+
+- Created username function
+
 
 # Change Log
 
