@@ -1,20 +1,32 @@
 package com.github.vincentrussell.json.datagenerator.impl;
 
 
-import com.github.vincentrussell.json.datagenerator.JsonDataGenerator;
-import com.github.vincentrussell.json.datagenerator.JsonDataGeneratorException;
-import org.apache.commons.collections4.queue.CircularFifoQueue;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.Validate;
+import static org.apache.commons.lang.Validate.isTrue;
+import static org.apache.commons.lang.Validate.notNull;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.Reader;
 import java.net.URL;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static org.apache.commons.lang.Validate.isTrue;
-import static org.apache.commons.lang.Validate.notNull;
+import org.apache.commons.collections4.queue.CircularFifoQueue;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
+
+import com.github.vincentrussell.json.datagenerator.JsonDataGenerator;
+import com.github.vincentrussell.json.datagenerator.JsonDataGeneratorException;
 
 public class JsonDataGeneratorImpl implements JsonDataGenerator {
 
@@ -23,9 +35,8 @@ public class JsonDataGeneratorImpl implements JsonDataGenerator {
     private static final String REPEAT_TEXT = REPEAT;
     private static final byte[] CLOSE_BRACKET_BYTE_ARRAY = "]".getBytes();
     private static final byte[] COMMA_NEWLINE_BYTE_ARRAY = ",\n".getBytes();
+    private static final byte[] NEWLINE_BYTE_ARRAY = "\n".getBytes();
     private static Pattern REPEAT_PARAMETERS_PATTERN = Pattern.compile("^(\\d+),*\\s*(\\d+)*$");
-
-    private static final Random RANDOM = new Random();
 
     @Override
     public void generateTestDataJson(String text, OutputStream outputStream) throws JsonDataGeneratorException {
@@ -83,10 +94,13 @@ public class JsonDataGeneratorImpl implements JsonDataGenerator {
     protected void handleRepeats(InputStream inputStream, OutputStream outputStream) throws IOException {
         final BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, UTF_8));
         final CircularFifoQueue<Character> lastCharQueue = new CircularFifoQueue<>(REPEAT_TEXT.length());
+        final List<Character> xmlRepeatTagList = new LinkedList<>();
         boolean isRepeating = false;
         int bracketCount = 0;
         int repeatTimes = 0;
         int firstNonWhitespaceCharacter = -1;
+		int xmlTag = 0;
+		String xmlRepeatTag = "";
         try (ByteArrayBackupToFileOutputStream tempBuffer = new ByteArrayBackupToFileOutputStream();
              ByteArrayBackupToFileOutputStream repeatBuffer = new ByteArrayBackupToFileOutputStream()) {
             int i;
@@ -104,7 +118,7 @@ public class JsonDataGeneratorImpl implements JsonDataGenerator {
                             bracketCount++;
                         } else if ('}' == i || (']' == i) && bracketCount == 0) {
                             bracketCount--;
-                            if (bracketCount == 0) {
+                            if (bracketCount == 0 && xmlTag == 0) {
                                 bufferedReader.mark(1);
                                 i = bufferedReader.read();
                                 if (i==firstNonWhitespaceCharacter) {
@@ -117,12 +131,7 @@ public class JsonDataGeneratorImpl implements JsonDataGenerator {
                                     try (InputStream repeatBufferNewInputStream = repeatBuffer.getNewInputStream()) {
                                         IOUtils.copy(repeatBufferNewInputStream, newCopyOutputStream);
                                     }
-                                    for (int j = 1; j < repeatTimes; j++) {
-                                        newCopyOutputStream.write(COMMA_NEWLINE_BYTE_ARRAY);
-                                        try (InputStream repeatBufferNewInputStream = repeatBuffer.getNewInputStream()) {
-                                            IOUtils.copy(repeatBufferNewInputStream, newCopyOutputStream);
-                                        }
-                                    }
+                                    copyRepeatStream(repeatTimes, repeatBuffer, newCopyOutputStream, COMMA_NEWLINE_BYTE_ARRAY);
                                     try (ByteArrayBackupToFileOutputStream recursiveOutputStream = new ByteArrayBackupToFileOutputStream()) {
                                         try (InputStream newCopyOutputStreamNewInputStream = newCopyOutputStream.getNewInputStream()) {
                                             handleRepeats(newCopyOutputStreamNewInputStream, recursiveOutputStream);
@@ -142,12 +151,7 @@ public class JsonDataGeneratorImpl implements JsonDataGenerator {
                                     try (InputStream repeatBufferNewInputStream = repeatBuffer.getNewInputStream()) {
                                         IOUtils.copy(repeatBufferNewInputStream, newCopyFileStream);
                                     }
-                                    for (int j = 1; j < repeatTimes; j++) {
-                                        newCopyFileStream.write(COMMA_NEWLINE_BYTE_ARRAY);
-                                        try (InputStream repeatBufferInputStream = repeatBuffer.getNewInputStream()) {
-                                            IOUtils.copy(repeatBufferInputStream, newCopyFileStream);
-                                        }
-                                    }
+                                    copyRepeatStream(repeatTimes, repeatBuffer, newCopyFileStream, COMMA_NEWLINE_BYTE_ARRAY);
                                     newCopyFileStream.write(CLOSE_BRACKET_BYTE_ARRAY);
                                     try (ByteArrayBackupToFileOutputStream recursiveOutputStream = new ByteArrayBackupToFileOutputStream()) {
                                         try (InputStream inputStream1 = newCopyFileStream.getNewInputStream()) {
@@ -164,6 +168,39 @@ public class JsonDataGeneratorImpl implements JsonDataGenerator {
                                 }
                             }
                         }
+                        if ('<' == i && xmlTag==0) {
+							 i = bufferedReader.read();
+							while ('>'!=i && i!=-1)	{
+								xmlRepeatTagList.add((char) i);
+								repeatBuffer.write((char) i);
+								i = bufferedReader.read();
+							}
+							xmlTag++;
+							repeatBuffer.write((char) i);
+							xmlRepeatTag = "</" + readAsString(xmlRepeatTagList) + ">";
+						}
+						if (repeatBuffer.getLength() > 0 && !xmlRepeatTag.isEmpty() && repeatBuffer.toString().endsWith(xmlRepeatTag))
+						{
+							try (ByteArrayBackupToFileOutputStream newCopyOutputStream = new ByteArrayBackupToFileOutputStream()) {
+                                try (InputStream repeatBufferNewInputStream = repeatBuffer.getNewInputStream()) {
+                                    IOUtils.copy(repeatBufferNewInputStream, newCopyOutputStream);
+                                }
+                                copyRepeatStream(repeatTimes, repeatBuffer, newCopyOutputStream, NEWLINE_BYTE_ARRAY);
+                                try (ByteArrayBackupToFileOutputStream recursiveOutputStream = new ByteArrayBackupToFileOutputStream()) {
+                                    try (InputStream newCopyOutputStreamNewInputStream = newCopyOutputStream.getNewInputStream()) {
+                                        handleRepeats(newCopyOutputStreamNewInputStream, recursiveOutputStream);
+                                    }
+                                    try (InputStream recursiveOutputStreamNewInputStream = recursiveOutputStream.getNewInputStream()) {
+                                        IOUtils.copy(recursiveOutputStreamNewInputStream, outputStream);
+                                    }
+                                    repeatBuffer.setLength(0);
+                                    tempBuffer.setLength(0);
+                                    isRepeating = false;
+                                    bracketCount = 0;
+                                    xmlTag=0;
+                                }
+                            }
+						}
                     } else {
                         tempBuffer.write((char) i);
                         lastCharQueue.add((char) i);
@@ -210,6 +247,7 @@ public class JsonDataGeneratorImpl implements JsonDataGenerator {
                             isRepeating = true;
                             bracketCount = 0;
                             lastCharQueue.clear();
+                            xmlRepeatTagList.clear();
                         } catch (IllegalStateException e) {
                             setQueueCharacters(lastCharQueue, REPEAT);
                             bufferedReader.reset();
@@ -226,6 +264,17 @@ public class JsonDataGeneratorImpl implements JsonDataGenerator {
             bufferedReader.close();
         }
     }
+
+	private void copyRepeatStream(int repeatTimes,ByteArrayBackupToFileOutputStream repeatBuffer,
+		ByteArrayBackupToFileOutputStream newCopyFileStream, byte[] separatorBytes) 
+			throws IOException	{
+		for (int j = 1; j < repeatTimes; j++) {
+		    newCopyFileStream.write(separatorBytes);
+		    try (InputStream repeatBufferInputStream = repeatBuffer.getNewInputStream()) {
+		        IOUtils.copy(repeatBufferInputStream, newCopyFileStream);
+		    }
+		}
+	}
 
     private int parseRepeats(String repeatArguments) {
         final Matcher matcher = REPEAT_PARAMETERS_PATTERN.matcher(repeatArguments);
@@ -255,6 +304,14 @@ public class JsonDataGeneratorImpl implements JsonDataGenerator {
         }
         return new String(charArray);
     }
+    
+    private String readAsString(List<Character> characters) {
+        char[] charArray = new char[characters.size()];
+        for (int i = 0; i < charArray.length; i++) {
+            charArray[i] = characters.get(i);
+        }
+        return new String(charArray);
+    }
 
     private void setQueueCharacters(CircularFifoQueue<Character> characters, String string) {
         characters.clear();
@@ -274,7 +331,8 @@ public class JsonDataGeneratorImpl implements JsonDataGenerator {
             }
 
         } finally {
-            inputStream.close();
+        	IOUtils.closeQuietly(inputStream);
+        	IOUtils.closeQuietly(reader);
         }
 
     }
