@@ -167,7 +167,7 @@ public class CLIMainTest {
         timezoneTest("Europe/Paris", new ValidatorTrue() {
             @Override
             public boolean isTrue(JsonObject obj) {
-                return obj.get("date").getAsString().endsWith("CET");
+                return obj.get("date").getAsString().endsWith("CEST");
             }
         });
     }
