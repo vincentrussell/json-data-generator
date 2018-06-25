@@ -1,41 +1,5 @@
 package com.github.vincentrussell.json.datagenerator;
 
-import static org.hamcrest.CoreMatchers.isA;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringWriter;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Map;
-import java.util.regex.Pattern;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
-import org.apache.commons.io.IOUtils;
-import org.custommonkey.xmlunit.XMLUnit;
-import org.custommonkey.xmlunit.XpathEngine;
-import org.custommonkey.xmlunit.exceptions.XpathException;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.rules.TemporaryFolder;
-import org.springframework.test.util.ReflectionTestUtils;
-import org.w3c.dom.Document;
-import org.xml.sax.SAXException;
-
 import com.github.approval.Approvals;
 import com.github.approval.reporters.Reporters;
 import com.github.vincentrussell.json.datagenerator.functions.impl.Index;
@@ -44,6 +8,29 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import org.apache.commons.io.IOUtils;
+import org.custommonkey.xmlunit.XMLUnit;
+import org.custommonkey.xmlunit.XpathEngine;
+import org.custommonkey.xmlunit.exceptions.XpathException;
+import org.junit.*;
+import org.junit.rules.ExpectedException;
+import org.junit.rules.TemporaryFolder;
+import org.springframework.test.util.ReflectionTestUtils;
+import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.*;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Map;
+import java.util.regex.Pattern;
+
+import static org.hamcrest.CoreMatchers.isA;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 
 public class JsonDataGeneratorTest{
@@ -233,15 +220,14 @@ public class JsonDataGeneratorTest{
     public void repeatFunctionInvalid() throws IOException, JsonDataGeneratorException {
         parser.generateTestDataJson(this.getClass().getClassLoader().getResource("repeatFunctionInvalid.json"), outputStream);
         String result = outputStream.toString();
-        Pattern pattern = Pattern.compile("\\{\n" +
+        assertTrue(Pattern.compile("\\{\n" +
                 "    \"id\": \"dfasf235345345\",\n" +
                 "    \"name\": \"A green door\",\n" +
                 "    \"age\": 23,\n" +
-                "    \"price\": 12\\.50,\n" +
-                "    \"numbers\": \\['\\{\\{repeat\\(3\\)},\n" +
-                "    \\d+]\n" +
-                "}", Pattern.MULTILINE);
-        assertTrue(pattern.matcher(result).find());
+                "    \"price\": 12.50,\n" +
+                "    \"numbers\": \\['\\{\\{repeat\\(3\\)\\},\n" +
+                "             \\d+\\]\n" +
+                "}", Pattern.MULTILINE).matcher(result).matches());
     }
 
     @Test
