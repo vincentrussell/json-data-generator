@@ -4,25 +4,36 @@ import com.github.approval.Approvals;
 import com.github.approval.reporters.Reporters;
 import com.github.vincentrussell.json.datagenerator.functions.impl.Index;
 import com.github.vincentrussell.json.datagenerator.impl.JsonDataGeneratorImpl;
-import com.google.gson.*;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import org.apache.commons.io.IOUtils;
+import org.custommonkey.xmlunit.XMLUnit;
+import org.custommonkey.xmlunit.XpathEngine;
+import org.custommonkey.xmlunit.exceptions.XpathException;
 import org.junit.*;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import static junit.framework.TestCase.assertTrue;
 import static org.hamcrest.CoreMatchers.isA;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 
-public class JsonDataGeneratorTest {
+public class JsonDataGeneratorTest{
 
     private JsonDataGeneratorImpl parser;
     ByteArrayOutputStream outputStream;
@@ -60,15 +71,6 @@ public class JsonDataGeneratorTest {
             StringWriter writer = new StringWriter();
             IOUtils.copy(inputStream, writer, "UTF-8");
             return writer.toString();
-        }
-    }
-
-    private String remoteWhiteSpaceFromJson(String json) {
-        try {
-            JsonElement jsonObject = new com.google.gson.JsonParser().parse(json);
-            return jsonObject.toString();
-        } catch (JsonSyntaxException e) {
-            return json.trim();
         }
     }
 
@@ -218,15 +220,14 @@ public class JsonDataGeneratorTest {
     public void repeatFunctionInvalid() throws IOException, JsonDataGeneratorException {
         parser.generateTestDataJson(this.getClass().getClassLoader().getResource("repeatFunctionInvalid.json"), outputStream);
         String result = outputStream.toString();
-        Pattern pattern = Pattern.compile("\\{\n" +
+        assertTrue(Pattern.compile("\\{\n" +
                 "    \"id\": \"dfasf235345345\",\n" +
                 "    \"name\": \"A green door\",\n" +
                 "    \"age\": 23,\n" +
-                "    \"price\": 12\\.50,\n" +
-                "    \"numbers\": \\['\\{\\{repeat\\(3\\)},\n" +
-                "             \\d+]\n" +
-                "}", Pattern.MULTILINE);
-        assertTrue(pattern.matcher(result).find());
+                "    \"price\": 12.50,\n" +
+                "    \"numbers\": \\['\\{\\{repeat\\(3\\)\\},\n" +
+                "             \\d+\\]\n" +
+                "}", Pattern.MULTILINE).matcher(result).matches());
     }
 
     @Test
@@ -266,5 +267,28 @@ public class JsonDataGeneratorTest {
       parser.generateTestDataJson("{{", outputStream);
       String output = outputStream.toString("UTF-8");
       assertTrue("{{}}".equals(output));
+    }
+    
+    @Test
+    public void testXmlTemplate() throws IOException, JsonDataGeneratorException, SAXException, ParserConfigurationException, XpathException {
+        parser.generateTestDataJson(this.getClass().getClassLoader().getResource("xmlfunctionWithRepeat.xml"), outputStream);
+        
+        ByteArrayInputStream inputstream = new ByteArrayInputStream(outputStream.toByteArray());
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        dbf.setNamespaceAware(true);
+        dbf.setCoalescing(true);
+        dbf.setIgnoringElementContentWhitespace(true);
+        dbf.setIgnoringComments(true);
+        DocumentBuilder db = dbf.newDocumentBuilder();
+
+        Document doc = db.parse(inputstream);
+        XpathEngine simpleXpathEngine = XMLUnit.newXpathEngine();
+        String value = simpleXpathEngine.evaluate("//root/tags", doc);
+		assertEquals(value.split(",").length, 7);
+		assertTrue(simpleXpathEngine.evaluate("//root/element[1]/name", doc).length() > 1);
+		assertTrue(simpleXpathEngine.evaluate("//root/element[2]/name", doc).length() > 1);
+		assertTrue(simpleXpathEngine.evaluate("//root/friends/friend[1]/name", doc).length() > 1);
+		assertTrue(simpleXpathEngine.evaluate("//root/friends/friend[2]/name", doc).length() > 1);
+		assertTrue(simpleXpathEngine.evaluate("//root/friends/friend[3]/name", doc).length() > 1);
     }
 }

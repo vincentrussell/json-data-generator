@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+  '{{repeat(2)}}',
+  <element>
+    <id>{{guid()}}</id>
+	<name>{{firstName()}}</name>
+    <index>{{lastName()}}</index>
+  </element>
+
+<tags>
+      '{{repeat(7)}}',
+      {{lorem(1, "words")}}
+</tags>
+<friends>
+      '{{repeat(3)}}',
+	  <friend>
+        <id>{{index()}}</id>
+        <name>{{firstName()}} {{surname()}}</name>
+	</friend>
+</friends>
+</root>
