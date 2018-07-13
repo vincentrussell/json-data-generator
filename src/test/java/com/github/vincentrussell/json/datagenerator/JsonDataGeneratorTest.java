@@ -258,6 +258,16 @@ public class JsonDataGeneratorTest{
         assertEquals("A green door", obj.get("name").getAsString());
         assertEquals(12.50, obj.get("price").getAsDouble(), 0);
     }
+
+    @Test
+    public void testInvalidScenario()
+        throws JsonDataGeneratorException, UnsupportedEncodingException {
+      JsonDataGeneratorImpl parser = new JsonDataGeneratorImpl();
+      ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+      parser.generateTestDataJson("{{", outputStream);
+      String output = outputStream.toString("UTF-8");
+      assertTrue("{{}}".equals(output));
+    }
     
     @Test
     public void testXmlTemplate() throws IOException, JsonDataGeneratorException, SAXException, ParserConfigurationException, XpathException {

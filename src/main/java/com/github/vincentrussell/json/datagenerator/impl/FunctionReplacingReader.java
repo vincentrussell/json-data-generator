@@ -51,7 +51,7 @@ public class FunctionReplacingReader extends Reader {
         this.tokenNameBuffer.delete(0, this.tokenNameBuffer.length());
 
         data = this.pushbackReader.read();
-        while (data != '}') {
+        while (data != -1 && data != '}') {
             this.tokenNameBuffer.append((char) data);
             data = this.pushbackReader.read();
         }
@@ -59,7 +59,7 @@ public class FunctionReplacingReader extends Reader {
         data = this.pushbackReader.read();
 
         //not a valid function no second '}'
-        if (data != '}') {
+        if (data != -1 && data != '}') {
             this.pushbackReader.unread(data);
             this.pushbackReader.unread('}');
 
