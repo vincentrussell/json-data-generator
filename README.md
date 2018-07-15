@@ -10,7 +10,7 @@ Add a dependency to `com.github.vincentrussell:json-data-generator`.
 <dependency>
    <groupId>com.github.vincentrussell</groupId>
    <artifactId>json-data-generator</artifactId>
-   <version>1.4</version>
+   <version>1.4.1</version>
 </dependency>
 ```
 
@@ -49,7 +49,7 @@ parser.generateTestDataJson(InputStream inputStream, OutputStream outputStream);
 ## Running it as a standalone jar
 
 ```
-java -jar json-data-generator-1.4-standalone.jar -s source.json -d destination.json
+java -jar json-data-generator-1.4.1-standalone.jar -s source.json -d destination.json
 ```
 ### Options
 
@@ -407,10 +407,16 @@ public class NewFunction {
 then you can put the jar that you have created on the classpath with the the standalone jar (-f registers one or more classes with the Function Registry):
 
 ```
-java -cp json-data-generator-1.4-standalone.jar:yourfunctions.jar com.github.vincentrussell.json.datagenerator.CLIMain -s source.json -d destination.json -f my.package.NewFunction
+java -cp json-data-generator-1.4.1-standalone.jar:yourfunctions.jar com.github.vincentrussell.json.datagenerator.CLIMain -s source.json -d destination.json -f my.package.NewFunction
 ```
 
 # Change Log
+
+## [1.4.1](https://github.com/vincentrussell/json-data-generator/tree/json-data-generator-1.4.1) (2018-07-15)
+
+**Bugs:**
+
+- Added check for invalid scenarios to avoid going in infinite loop
 
 ## [1.4](https://github.com/vincentrussell/json-data-generator/tree/json-data-generator-1.4) (2018-06-25)
 
