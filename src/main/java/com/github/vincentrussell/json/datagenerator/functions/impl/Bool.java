@@ -10,4 +10,9 @@ public class Bool {
     public String getRandomBool() {
         return Boolean.valueOf(Math.random() < 0.5).toString();
     }
+    
+    @FunctionInvocation
+    public String getRandomBool(String chance) {
+    	return Boolean.valueOf(Math.random() < Float.parseFloat(chance)).toString();
+    }
 }
