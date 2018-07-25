@@ -112,6 +112,13 @@ public class DefaultFunctionsTest {
         Pattern pattern = Pattern.compile("true|false");
         assertTrue(pattern.matcher(result).matches());
     }
+    
+    @Test
+    public void boolWithChance() throws InvocationTargetException, IllegalAccessException {
+        String result = functionRegistry.executeFunction("bool", "0.9");
+        Pattern pattern = Pattern.compile("true|false");
+        assertTrue(pattern.matcher(result).matches());
+    }
 
     @Test
     public void index() throws InvocationTargetException, IllegalAccessException {
