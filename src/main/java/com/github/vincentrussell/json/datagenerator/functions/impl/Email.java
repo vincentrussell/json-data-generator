@@ -14,4 +14,10 @@ public class Email {
     public String email() {
         return FIRST_NAME.firstName().toLowerCase() + "." + LAST_NAME.lastName().toLowerCase() + "@" + COMPANY.company().toLowerCase() + ".com";
     }
+    
+    @FunctionInvocation
+    public String email(String domain) {
+        return FIRST_NAME.firstName().toLowerCase() + "." + LAST_NAME.lastName().toLowerCase() + "@" + domain.toLowerCase() + ".com";
+    }
+
 }

@@ -364,6 +364,14 @@ public class DefaultFunctionsTest {
         Pattern pattern = Pattern.compile("\\w+\\.\\w+\\@\\w+\\.com");
         assertTrue(pattern.matcher(result).matches());
     }
+    
+    @Test
+    public void emailWithDomain() throws InvocationTargetException, IllegalAccessException {
+        String result = functionRegistry.executeFunction("email", "github");
+        Pattern pattern = Pattern.compile("\\w+\\.\\w+\\@\\w+\\.com");
+        assertTrue(pattern.matcher(result).matches());
+        assertTrue(result.contains("@github.com"));
+    }
 
     @Test
     public void username() throws InvocationTargetException, IllegalAccessException {
