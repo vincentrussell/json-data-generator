@@ -149,6 +149,11 @@ random boolean:
 {{bool()}}
 ```
 
+random boolean with given probability:
+```
+{{bool(0.9)}}
+```
+
 an incrementing index integer
 ```
 {{index()}
@@ -411,6 +416,12 @@ java -cp json-data-generator-1.4.1-standalone.jar:yourfunctions.jar com.github.v
 ```
 
 # Change Log
+
+## [1.5](https://github.com/vincentrussell/json-data-generator/tree/json-data-generator-1.5) (2018-07-28)
+
+**Improvements:**
+
+- Adding boolean with probability support
 
 ## [1.4.1](https://github.com/vincentrussell/json-data-generator/tree/json-data-generator-1.4.1) (2018-07-15)
 
