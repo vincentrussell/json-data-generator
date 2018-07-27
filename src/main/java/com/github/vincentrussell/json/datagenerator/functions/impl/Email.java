@@ -17,7 +17,7 @@ public class Email {
     
     @FunctionInvocation
     public String email(String domain) {
-        return FIRST_NAME.firstName().toLowerCase() + "." + LAST_NAME.lastName().toLowerCase() + "@" + domain.toLowerCase() + ".com";
+        return FIRST_NAME.firstName().toLowerCase() + "." + LAST_NAME.lastName().toLowerCase() + "@" + domain.toLowerCase();
     }
 
 }

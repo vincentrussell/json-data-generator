@@ -10,7 +10,7 @@ Add a dependency to `com.github.vincentrussell:json-data-generator`.
 <dependency>
    <groupId>com.github.vincentrussell</groupId>
    <artifactId>json-data-generator</artifactId>
-   <version>1.4.1</version>
+   <version>1.5</version>
 </dependency>
 ```
 
@@ -49,7 +49,7 @@ parser.generateTestDataJson(InputStream inputStream, OutputStream outputStream);
 ## Running it as a standalone jar
 
 ```
-java -jar json-data-generator-1.4.1-standalone.jar -s source.json -d destination.json
+java -jar json-data-generator-1.5-standalone.jar -s source.json -d destination.json
 ```
 ### Options
 
@@ -264,6 +264,11 @@ random email:
 {{email()}}
 ```
 
+random email with domain:
+```
+{{email("mydomain.com")}}
+```
+
 random social security number:
 ```
 {{ssn()}}
@@ -412,7 +417,7 @@ public class NewFunction {
 then you can put the jar that you have created on the classpath with the the standalone jar (-f registers one or more classes with the Function Registry):
 
 ```
-java -cp json-data-generator-1.4.1-standalone.jar:yourfunctions.jar com.github.vincentrussell.json.datagenerator.CLIMain -s source.json -d destination.json -f my.package.NewFunction
+java -cp json-data-generator-1.5-standalone.jar:yourfunctions.jar com.github.vincentrussell.json.datagenerator.CLIMain -s source.json -d destination.json -f my.package.NewFunction
 ```
 
 # Change Log
@@ -422,6 +427,7 @@ java -cp json-data-generator-1.4.1-standalone.jar:yourfunctions.jar com.github.v
 **Improvements:**
 
 - Adding boolean with probability support
+- Adding the ability to provide a domain to the email function
 
 ## [1.4.1](https://github.com/vincentrussell/json-data-generator/tree/json-data-generator-1.4.1) (2018-07-15)
 
