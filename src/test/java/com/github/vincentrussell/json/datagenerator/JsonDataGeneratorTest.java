@@ -152,6 +152,27 @@ public class JsonDataGeneratorTest{
                 "}", outputStream);
     }
 
+    @Test
+    public void concatWithBracesEscaped() throws IOException, JsonDataGeneratorException {
+        parser.generateTestDataJson("{\n" +
+                "    \"concattest\": \"{{concat(\"\\{\", \"test\", \"\\}\")}}\",\n" +
+                "}", outputStream);
+        String results = new String(outputStream.toByteArray());
+        assertEquals("{\n" +
+                "    \"concattest\": \"{test}\",\n" +
+                "}",results);
+    }
+
+    @Test
+    public void concatWithEscapesWithoutBraces() throws IOException, JsonDataGeneratorException {
+        parser.generateTestDataJson("{\n" +
+                "    \"concattest\": \"{{concat(\"\\\\\", \"test\", \"\\}\")}}\",\n" +
+                "}", outputStream);
+        String results = new String(outputStream.toByteArray());
+        assertEquals("{\n" +
+                "    \"concattest\": \"\\\\test}\",\n" +
+                "}",results);
+    }
 
     @Test
     public void repeatFunctionRangeEqual() throws IOException, JsonDataGeneratorException {

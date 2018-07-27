@@ -339,6 +339,14 @@ random string with alpha-numeric characters (defaults to between 10 and 20 chara
 {{alphaNumeric(length)}}
 ```
 
+##Escape braces
+
+If you want to escape braces from within a function use a single escape character as seen in the example below:
+
+```
+{{concat("\{", "test", "\}")}}
+```
+
 ##XML support
 
 ```
@@ -428,6 +436,7 @@ java -cp json-data-generator-1.5-standalone.jar:yourfunctions.jar com.github.vin
 
 - Adding boolean with probability support
 - Adding the ability to provide a domain to the email function
+- Added the ability to escape brackets within functions so that the interperter can understand that the function and wont return early
 
 ## [1.4.1](https://github.com/vincentrussell/json-data-generator/tree/json-data-generator-1.4.1) (2018-07-15)
 

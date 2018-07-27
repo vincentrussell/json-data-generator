@@ -188,6 +188,13 @@ public class DefaultFunctionsTest {
     }
 
     @Test
+    public void concatWithBrackets() throws InvocationTargetException, IllegalAccessException {
+        String[] args = new String[]{"{", "test", "}"};
+        assertEquals("{test}", functionRegistry.executeFunction("concat", args));
+    }
+
+
+    @Test
     public void toUpper() throws InvocationTargetException, IllegalAccessException {
         String[] args = new String[]{"one"};
         assertEquals("ONE", functionRegistry.executeFunction("toUpperCase", args));
