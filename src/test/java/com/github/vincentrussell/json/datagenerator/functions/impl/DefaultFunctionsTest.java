@@ -377,7 +377,7 @@ public class DefaultFunctionsTest {
         String result = functionRegistry.executeFunction("email", "github.com");
         Pattern pattern = Pattern.compile("\\w+\\.\\w+\\@\\w+\\.com");
         assertTrue(pattern.matcher(result).matches());
-        assertTrue(result.contains("@github.com"));
+        assertTrue(result.endsWith("@github.com"));
     }
 
     @Test

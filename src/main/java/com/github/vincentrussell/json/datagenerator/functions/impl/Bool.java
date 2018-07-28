@@ -12,7 +12,7 @@ public class Bool {
     }
     
     @FunctionInvocation
-    public String getRandomBool(String chance) {
-    	return Boolean.valueOf(Math.random() < Float.parseFloat(chance)).toString();
+    public String getRandomBool(String probability) {
+    	return Boolean.valueOf(Math.random() < Float.parseFloat(probability)).toString();
     }
 }
