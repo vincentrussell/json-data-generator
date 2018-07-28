@@ -93,6 +93,20 @@ public class DefaultFunctionsTest {
     }
 
     @Test
+    public void hexDefault16bytes() throws InvocationTargetException, IllegalAccessException {
+        String result = functionRegistry.executeFunction("hex", null);
+        Pattern pattern = Pattern.compile("[0-9a-f]{32}");
+        assertTrue(pattern.matcher(result).matches());
+    }
+
+    @Test
+    public void hex2bytes() throws InvocationTargetException, IllegalAccessException {
+        String result = functionRegistry.executeFunction("hex", "2");
+        Pattern pattern = Pattern.compile("[0-9a-f]{4}");
+        assertTrue(pattern.matcher(result).matches());
+    }
+
+    @Test
     public void guid() throws InvocationTargetException, IllegalAccessException {
         String result = functionRegistry.executeFunction("guid", null);
         Pattern pattern = Pattern.compile("[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}");

@@ -139,6 +139,16 @@ uuid:
 {{uuid()}}
 ```
 
+hex (16 bytes):
+```
+{{hex()}}
+```
+
+hex (with byte size):
+```
+{{hex(size)}}
+```
+
 objectId (12 byte hex string):
 ```
 {{objectId()}}
@@ -437,6 +447,7 @@ java -cp json-data-generator-1.5-standalone.jar:yourfunctions.jar com.github.vin
 - Adding boolean with probability support
 - Adding the ability to provide a domain to the email function
 - Added the ability to escape brackets within functions so that the interperter can understand that the function and wont return early
+- Added a hex function
 
 ## [1.4.1](https://github.com/vincentrussell/json-data-generator/tree/json-data-generator-1.4.1) (2018-07-15)
 

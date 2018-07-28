@@ -59,6 +59,7 @@ public class FunctionRegistry {
         registerClass(Ipv4.class);
         registerClass(Ipv6.class);
         registerClass(ObjectId.class);
+        registerClass(Hex.class);
     }
 
     public void registerClass(Class clazz) {
