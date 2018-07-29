@@ -6,3 +6,6 @@ dependency-reduced-pom.xml
 *.releaseBackup
 release.properties
 *.versionsBackup
+.classpath
+.project
+.settings/

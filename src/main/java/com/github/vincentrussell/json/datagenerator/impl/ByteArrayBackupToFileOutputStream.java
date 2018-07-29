@@ -1,10 +1,19 @@
 package com.github.vincentrussell.json.datagenerator.impl;
 
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.RandomAccessFile;
+import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
+import java.util.Arrays;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-
-import java.io.*;
-import java.util.Arrays;
 
 public class ByteArrayBackupToFileOutputStream extends OutputStream {
 
@@ -77,7 +86,8 @@ public class ByteArrayBackupToFileOutputStream extends OutputStream {
             throw new IOException("Pushback buffer overflow");
         }
         if (buf == null) {
-            RandomAccessFile randomAccessFile = new RandomAccessFile(file, "rw");
+            @SuppressWarnings("resource")
+			RandomAccessFile randomAccessFile = new RandomAccessFile(file, "rw");
             randomAccessFile.setLength(file.length() - 1);
             return;
         }
@@ -86,7 +96,8 @@ public class ByteArrayBackupToFileOutputStream extends OutputStream {
         buf[--count] = (byte) 0;
     }
 
-    public synchronized void write(byte b[], int off, int len) throws IOException {
+    @Override
+	public synchronized void write(byte b[], int off, int len) throws IOException {
         if ((off < 0) || (off > b.length) || (len < 0) ||
                 ((off + len) - b.length > 0)) {
             throw new IndexOutOfBoundsException();
@@ -126,12 +137,13 @@ public class ByteArrayBackupToFileOutputStream extends OutputStream {
         return new String(buf, 0, count, charsetName);
     }
 
-    public void close() throws IOException {
+    @Override
+	public void close() throws IOException {
         if (fileOutputStream != null) {
             fileOutputStream.close();
         }
         if (file != null) {
-            FileUtils.forceDelete(file);
+			FileUtils.forceDelete(file);
         }
     }
 
@@ -170,7 +182,8 @@ public class ByteArrayBackupToFileOutputStream extends OutputStream {
             if (length > file.length()) {
                 throw new IllegalStateException("length: " + length + " is greater than file length");
             }
-            RandomAccessFile randomAccessFile = new RandomAccessFile(file, "rw");
+            @SuppressWarnings("resource")
+			RandomAccessFile randomAccessFile = new RandomAccessFile(file, "rw");
             randomAccessFile.setLength(length);
             fileOutputStream = new FileOutputStream(file, true);
         }

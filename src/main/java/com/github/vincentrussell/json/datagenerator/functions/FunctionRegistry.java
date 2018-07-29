@@ -61,7 +61,7 @@ public class FunctionRegistry {
         registerClass(ObjectId.class);
     }
 
-    public void registerClass(Class clazz) {
+    public void registerClass(Class<?> clazz) {
         Function annotation = (Function) clazz.getAnnotation(Function.class);
         checkClassValidity(clazz, annotation);
         try {
@@ -109,7 +109,7 @@ public class FunctionRegistry {
         }
     }
 
-    private void checkClassValidity(Class clazz, Function annotation) {
+    private void checkClassValidity(Class<?> clazz, Function annotation) {
         if (annotation == null) {
             throw new IllegalArgumentException(clazz.getName() + " must be annotated with " + Function.class.getName());
         }
@@ -124,8 +124,8 @@ public class FunctionRegistry {
             }
         }
 
-        int zeroArgConstructorCount = Iterables.size(Iterables.filter(Arrays.asList(clazz.getConstructors()), new Predicate<Constructor>() {
-            public boolean apply(Constructor constructor) {
+        int zeroArgConstructorCount = Iterables.size(Iterables.filter(Arrays.asList(clazz.getConstructors()), new Predicate<Constructor<?>>() {
+            public boolean apply(Constructor<?> constructor) {
                 return constructor.getParameterTypes().length == 0;
             }
         }));
@@ -161,7 +161,7 @@ public class FunctionRegistry {
     }
 
     public Method getMethod(String functionName, String... arguments) throws IllegalArgumentException {
-        final List<Class> classList = new ArrayList<>();
+        final List<Class<?>> classList = new ArrayList<>();
         if (arguments != null) {
             for (String argument : arguments) {
                 if (argument != null) {
@@ -184,7 +184,7 @@ public class FunctionRegistry {
         return holder.getMethod();
     }
 
-    private MethodAndObjectHolder getHolder(String functionName, List<Class> classList) throws IllegalAccessException {
+    private MethodAndObjectHolder getHolder(String functionName, List<Class<?>> classList) throws IllegalAccessException {
         MethodAndObjectHolder holder = functionInvocationHolderMethodConcurrentHashMap.get(new FunctionInvocationHolder(functionName, classList.toArray(new Class[classList.size()])));
 
         if (holder == null) {
@@ -214,27 +214,30 @@ public class FunctionRegistry {
             return method;
         }
 
-        public Object getInstance() {
+        @SuppressWarnings("unused")
+		public Object getInstance() {
             return instance;
         }
     }
 
     private static class FunctionInvocationHolder {
         private final String functionName;
-        private final Class[] parameterTypes;
+        private final Class<?>[] parameterTypes;
 
-        private FunctionInvocationHolder(String functionName, Class[] parameterTypes) {
+        private FunctionInvocationHolder(String functionName, Class<?>[] parameterTypes) {
             notNull(functionName, "a function name must be provided");
             notNull(parameterTypes, "parameter types must be provided");
             this.functionName = functionName;
             this.parameterTypes = parameterTypes;
         }
 
-        public String getFunctionName() {
+        @SuppressWarnings("unused")
+		public String getFunctionName() {
             return functionName;
         }
 
-        public Class[] getParameterTypes() {
+        @SuppressWarnings("unused")
+		public Class<?>[] getParameterTypes() {
             return parameterTypes;
         }
 

@@ -3,9 +3,6 @@ package com.github.vincentrussell.json.datagenerator.functions.impl;
 import com.github.vincentrussell.json.datagenerator.functions.Function;
 import com.github.vincentrussell.json.datagenerator.functions.FunctionInvocation;
 
-import java.net.Inet6Address;
-import java.util.Random;
-
 @Function(name = "ipv6")
 public class Ipv6 {
 
