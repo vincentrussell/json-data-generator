@@ -48,7 +48,7 @@ public class JsonDataGeneratorTest{
     public void setUp() {
         parser = new JsonDataGeneratorImpl();
         outputStream = new ByteArrayOutputStream();
-        ((Map<?, ?>)ReflectionTestUtils.getField(Index.class,"stringIndexHolderMap")).clear();
+        ((Map<?, ?>)ReflectionTestUtils.getField(Index.class,"STRING_INDEX_HOLDER_MAP")).clear();
         Approvals.setReporter(Reporters.console());
     }
 

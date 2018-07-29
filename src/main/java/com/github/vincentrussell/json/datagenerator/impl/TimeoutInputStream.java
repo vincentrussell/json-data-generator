@@ -2,9 +2,18 @@ package com.github.vincentrussell.json.datagenerator.impl;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.concurrent.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
-public class TimeoutInputStream extends InputStream {
+/**
+ * {@link InputStream} wrapper that will timeout if read doesn't happen within specified time
+ */
+public final class TimeoutInputStream extends InputStream {
 
     private static ExecutorService EXECUTOR = Executors.newFixedThreadPool(1);
 
@@ -14,7 +23,14 @@ public class TimeoutInputStream extends InputStream {
     private boolean receivedData = false;
 
 
-    public TimeoutInputStream(InputStream inputStream, long timeout, TimeUnit timeUnit) {
+    /**
+     * default constuctor
+     * @param inputStream wrapped {@link InputStream}
+     * @param timeout timeout value
+     * @param timeUnit time unit value like millis or seconds
+     */
+    public TimeoutInputStream(final InputStream inputStream, final long timeout,
+        final TimeUnit timeUnit) {
         this.inputStream = inputStream;
         this.timeout = timeout;
         this.timeUnit = timeUnit;
@@ -35,7 +51,8 @@ public class TimeoutInputStream extends InputStream {
         return result;
     }
 
-    private Integer getInteger(Future<Integer> future) throws InterruptedException, ExecutionException, TimeoutException {
+    private Integer getInteger(final Future<Integer> future) throws InterruptedException,
+        ExecutionException, TimeoutException {
         if (!receivedData) {
             return future.get(1, TimeUnit.MINUTES);
         } else {
@@ -48,11 +65,14 @@ public class TimeoutInputStream extends InputStream {
         //noop
     }
 
-    private static class ReadNext implements Callable<Integer> {
+    /**
+     * helper class to support using a future to get the next integer from the inputstream
+     */
+    private static final class ReadNext implements Callable<Integer> {
 
         private final InputStream inputStream;
 
-        private ReadNext(InputStream inputStream) {
+        private ReadNext(final InputStream inputStream) {
             this.inputStream = inputStream;
         }
 

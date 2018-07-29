@@ -349,6 +349,16 @@ random string with alpha-numeric characters (defaults to between 10 and 20 chara
 {{alphaNumeric(length)}}
 ```
 
+lower case a string:
+```
+{{toLowerCase("red")}}
+```
+
+upper case a string:
+```
+{{toUpperCase("red")}}
+```
+
 ##Escape braces
 
 If you want to escape braces from within a function use a single escape character as seen in the example below:

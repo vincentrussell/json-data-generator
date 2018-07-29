@@ -7,24 +7,39 @@ import java.nio.CharBuffer;
 
 import com.github.vincentrussell.json.datagenerator.TokenResolver;
 
+/**
+ * {@link Reader} capable of finding functions in the reader and running them
+ */
 public class FunctionReplacingReader extends Reader {
 
-    protected PushbackReader pushbackReader = null;
-    protected TokenResolver tokenResolver = null;
-    protected StringBuilder tokenNameBuffer = new StringBuilder();
-    protected String tokenValue = null;
-    protected int tokenValueIndex = 0;
+    private static final int DEFAULT_PUSHBACK_BUFFER_SIZE = 200;
+    private PushbackReader pushbackReader = null;
+    private TokenResolver tokenResolver = null;
+    private StringBuilder tokenNameBuffer = new StringBuilder();
+    private String tokenValue = null;
+    private int tokenValueIndex = 0;
 
-    public FunctionReplacingReader(Reader source, TokenResolver resolver) {
-        pushbackReader = new PushbackReader(source, 80);
+    /**
+     * Reader that can find the functions from another reader and replace them
+     * @param source the source reader
+     * @param resolver the token resolver
+     */
+    public FunctionReplacingReader(final Reader source, final TokenResolver resolver) {
+        pushbackReader = new PushbackReader(source, DEFAULT_PUSHBACK_BUFFER_SIZE);
         tokenResolver = resolver;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public int read(CharBuffer target) throws IOException {
+    public int read(final CharBuffer target) throws IOException {
         throw new RuntimeException("Operation Not Supported");
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int read() throws IOException {
         if (this.tokenValue != null) {
@@ -39,7 +54,9 @@ public class FunctionReplacingReader extends Reader {
 
         int data = this.pushbackReader.read();
 
-        if (data != '{') return data;
+        if (data != '{') {
+            return data;
+        }
 
         data = this.pushbackReader.read();
         if (data != '{') {
@@ -101,41 +118,65 @@ public class FunctionReplacingReader extends Reader {
 
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public int read(char cbuf[]) throws IOException {
+    public int read(final char[] cbuf) throws IOException {
         throw new RuntimeException("Operation Not Supported");
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public int read(char cbuf[], int off, int len) throws IOException {
+    public int read(final char[] cbuf, final int off, final int len) throws IOException {
         throw new RuntimeException("Operation Not Supported");
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void close() throws IOException {
         this.pushbackReader.close();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public long skip(long n) throws IOException {
+    public long skip(final long n) throws IOException {
         throw new RuntimeException("Operation Not Supported");
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean ready() throws IOException {
         return this.pushbackReader.ready();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean markSupported() {
         return false;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public void mark(int readAheadLimit) throws IOException {
+    public void mark(final int readAheadLimit) throws IOException {
         throw new RuntimeException("Operation Not Supported");
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void reset() throws IOException {
         throw new RuntimeException("Operation Not Supported");

@@ -7,47 +7,66 @@ import com.github.vincentrussell.json.datagenerator.impl.IndexHolder;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * an incrementing index integer
+ */
 @Function(name = "index")
 public class Index {
 
-    private static Map<String,IndexHolder> stringIndexHolderMap = new ConcurrentHashMap<>();
+    private static final Map<String, IndexHolder>
+        STRING_INDEX_HOLDER_MAP = new ConcurrentHashMap<>();
 
 
     public static final String DEFAULT = "DEFAULT";
 
+    /**
+     * function call with default index name
+     * @return the result
+     */
     @FunctionInvocation
     public String getIndex() {
         return getIndex(DEFAULT);
     }
 
+    /**
+     * index for given index name
+     * @param indexName name of index
+     * @return the result
+     */
     @FunctionInvocation
-    public String getIndex(String indexName) {
+    public String getIndex(final String indexName) {
         try {
-            return getIndex(DEFAULT,Integer.parseInt(indexName));
+            return getIndex(DEFAULT, Integer.parseInt(indexName));
         } catch (NumberFormatException e) {
             return "" + getIndexHolder(indexName).getNextIndex();
         }
     }
 
+    /**
+     * index for index name
+     * @param indexName name of index
+     * @param startingPoint starting point integer for index
+     * @return the result
+     */
     @FunctionInvocation
-    public String getIndex(String indexName, String startingPoint) {
-        return getIndex(indexName,Integer.parseInt(startingPoint));
+    public String getIndex(final String indexName, final String startingPoint) {
+        return getIndex(indexName, Integer.parseInt(startingPoint));
     }
 
-    private String getIndex(String indexName, int startingPoint) {
-        return "" + getIndexHolder(indexName,startingPoint).getNextIndex();
+    private String getIndex(final String indexName, final int startingPoint) {
+        return "" + getIndexHolder(indexName, startingPoint).getNextIndex();
     }
 
-    private IndexHolder getIndexHolder(String indexName) {
-        return getIndexHolder(indexName,0);
+    private IndexHolder getIndexHolder(final String indexName) {
+        return getIndexHolder(indexName, 0);
     }
 
-    private IndexHolder getIndexHolder(String indexName, int startingPoint) {
-        if (stringIndexHolderMap.containsKey(indexName)) {
-            return stringIndexHolderMap.get(indexName);
+    private IndexHolder getIndexHolder(final String indexName, final int startingPoint) {
+        if (STRING_INDEX_HOLDER_MAP.containsKey(indexName)) {
+            return STRING_INDEX_HOLDER_MAP.get(indexName);
         }
         IndexHolder indexHolder = new IndexHolder(startingPoint);
-        stringIndexHolderMap.put(indexName, indexHolder);
+        STRING_INDEX_HOLDER_MAP.put(indexName, indexHolder);
         return indexHolder;
     }
 }

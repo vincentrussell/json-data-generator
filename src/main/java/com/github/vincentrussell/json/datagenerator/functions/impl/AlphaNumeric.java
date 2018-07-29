@@ -4,35 +4,47 @@ import com.github.vincentrussell.json.datagenerator.functions.Function;
 import com.github.vincentrussell.json.datagenerator.functions.FunctionInvocation;
 import org.apache.commons.lang.RandomStringUtils;
 
-import java.util.Random;
-
+/**
+ * random string with alpha-numeric characters (defaults to between 10 and 20 characters)
+ */
 @Function(name = "alphaNumeric")
 public class AlphaNumeric {
 
-    private static final Random RANDOM = new Random();
-
+    /**
+     * Function call with min and max arguments
+     * @param min minium length
+     * @param max maximum length
+     * @return the result
+     */
     @FunctionInvocation
-    public String getAlphaNumeric(String min, String max) {
-        int randomInt = getRandomInteger(Integer.parseInt(min), Integer.parseInt(max));
+    public String getAlphaNumeric(final String min, final String max) {
+        int randomInt = FunctionUtils.getRandomInteger(Integer.parseInt(min),
+            Integer.parseInt(max));
         return getRandomAlphabetic(randomInt);
     }
 
+    /**
+     * Default function call
+     * @return the result
+     */
     @FunctionInvocation
+    @SuppressWarnings("checkstyle:magicnumber")
     public String getAlphaNumeric() {
-        int randomInt = getRandomInteger(10, 20);
+        int randomInt = FunctionUtils.getRandomInteger(10, 20);
         return getRandomAlphabetic(randomInt);
     }
 
+    /**
+     * Function call with length
+     * @param length length of string
+     * @return the result
+     */
     @FunctionInvocation
-    public String getAlphaNumeric(String length) {
+    public String getAlphaNumeric(final String length) {
         return getRandomAlphabetic(Integer.parseInt(length));
     }
 
-    private int getRandomInteger(Integer min, Integer max) {
-        return RANDOM.nextInt(max - min) + min;
-    }
-
-    public String getRandomAlphabetic(int length) {
+    private String getRandomAlphabetic(final int length) {
         return RandomStringUtils.randomAlphanumeric(length);
     }
 

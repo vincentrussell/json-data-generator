@@ -27,6 +27,11 @@
         <jdkVersion>1.7</jdkVersion>
         <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
         <maven.version>3.0.4</maven.version>
+        <maven-checkstyle-plugin.version>3.0.0</maven-checkstyle-plugin.version>
+        <checkstyle.version>8.11</checkstyle.version>
+        <checkstyle.configLocation>${project.basedir}/src/test/resources/checkstyle/checkstyle_checks.xml</checkstyle.configLocation>
+        <checkstyle.suppressions.file>${project.basedir}/src/test/resources/checkstyle/checkstyle_suppressions.xml</checkstyle.suppressions.file>
+        <checkstyle.excludes>**/x/y/generated/GeneratedClass.java, **/generated/**</checkstyle.excludes>
     </properties>
 
     <prerequisites>
@@ -94,6 +99,11 @@
                 <version>4.12</version>
             </dependency>
             <dependency>
+                <groupId>com.puppycrawl.tools</groupId>
+                <artifactId>checkstyle</artifactId>
+                <version>${checkstyle.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.hamcrest</groupId>
                 <artifactId>hamcrest-junit</artifactId>
                 <version>2.0.0.0</version>
@@ -122,6 +132,15 @@
     </dependencyManagement>
 
     <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>maven</groupId>
+                    <artifactId>maven-checkstyle-plugin</artifactId>
+                    <version>${maven-checkstyle-plugin.version}</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -164,6 +183,43 @@
                                 </transformer>
                             </transformers>
                         </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <version>${maven-checkstyle-plugin.version}</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>com.puppycrawl.tools</groupId>
+                        <artifactId>checkstyle</artifactId>
+                        <version>${checkstyle.version}</version>
+                    </dependency>
+                </dependencies>
+                <configuration>
+                    <configLocation>${checkstyle.configLocation}</configLocation>
+                    <suppressionsLocation>${checkstyle.suppressions.file}</suppressionsLocation>
+                    <!-- The things above this line are required, the rest is 'bonus' -->
+                    <consoleOutput>true</consoleOutput>
+                    <!-- Remove or switch to false to keep building even with checkstyle errors -->
+                    <failOnViolation>true</failOnViolation>
+                    <failsOnError>true</failsOnError>
+                    <logViolationsToConsole>true</logViolationsToConsole>
+                    <!-- change to 'error' to be more strict about following checkstyle conventions -->
+                    <violationSeverity>error</violationSeverity>
+                    <includeTestSourceDirectory>true</includeTestSourceDirectory>
+                    <excludes>${checkstyle.excludes}</excludes>
+                    <excludes>${project.basedir}/src/test/java/**</excludes>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>validate</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>checkstyle</goal>
+                            <goal>checkstyle-aggregate</goal>
+                        </goals>
                     </execution>
                 </executions>
             </plugin>
