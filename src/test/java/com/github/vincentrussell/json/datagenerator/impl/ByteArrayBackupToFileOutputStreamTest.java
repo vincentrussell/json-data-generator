@@ -10,8 +10,6 @@ import static org.junit.Assert.*;
 
 public class ByteArrayBackupToFileOutputStreamTest {
 
-    private static final Random RANDOM = new Random();
-
     @Test
     public void notOverflow() throws IOException {
         int size = 3;

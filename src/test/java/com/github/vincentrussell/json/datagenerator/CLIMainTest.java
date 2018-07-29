@@ -1,8 +1,20 @@
 package com.github.vincentrussell.json.datagenerator;
 
-import com.github.vincentrussell.json.datagenerator.functions.Function;
-import com.github.vincentrussell.json.datagenerator.functions.FunctionInvocation;
-import com.google.gson.JsonObject;
+import static com.github.vincentrussell.json.datagenerator.CLIMain.ENTER_JSON_TEXT;
+import static junit.framework.TestCase.assertTrue;
+import static org.hamcrest.core.StringStartsWith.startsWith;
+import static org.hamcrest.junit.MatcherAssert.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.junit.contrib.java.lang.system.TextFromStandardInputStream.emptyStandardInputStream;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.util.List;
+
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -15,16 +27,9 @@ import org.junit.contrib.java.lang.system.TextFromStandardInputStream;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 
-import java.io.*;
-import java.security.Permission;
-import java.util.List;
-
-import static com.github.vincentrussell.json.datagenerator.CLIMain.ENTER_JSON_TEXT;
-import static junit.framework.TestCase.assertTrue;
-import static org.hamcrest.core.StringStartsWith.startsWith;
-import static org.hamcrest.junit.MatcherAssert.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.contrib.java.lang.system.TextFromStandardInputStream.emptyStandardInputStream;
+import com.github.vincentrussell.json.datagenerator.functions.Function;
+import com.github.vincentrussell.json.datagenerator.functions.FunctionInvocation;
+import com.google.gson.JsonObject;
 
 public class CLIMainTest {
 
@@ -108,7 +113,7 @@ public class CLIMainTest {
             CLIMain.main(new String[]{"-s", sourceFile.getAbsolutePath(), "-d", destinationFile.getAbsolutePath()});
             assertTrue(destinationFile.exists());
             try (FileInputStream fileInputStream = new FileInputStream(destinationFile)) {
-                List list = IOUtils.readLines(fileInputStream);
+                List<?> list = IOUtils.readLines(fileInputStream);
                 assertEquals(7, list.size());
             }
 
@@ -222,26 +227,5 @@ public class CLIMainTest {
         public String invocation() {
             return "ran successfully 2";
         }
-
-
     }
-
-    private static class NoExitSecurityManager extends SecurityManager
-    {
-        @Override
-        public void checkPermission(Permission perm)
-        {
-            // allow anything.
-        }
-        @Override
-        public void checkPermission(Permission perm, Object context)
-        {
-            // allow anything.
-        }
-        @Override
-        public void checkExit(int status) {
-            super.checkExit(status);
-        }
-    }
-
 }

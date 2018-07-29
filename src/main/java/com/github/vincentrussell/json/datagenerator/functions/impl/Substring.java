@@ -11,17 +11,8 @@ public class Substring {
         return value.substring(Integer.valueOf(beginIndex));
     }
 
-    private String substring(String value, int beginIndex) {
-        return value.substring(beginIndex);
-    }
-
     @FunctionInvocation
     public String substring(String value, String beginIndex, String endIndex) {
         return value.substring(Integer.valueOf(beginIndex), Integer.valueOf(endIndex));
     }
-
-    private String substring(String value, int beginIndex, int endIndex) {
-        return value.substring(beginIndex, endIndex);
-    }
-
 }

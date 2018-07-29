@@ -131,10 +131,6 @@ public class FunctionJJTreeTest {
             return Float.toString(randomNumber);
         }
 
-        private String getRandomFloat(Float min, Float max) {
-            return getRandomFloat(min, max, null);
-        }
-
         @FunctionInvocation
         public String getRandomFloat(String min, String max) {
             return getRandomFloat(min, max, null);

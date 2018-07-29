@@ -1,8 +1,9 @@
 package com.github.vincentrussell.json.datagenerator;
 
 public class JsonDataGeneratorException extends Exception {
+	private static final long serialVersionUID = 1L;
 
-    public JsonDataGeneratorException() {
+	public JsonDataGeneratorException() {
         super();
     }
 

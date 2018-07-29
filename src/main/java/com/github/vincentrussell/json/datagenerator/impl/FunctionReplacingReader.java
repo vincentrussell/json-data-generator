@@ -1,12 +1,11 @@
 package com.github.vincentrussell.json.datagenerator.impl;
 
-import com.github.vincentrussell.json.datagenerator.TokenResolver;
-
 import java.io.IOException;
 import java.io.PushbackReader;
 import java.io.Reader;
 import java.nio.CharBuffer;
-import java.util.Stack;
+
+import com.github.vincentrussell.json.datagenerator.TokenResolver;
 
 public class FunctionReplacingReader extends Reader {
 

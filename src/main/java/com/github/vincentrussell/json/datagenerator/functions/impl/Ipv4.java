@@ -1,10 +1,9 @@
 package com.github.vincentrussell.json.datagenerator.functions.impl;
 
+import java.util.Random;
+
 import com.github.vincentrussell.json.datagenerator.functions.Function;
 import com.github.vincentrussell.json.datagenerator.functions.FunctionInvocation;
-
-import java.text.DecimalFormat;
-import java.util.Random;
 
 @Function(name = "ipv4")
 public class Ipv4 {

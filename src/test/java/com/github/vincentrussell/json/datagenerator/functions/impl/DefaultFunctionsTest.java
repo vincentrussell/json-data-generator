@@ -335,7 +335,7 @@ public class DefaultFunctionsTest {
         assertFunctionRandomFromField("city", City.class, "CITIES");
     }
 
-    private void assertFunctionRandomFromField(String functionName, Class clazz, String... fieldNames) throws NoSuchFieldException, IllegalAccessException, InvocationTargetException {
+    private void assertFunctionRandomFromField(String functionName, Class<?> clazz, String... fieldNames) throws NoSuchFieldException, IllegalAccessException, InvocationTargetException {
         String result = functionRegistry.executeFunction(functionName, null);
         List<String> values = new ArrayList<String>();
         for (String fieldName : fieldNames) {
@@ -466,7 +466,7 @@ public class DefaultFunctionsTest {
         assertTrue(pattern.matcher(result).matches());
     }
 
-    private List<String> getArrayAsListFromStaticField(Class clazz, String fieldName) throws IllegalAccessException, NoSuchFieldException {
+    private List<String> getArrayAsListFromStaticField(Class<?> clazz, String fieldName) throws IllegalAccessException, NoSuchFieldException {
         Field field = clazz.getDeclaredField(fieldName);
         field.setAccessible(true);
         String[] values = (String[]) field.get(null);

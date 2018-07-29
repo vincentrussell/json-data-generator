@@ -1,9 +1,9 @@
 package com.github.vincentrussell.json.datagenerator.functions.impl;
 
+import java.util.Random;
+
 import com.github.vincentrussell.json.datagenerator.functions.Function;
 import com.github.vincentrussell.json.datagenerator.functions.FunctionInvocation;
-
-import java.util.Random;
 
 @Function(name = {"float", "floating"})
 public class RandomFloat {
@@ -17,10 +17,6 @@ public class RandomFloat {
             return String.format(format, randomNumber);
         }
         return Float.toString(randomNumber);
-    }
-
-    private String getRandomFloat(Float min, Float max) {
-        return getRandomFloat(min, max, null);
     }
 
     @FunctionInvocation
