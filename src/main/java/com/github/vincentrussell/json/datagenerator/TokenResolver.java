@@ -2,15 +2,15 @@ package com.github.vincentrussell.json.datagenerator;
 
 
 /**
- * interface for processing functions in the test data
+ * interface for processing functions in the test data.
  */
 public interface TokenResolver {
 
     /**
-     * process text in json and run return the results of processing the json tokens
+     * process text in json and run return the results of processing the json tokens.
      *
-     * @param s
+     * @param string the string
      * @return the result of resolving the token
      */
-    String resolveToken(CharSequence s);
+    String resolveToken(CharSequence string);
 }

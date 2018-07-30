@@ -3,7 +3,11 @@ package com.github.vincentrussell.json.datagenerator.functions.impl;
 import com.github.vincentrussell.json.datagenerator.functions.Function;
 import com.github.vincentrussell.json.datagenerator.functions.FunctionInvocation;
 
+/**
+ * lorem ipsum words or paragraphs
+ */
 @Function(name = "lorem")
+@SuppressWarnings("checkstyle:linelength")
 public class LoremIpsum {
 
     private static String[] LOREM_IPSUM_WORDS = new String[]{"lorem", "ipsum", "dolor", "sit", "amet", "consectetur", "adipiscing", "elit", "curabitur", "vel", "hendrerit", "libero", "eleifend", "blandit", "nunc", "ornare", "odio", "ut", "orci", "gravida", "imperdiet", "nullam", "purus", "lacinia", "a", "pretium", "quis", "congue", "praesent", "sagittis", "laoreet", "auctor", "mauris", "non", "velit", "eros", "dictum", "proin", "accumsan", "sapien", "nec", "massa", "volutpat", "venenatis", "sed", "eu", "molestie", "lacus", "quisque", "porttitor", "ligula", "dui", "mollis", "tempus", "at", "magna", "vestibulum", "turpis", "ac", "diam", "tincidunt", "id", "condimentum", "enim", "sodales", "in", "hac", "habitasse", "platea", "dictumst", "aenean", "neque", "fusce", "augue", "leo", "eget", "semper", "mattis", "tortor", "scelerisque", "nulla", "interdum", "tellus", "malesuada", "rhoncus", "porta", "sem", "aliquet", "et", "nam", "suspendisse", "potenti", "vivamus", "luctus", "fringilla", "erat", "donec", "justo", "vehicula", "ultricies", "varius", "ante", "primis", "faucibus", "ultrices", "posuere", "cubilia", "curae", "etiam", "cursus", "aliquam", "quam", "dapibus", "nisl", "feugiat", "egestas", "class", "aptent", "taciti", "sociosqu", "ad", "litora", "torquent", "per", "conubia", "nostra", "inceptos", "himenaeos", "phasellus", "nibh", "pulvinar", "vitae", "urna", "iaculis", "lobortis", "nisi", "viverra", "arcu", "morbi", "pellentesque", "metus", "commodo", "ut", "facilisis", "felis", "tristique", "ullamcorper", "placerat", "aenean", "convallis", "sollicitudin", "integer", "rutrum", "duis", "est", "etiam", "bibendum", "donec", "pharetra", "vulputate", "maecenas", "mi", "fermentum", "consequat", "suscipit", "aliquam", "habitant", "senectus", "netus", "fames", "quisque", "euismod", "curabitur", "lectus", "elementum", "tempor", "risus", "cras"};
@@ -14,12 +18,18 @@ public class LoremIpsum {
     private static final int SENTENCES_PER_PARAGRAPH_HIGH_END = 7;
 
 
+    /**
+     * lorem ipsum words or paragraphs
+     * @param amountOfLoremIpsum count of either words or paragraphs
+     * @param type "words" or "paragraphs"
+     * @return the result
+     */
     @FunctionInvocation
-    public String getLorem(String amountOfLoremIpsum, String type) {
+    public String getLorem(final String amountOfLoremIpsum, final String type) {
         return getLorem(Integer.valueOf(amountOfLoremIpsum), type);
     }
 
-    private String getLorem(Integer amountOfLoremIpsum, String type) {
+    private String getLorem(final Integer amountOfLoremIpsum, final String type) {
         if ("words".equals(type)) {
             return getWords(amountOfLoremIpsum, false);
         } else if ("paragraphs".equals(type)) {
@@ -29,7 +39,7 @@ public class LoremIpsum {
         }
     }
 
-    private String getWords(int count, boolean titleCase) {
+    private String getWords(final int count, final boolean titleCase) {
 
         if (count == 1) {
             return FunctionUtils.getRandomElementFromArray(LOREM_IPSUM_WORDS);
@@ -50,7 +60,7 @@ public class LoremIpsum {
         return stringBuilder.toString();
     }
 
-    private String getParagraphs(int count) {
+    private String getParagraphs(final int count) {
         StringBuilder paragraphs = new StringBuilder();
         for (int i = 0; i < count; i++) {
             StringBuilder paragraph = new StringBuilder();
