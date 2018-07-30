@@ -1,11 +1,29 @@
 package com.github.vincentrussell.json.datagenerator.functions;
 
+import static org.apache.commons.lang.StringUtils.isEmpty;
+import static org.apache.commons.lang.Validate.notNull;
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
+
 import com.github.vincentrussell.json.datagenerator.functions.impl.Alpha;
 import com.github.vincentrussell.json.datagenerator.functions.impl.AlphaNumeric;
 import com.github.vincentrussell.json.datagenerator.functions.impl.Bool;
 import com.github.vincentrussell.json.datagenerator.functions.impl.City;
 import com.github.vincentrussell.json.datagenerator.functions.impl.Company;
 import com.github.vincentrussell.json.datagenerator.functions.impl.Concat;
+import com.github.vincentrussell.json.datagenerator.functions.impl.CountriesList;
 import com.github.vincentrussell.json.datagenerator.functions.impl.Country;
 import com.github.vincentrussell.json.datagenerator.functions.impl.Date;
 import com.github.vincentrussell.json.datagenerator.functions.impl.Email;
@@ -35,22 +53,6 @@ import com.github.vincentrussell.json.datagenerator.functions.impl.UUID;
 import com.github.vincentrussell.json.datagenerator.functions.impl.Username;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
-
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-
-import static org.apache.commons.lang.StringUtils.isEmpty;
-import static org.apache.commons.lang.Validate.notNull;
 
 /**
  * Class responsible for registering functions so that they can be used
@@ -102,6 +104,7 @@ public final class FunctionRegistry {
         registerClass(Ipv6.class);
         registerClass(ObjectId.class);
         registerClass(Hex.class);
+		registerClass(CountriesList.class);
     }
 
     /**
@@ -109,7 +112,7 @@ public final class FunctionRegistry {
      * @param clazz the class that has the {@link Function} and {@link FunctionInvocation}
      */
     public void registerClass(final Class<?> clazz) {
-        Function annotation = (Function) clazz.getAnnotation(Function.class);
+		Function annotation = clazz.getAnnotation(Function.class);
         checkClassValidity(clazz, annotation);
         try {
             for (String annotationName : annotation.name()) {
@@ -139,14 +142,16 @@ public final class FunctionRegistry {
     private void checkMethodValidity(final Method method) {
         int stringClassesCount = Iterables.size(
             Iterables.filter(Arrays.asList(method.getParameterTypes()), new Predicate<Class<?>>() {
-                public boolean apply(final Class<?> aClass) {
+					@Override
+					public boolean apply(final Class<?> aClass) {
                     return aClass == String.class;
                 }
             }));
 
         int stringArrayClassesCount = Iterables.size(
             Iterables.filter(Arrays.asList(method.getParameterTypes()), new Predicate<Class<?>>() {
-                public boolean apply(final Class<?> aClass) {
+					@Override
+					public boolean apply(final Class<?> aClass) {
                     return aClass == String[].class;
                 }
             }));
@@ -190,7 +195,8 @@ public final class FunctionRegistry {
 
         int zeroArgConstructorCount = Iterables.size(Iterables
             .filter(Arrays.asList(clazz.getConstructors()), new Predicate<Constructor<?>>() {
-                public boolean apply(final Constructor<?> constructor) {
+					@Override
+					public boolean apply(final Constructor<?> constructor) {
                     return constructor.getParameterTypes().length == 0;
                 }
             }));
@@ -201,7 +207,8 @@ public final class FunctionRegistry {
 
         int validMethodCount = Iterables.size(
             Iterables.filter(Arrays.asList(clazz.getDeclaredMethods()), new Predicate<Method>() {
-                public boolean apply(final Method method) {
+					@Override
+					public boolean apply(final Method method) {
                     return method.isAnnotationPresent(FunctionInvocation.class);
                 }
             }));
