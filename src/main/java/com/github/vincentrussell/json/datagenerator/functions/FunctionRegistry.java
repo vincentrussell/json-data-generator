@@ -1,22 +1,58 @@
 package com.github.vincentrussell.json.datagenerator.functions;
 
-import com.github.vincentrussell.json.datagenerator.functions.impl.*;
-import com.github.vincentrussell.json.datagenerator.functions.impl.Date;
-import com.github.vincentrussell.json.datagenerator.functions.impl.Random;
-import com.github.vincentrussell.json.datagenerator.functions.impl.UUID;
-import com.google.common.base.Predicate;
-import com.google.common.collect.Iterables;
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
+import static org.apache.commons.lang.StringUtils.isEmpty;
+import static org.apache.commons.lang.Validate.notNull;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static org.apache.commons.lang.StringUtils.isEmpty;
-import static org.apache.commons.lang.Validate.notNull;
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
+
+import com.github.vincentrussell.json.datagenerator.functions.impl.Alpha;
+import com.github.vincentrussell.json.datagenerator.functions.impl.AlphaNumeric;
+import com.github.vincentrussell.json.datagenerator.functions.impl.Bool;
+import com.github.vincentrussell.json.datagenerator.functions.impl.City;
+import com.github.vincentrussell.json.datagenerator.functions.impl.Company;
+import com.github.vincentrussell.json.datagenerator.functions.impl.Concat;
+import com.github.vincentrussell.json.datagenerator.functions.impl.CountriesList;
+import com.github.vincentrussell.json.datagenerator.functions.impl.Country;
+import com.github.vincentrussell.json.datagenerator.functions.impl.Date;
+import com.github.vincentrussell.json.datagenerator.functions.impl.Email;
+import com.github.vincentrussell.json.datagenerator.functions.impl.FirstName;
+import com.github.vincentrussell.json.datagenerator.functions.impl.Gender;
+import com.github.vincentrussell.json.datagenerator.functions.impl.Hex;
+import com.github.vincentrussell.json.datagenerator.functions.impl.Index;
+import com.github.vincentrussell.json.datagenerator.functions.impl.Ipv4;
+import com.github.vincentrussell.json.datagenerator.functions.impl.Ipv6;
+import com.github.vincentrussell.json.datagenerator.functions.impl.LastName;
+import com.github.vincentrussell.json.datagenerator.functions.impl.LoremIpsum;
+import com.github.vincentrussell.json.datagenerator.functions.impl.ObjectId;
+import com.github.vincentrussell.json.datagenerator.functions.impl.Phone;
+import com.github.vincentrussell.json.datagenerator.functions.impl.Random;
+import com.github.vincentrussell.json.datagenerator.functions.impl.RandomDouble;
+import com.github.vincentrussell.json.datagenerator.functions.impl.RandomFloat;
+import com.github.vincentrussell.json.datagenerator.functions.impl.RandomInteger;
+import com.github.vincentrussell.json.datagenerator.functions.impl.RandomLong;
+import com.github.vincentrussell.json.datagenerator.functions.impl.Ssn;
+import com.github.vincentrussell.json.datagenerator.functions.impl.State;
+import com.github.vincentrussell.json.datagenerator.functions.impl.Street;
+import com.github.vincentrussell.json.datagenerator.functions.impl.Substring;
+import com.github.vincentrussell.json.datagenerator.functions.impl.Timestamp;
+import com.github.vincentrussell.json.datagenerator.functions.impl.ToLower;
+import com.github.vincentrussell.json.datagenerator.functions.impl.ToUpper;
+import com.github.vincentrussell.json.datagenerator.functions.impl.UUID;
+import com.github.vincentrussell.json.datagenerator.functions.impl.Username;
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterables;
 
 public class FunctionRegistry {
 
@@ -60,10 +96,11 @@ public class FunctionRegistry {
         registerClass(Ipv6.class);
         registerClass(ObjectId.class);
         registerClass(Hex.class);
+		registerClass(CountriesList.class);
     }
 
     public void registerClass(Class<?> clazz) {
-        Function annotation = (Function) clazz.getAnnotation(Function.class);
+        Function annotation = clazz.getAnnotation(Function.class);
         checkClassValidity(clazz, annotation);
         try {
             for (String annotationName : annotation.name()) {
@@ -89,13 +126,15 @@ public class FunctionRegistry {
 
     private void checkMethodValidity(Method method) {
         int stringClassesCount = Iterables.size(Iterables.filter(Arrays.asList(method.getParameterTypes()), new Predicate<Class<?>>() {
-            public boolean apply(Class<?> aClass) {
+            @Override
+			public boolean apply(Class<?> aClass) {
                 return aClass == String.class;
             }
         }));
 
         int stringArrayClassesCount = Iterables.size(Iterables.filter(Arrays.asList(method.getParameterTypes()), new Predicate<Class<?>>() {
-            public boolean apply(Class<?> aClass) {
+            @Override
+			public boolean apply(Class<?> aClass) {
                 return aClass == String[].class;
             }
         }));
@@ -126,7 +165,8 @@ public class FunctionRegistry {
         }
 
         int zeroArgConstructorCount = Iterables.size(Iterables.filter(Arrays.asList(clazz.getConstructors()), new Predicate<Constructor<?>>() {
-            public boolean apply(Constructor<?> constructor) {
+            @Override
+			public boolean apply(Constructor<?> constructor) {
                 return constructor.getParameterTypes().length == 0;
             }
         }));
@@ -136,7 +176,8 @@ public class FunctionRegistry {
         }
 
         int validMethodCount = Iterables.size(Iterables.filter(Arrays.asList(clazz.getDeclaredMethods()), new Predicate<Method>() {
-            public boolean apply(Method method) {
+            @Override
+			public boolean apply(Method method) {
                 return method.isAnnotationPresent(FunctionInvocation.class);
             }
         }));
