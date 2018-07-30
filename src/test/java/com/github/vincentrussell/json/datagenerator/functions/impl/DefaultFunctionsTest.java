@@ -1,11 +1,9 @@
 package com.github.vincentrussell.json.datagenerator.functions.impl;
 
-import com.github.vincentrussell.json.datagenerator.functions.FunctionRegistry;
-import com.google.common.base.Splitter;
-import org.bitstrings.test.junit.runner.ClassLoaderPerTestRunner;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -17,12 +15,20 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import static org.junit.Assert.*;
+import org.bitstrings.test.junit.runner.ClassLoaderPerTestRunner;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import com.github.vincentrussell.json.datagenerator.functions.FunctionRegistry;
+import com.google.common.base.Splitter;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 @RunWith(ClassLoaderPerTestRunner.class)
 public class DefaultFunctionsTest {
 
-    FunctionRegistry functionRegistry;
+	private FunctionRegistry functionRegistry;
 
     @Before
     public void registerClasses() {
@@ -465,6 +471,33 @@ public class DefaultFunctionsTest {
         Pattern pattern = Pattern.compile("[0-9a-zA-Z]{10,20}");
         assertTrue(pattern.matcher(result).matches());
     }
+
+	@Test
+    public void countriesListWillAllCountry() throws InvocationTargetException, IllegalAccessException {
+    	String result = functionRegistry.executeFunction("countriesList");
+    	
+		assertTrue(result.contains("\"AF\": \"Afghanistan\", \"AL\": \"Albania\""));
+		assertTrue(result.startsWith("{"));
+		assertTrue(result.endsWith("}"));
+    }
+
+	@Test
+	public void countriesListWithSpecificCode() throws InvocationTargetException, IllegalAccessException {
+		String result = functionRegistry.executeFunction("countriesList", "IN", "US", "UK");
+
+		JsonObject jsonObject = new JsonParser().parse(result).getAsJsonObject();
+		assertTrue(jsonObject.get("IN").getAsString().equals("India"));
+		assertTrue(jsonObject.get("US").getAsString().equals("United States"));
+		assertTrue(jsonObject.get("UK").getAsString().equals("United Kingdom"));
+		assertNull(jsonObject.get("AF"));
+	}
+
+	@Test
+	public void countriesListWithOneSpecificCode() throws InvocationTargetException, IllegalAccessException {
+		String result = functionRegistry.executeFunction("countriesList", "IN");
+
+		assertTrue(result.equals("India"));
+	}
 
     private List<String> getArrayAsListFromStaticField(Class<?> clazz, String fieldName) throws IllegalAccessException, NoSuchFieldException {
         Field field = clazz.getDeclaredField(fieldName);
