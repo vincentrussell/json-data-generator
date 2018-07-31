@@ -239,6 +239,20 @@ random country:
 {{country()}}
 ```
 
+a json mapping with all country codes to mappings:
+```
+{{countryList()}}
+```
+
+
+a json mapping with just specified country codes to mappings:
+
+{"IN":"India","US":"United States","UK":"United Kingdom"}
+
+```
+{{countryList("IN", "US", "UK")}}
+```
+
 random city:
 ```
 {{city()}}
@@ -450,7 +464,7 @@ java -cp json-data-generator-1.5-standalone.jar:yourfunctions.jar com.github.vin
 
 # Change Log
 
-## [1.5](https://github.com/vincentrussell/json-data-generator/tree/json-data-generator-1.5) (2018-07-28)
+## [1.5](https://github.com/vincentrussell/json-data-generator/tree/json-data-generator-1.5) (2018-07-31)
 
 **Improvements:**
 
@@ -458,6 +472,7 @@ java -cp json-data-generator-1.5-standalone.jar:yourfunctions.jar com.github.vin
 - Adding the ability to provide a domain to the email function
 - Added the ability to escape brackets within functions so that the interperter can understand that the function and wont return early
 - Added a hex function
+- Added a countryList function
 
 ## [1.4.1](https://github.com/vincentrussell/json-data-generator/tree/json-data-generator-1.4.1) (2018-07-15)
 
