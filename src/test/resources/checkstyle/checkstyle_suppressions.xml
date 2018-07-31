@@ -6,4 +6,5 @@
 
 <suppressions>
     <suppress checks="[a-zA-Z0-9]*" files=".*[\\/]src[\\/](test|it)[\\/].*"/>
+    <suppress checks="[a-zA-Z0-9]*" files=".*[\\/]target[\\/]generated-sources[\\/].*"/>
 </suppressions>
