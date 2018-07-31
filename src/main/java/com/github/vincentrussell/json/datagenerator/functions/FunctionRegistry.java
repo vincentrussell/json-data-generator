@@ -59,7 +59,8 @@ public final class FunctionRegistry {
 
   private static FunctionRegistry INSTANCE;
 
-  private final Map<FunctionInvocationHolder, MethodAndObjectHolder> functionInvocationHolderMethodConcurrentHashMap =
+  private final Map<FunctionInvocationHolder,
+      MethodAndObjectHolder> functionInvocationHolderMethodConcurrentHashMap =
       new ConcurrentHashMap<>();
   private final Map<Method, Object> methodInstanceMap = new ConcurrentHashMap<>();
   private final Set<String> nonOverridableFunctionNames = new HashSet<>();
@@ -105,8 +106,20 @@ public final class FunctionRegistry {
   }
 
   /**
+   * get an instance of this singleton
+   *
+   * @return the singleton
+   */
+  public static FunctionRegistry getInstance() {
+    if (INSTANCE == null) {
+      INSTANCE = new FunctionRegistry();
+    }
+    return INSTANCE;
+  }
+
+  /**
    * register a class that has functions
-   * 
+   *
    * @param clazz the class that has the {@link Function} and {@link FunctionInvocation}
    */
   public void registerClass(final Class<?> clazz) {
@@ -218,7 +231,7 @@ public final class FunctionRegistry {
 
   /**
    * execution a function based on the name of that function and it's argumetns
-   * 
+   *
    * @param functionName the function name
    * @param arguments the arguments
    * @return the result of the function
@@ -246,7 +259,7 @@ public final class FunctionRegistry {
 
   /**
    * find a method based on name and it's arguments
-   * 
+   *
    * @param functionName name of functions
    * @param arguments arguments to call on function
    * @return the method found
@@ -290,17 +303,6 @@ public final class FunctionRegistry {
     return holder;
   }
 
-  /**
-   * get an instance of this singleton
-   * 
-   * @return the singleton
-   */
-  public static FunctionRegistry getInstance() {
-    if (INSTANCE == null) {
-      INSTANCE = new FunctionRegistry();
-    }
-    return INSTANCE;
-  }
 
   /**
    * helper class thar associates methods (for functions) with the instance of the function class
