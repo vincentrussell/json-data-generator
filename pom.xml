@@ -4,7 +4,7 @@
     <groupId>com.github.vincentrussell</groupId>
     <artifactId>json-data-generator</artifactId>
     <packaging>jar</packaging>
-    <version>1.5-SNAPSHOT</version>
+    <version>1.5</version>
     <name>json-data-generator</name>
     <description>json-data-generator helps you build json data that you need for test data purposes.
         It has a lot of nice features that you can use to build as much test data as you need.</description>
