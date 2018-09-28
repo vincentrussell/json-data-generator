@@ -78,7 +78,7 @@ usage: [-s <arg>] [-d
 }
 ```
 
-###Repeats
+### Repeats
 You can repeat sections of json to make repeating json objects.
 
 For instance you can do repeats like this:
@@ -106,7 +106,7 @@ You can also get a random repeat within a range like this:
 '{{repeat(2,9)}}',
 ```
 
-##Available functions
+## Available functions
 
 You can do a lot of cool functions in your puesdo json that that help you randomize your test data.
 
@@ -373,7 +373,7 @@ upper case a string:
 {{toUpperCase("red")}}
 ```
 
-##Escape braces
+## Escape braces
 
 If you want to escape braces from within a function use a single escape character as seen in the example below:
 
@@ -381,7 +381,7 @@ If you want to escape braces from within a function use a single escape characte
 {{concat("\{", "test", "\}")}}
 ```
 
-##XML support
+## XML support
 
 ```
 <?xml version="1.0" encoding="UTF-8"?>
@@ -407,7 +407,7 @@ If you want to escape braces from within a function use a single escape characte
 </root>
 ```
 
-##Nesting functions
+## Nesting functions
 
 jason-data-generator supports nesting functions as well.
 
@@ -423,7 +423,7 @@ or something like this if you wanted a capitalized F or M:
 {{toUpperCase(substring(gender(),0,1))}}
 ```
 
-##Creating Custom Functions
+## Creating Custom Functions
 
 You can also create new functions if you create the classes and register the function with the function registry.
 
