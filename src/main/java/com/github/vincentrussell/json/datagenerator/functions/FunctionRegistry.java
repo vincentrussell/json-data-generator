@@ -12,6 +12,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+
+import com.github.vincentrussell.json.datagenerator.functions.impl.Get;
+import com.github.vincentrussell.json.datagenerator.functions.impl.Put;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import com.github.vincentrussell.json.datagenerator.functions.impl.Alpha;
@@ -103,6 +106,8 @@ public final class FunctionRegistry {
     registerClass(ObjectId.class);
     registerClass(Hex.class);
     registerClass(CountriesList.class);
+    registerClass(Put.class);
+    registerClass(Get.class);
   }
 
   /**

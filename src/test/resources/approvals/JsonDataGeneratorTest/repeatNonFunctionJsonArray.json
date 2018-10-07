@@ -3,7 +3,13 @@
     "name": "A green door",
     "age": 23,
     "price": 12.50,
-    "colors": ['{{repeat(4)}}',
+    "colors": [
+             "yo",
+
+             "yo",
+
+             "yo",
+
              "yo"]
 }
 

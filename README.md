@@ -373,6 +373,17 @@ upper case a string:
 {{toUpperCase("red")}}
 ```
 
+put a value in the cache:
+```
+{{put("key", "VALUE"}}
+```
+
+retrieve a value from the cache:
+```
+{{get("key"}}
+```
+
+
 ## Escape braces
 
 If you want to escape braces from within a function use a single escape character as seen in the example below:
@@ -423,6 +434,29 @@ or something like this if you wanted a capitalized F or M:
 {{toUpperCase(substring(gender(),0,1))}}
 ```
 
+## Use of put and get functions
+
+The get and put functions can be used to use previously-used values later on in the document.  She the following example.
+
+```
+{
+  "firstName": "{{put("firstName", firstName())}}",
+  "lastName": "{{put("lastName", lastName())}}",
+  "email": "{{get("firstName")}}.{{get("lastName")}}@mydomain.com"
+}
+
+```
+
+produces
+
+```
+{
+  "firstName": "Eve",
+  "lastName": "Acosta",
+  "email": "Eve.Acosta@mydomain.com"
+}
+```
+
 ## Creating Custom Functions
 
 You can also create new functions if you create the classes and register the function with the function registry.
@@ -463,6 +497,15 @@ java -cp json-data-generator-1.5-standalone.jar:yourfunctions.jar com.github.vin
 ```
 
 # Change Log
+
+## [1.6](https://github.com/vincentrussell/json-data-generator/tree/json-data-generator-1.6) (2018-10-08)
+
+**Improvements:**
+
+- Added put and get functions to allow to reference values later that had been stored previously
+- Upgraded guava to version 25.0-jre
+- Upgraded java compile version to java 1.8
+
 
 ## [1.5](https://github.com/vincentrussell/json-data-generator/tree/json-data-generator-1.5) (2018-07-31)
 

@@ -1,10 +1,33 @@
 [
-    '{{repeat(2)}}',
+    
     {
         "id": 1,
         "name": "Test",
         "attributes": [
-            '{{repeat(2)}}',
+            
+            {
+                "shirt": "red",
+                "pants": "blue"
+            },
+
+            {
+                "shirt": "red",
+                "pants": "blue"
+            }
+        ]
+
+    },
+
+    {
+        "id": 1,
+        "name": "Test",
+        "attributes": [
+            
+            {
+                "shirt": "red",
+                "pants": "blue"
+            },
+
             {
                 "shirt": "red",
                 "pants": "blue"

@@ -68,9 +68,11 @@ public class JsonDataGeneratorTest{
 
     private String getClasspathFileAsString(String source) throws IOException {
         try (InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream(source)) {
-            StringWriter writer = new StringWriter();
-            IOUtils.copy(inputStream, writer, "UTF-8");
-            return writer.toString();
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            new JsonDataGeneratorImpl().generateTestDataJson(inputStream, byteArrayOutputStream);
+            return byteArrayOutputStream.toString("UTF-8");
+        } catch (Throwable t) {
+            throw new RuntimeException(t);
         }
     }
 
@@ -130,6 +132,12 @@ public class JsonDataGeneratorTest{
     public void indexFunctionWithNamesTest() throws IOException, JsonDataGeneratorException {
         classpathJsonTests("indexFunctionNested.json");
     }
+
+    @Test
+    public void putGetTest() throws IOException, JsonDataGeneratorException {
+        classpathJsonTests("putGetTest.json");
+    }
+
 
     @Test
     public void repeatFunctionRangeJsonArrayNoQuotes() throws IOException, JsonDataGeneratorException {

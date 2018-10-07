@@ -1,5 +1,11 @@
 [
-    '{{repeat(2)}}',
+    
+    {
+        "id": 1,
+        "name": "Test"
+
+    },
+
     {
         "id": 1,
         "name": "Test"

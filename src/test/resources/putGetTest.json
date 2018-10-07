@@ -1,0 +1,10 @@
+{
+  "color": "{{put("key", toUpperCase("red"))}}",
+  "category": "hue",
+  "type": "primary",
+  "code": {
+    "rgba": [0,0,255,1],
+    "key" : "{{get("key")}}",
+    "hex": "#00F"
+  }
+}

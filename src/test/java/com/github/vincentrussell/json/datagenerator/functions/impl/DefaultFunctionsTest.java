@@ -499,6 +499,14 @@ public class DefaultFunctionsTest {
 		assertTrue(result.equals("India"));
 	}
 
+	@Test
+  public void putAndGet() throws InvocationTargetException, IllegalAccessException {
+      assertEquals("value", functionRegistry.executeFunction("put", "key", "value"));
+      assertEquals("value", functionRegistry.executeFunction("get", "key"));
+      assertEquals("value2", functionRegistry.executeFunction("put", "key", "value2"));
+      assertEquals("value2", functionRegistry.executeFunction("get", "key"));
+  }
+
     private List<String> getArrayAsListFromStaticField(Class<?> clazz, String fieldName) throws IllegalAccessException, NoSuchFieldException {
         Field field = clazz.getDeclaredField(fieldName);
         field.setAccessible(true);

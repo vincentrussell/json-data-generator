@@ -24,7 +24,9 @@
     </distributionManagement>
 
     <properties>
-        <jdkVersion>1.7</jdkVersion>
+        <jdkVersion>1.8</jdkVersion>
+        <maven.compiler.source>${jdkVersion}</maven.compiler.source>
+        <maven.compiler.target>${jdkVersion}</maven.compiler.target>
         <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
         <maven.version>3.0.4</maven.version>
         <maven-checkstyle-plugin.version>3.0.0</maven-checkstyle-plugin.version>
@@ -66,7 +68,7 @@
             <dependency>
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
-                <version>18.0</version>
+                <version>25.0-jre</version>
             </dependency>
             <dependency>
                 <groupId>commons-lang</groupId>
