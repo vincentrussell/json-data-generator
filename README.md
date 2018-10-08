@@ -10,12 +10,12 @@ Add a dependency to `com.github.vincentrussell:json-data-generator`.
 <dependency>
    <groupId>com.github.vincentrussell</groupId>
    <artifactId>json-data-generator</artifactId>
-   <version>1.5</version>
+   <version>1.6</version>
 </dependency>
 ```
 
 ## Requirements
-- JDK 1.7 or higher
+- JDK 1.8 or higher
 - Apache Maven 3.1.0 or higher
 
 ## Running it from Java
@@ -49,7 +49,7 @@ parser.generateTestDataJson(InputStream inputStream, OutputStream outputStream);
 ## Running it as a standalone jar
 
 ```
-java -jar json-data-generator-1.5-standalone.jar -s source.json -d destination.json
+java -jar json-data-generator-1.6-standalone.jar -s source.json -d destination.json
 ```
 ### Options
 
@@ -436,7 +436,7 @@ or something like this if you wanted a capitalized F or M:
 
 ## Use of put and get functions
 
-The get and put functions can be used to use previously-used values later on in the document.  She the following example.
+The get and put functions can be used to use previously-used values later on in the document.  The put function returns the value passed into it.  See the following example.
 
 ```
 {
@@ -493,7 +493,7 @@ public class NewFunction {
 then you can put the jar that you have created on the classpath with the the standalone jar (-f registers one or more classes with the Function Registry):
 
 ```
-java -cp json-data-generator-1.5-standalone.jar:yourfunctions.jar com.github.vincentrussell.json.datagenerator.CLIMain -s source.json -d destination.json -f my.package.NewFunction
+java -cp json-data-generator-1.6-standalone.jar:yourfunctions.jar com.github.vincentrussell.json.datagenerator.CLIMain -s source.json -d destination.json -f my.package.NewFunction
 ```
 
 # Change Log
