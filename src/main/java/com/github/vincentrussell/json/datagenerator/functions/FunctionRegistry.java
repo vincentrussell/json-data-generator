@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.github.vincentrussell.json.datagenerator.functions.impl.AddDays;
 import com.github.vincentrussell.json.datagenerator.functions.impl.Get;
 import com.github.vincentrussell.json.datagenerator.functions.impl.Put;
 import org.apache.commons.lang.builder.EqualsBuilder;
@@ -88,6 +89,7 @@ public final class FunctionRegistry {
     registerClass(Phone.class);
     registerClass(Gender.class);
     registerClass(Date.class);
+    registerClass(AddDays.class);
     registerClass(Timestamp.class);
     registerClass(Alpha.class);
     registerClass(AlphaNumeric.class);

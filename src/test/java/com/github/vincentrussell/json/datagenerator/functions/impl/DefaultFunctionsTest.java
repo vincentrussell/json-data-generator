@@ -325,6 +325,30 @@ public class DefaultFunctionsTest {
         assertNotNull(date);
     }
 
+
+    @Test
+    public void addDays() throws ParseException, InvocationTargetException, IllegalAccessException {
+        String dateFormatText = "dd-MM-yyyy HH:mm:ss";
+        SimpleDateFormat dateFormat = new SimpleDateFormat(dateFormatText);
+        String result = functionRegistry.executeFunction("addDays", dateFormatText, "12-12-2012 12:12:12", "3");
+        assertEquals("15-12-2012 12:12:12", result);
+    }
+
+    @Test
+    public void addDaysDefaultFormat() throws ParseException, InvocationTargetException, IllegalAccessException {
+        SimpleDateFormat dateFormat = new SimpleDateFormat(Date.DEFAULT_INPUT_FORMAT);
+        String result = functionRegistry.executeFunction("addDays", "12-12-2012 12:12:12", "3");
+        assertEquals("15-12-2012 12:12:12", result);
+    }
+
+    @Test
+    public void addDaysNegative() throws ParseException, InvocationTargetException, IllegalAccessException {
+        String dateFormatText = "dd-MM-yyyy HH:mm:ss";
+        SimpleDateFormat dateFormat = new SimpleDateFormat(dateFormatText);
+        String result = functionRegistry.executeFunction("addDays", dateFormatText, "12-12-2012 12:12:12", "-3");
+        assertEquals("09-12-2012 12:12:12", result);
+    }
+
     @Test
     public void timestamp() throws InvocationTargetException, IllegalAccessException, ParseException {
         String result = functionRegistry.executeFunction("timestamp", null);

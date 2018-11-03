@@ -244,6 +244,16 @@ random country:
 {{country()}}
 ```
 
+add days to date with format:
+```
+{{addDays("dd-MM-yyyy HH:mm:ss", "03-11-2018 09:27:56", 12)}}
+```
+
+add days to date with default input format:
+```
+{{addDays("03-11-2018 09:27:56", 12)}}
+```
+
 a json mapping with all country codes to mappings:
 ```
 {{countryList()}}
@@ -461,6 +471,28 @@ produces
   "email": "Eve.Acosta@mydomain.com"
 }
 ```
+
+## Use date add functions
+
+The date add functions can be used in conjuction with the get and put functions to create new date values by adding (or subtracting) 
+
+```
+{
+    "day1": "{{put("date", date("dd-MM-yyyy HH:mm:ss"))}}",
+    "day2": "{{addDays(get("date"), 12)}}"
+}
+
+```
+
+produces
+
+```
+{
+    "day1": "03-11-2018 09:27:56",
+    "day2": "15-11-2018 09:27:56"
+}
+```
+
 
 ## Creating Custom Functions
 
