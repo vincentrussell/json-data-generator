@@ -11,10 +11,28 @@ public class UUID {
 
     /**
      * random uuid
-     * @return the result
+     * @return the uuid
      */
     @FunctionInvocation
     public String getRandomUUID() {
-        return java.util.UUID.randomUUID().toString();
+        return getRandomUUID(Boolean.TRUE.toString());
+    }
+
+
+    /**
+     * random hex string for random 16 bytes
+     * @param keepDashes false to remove dashes from uuid
+     * @return the uuid with out with dashes
+     */
+    @FunctionInvocation
+    @SuppressWarnings("checkstyle:magicnumber")
+    public String getRandomUUID(final String keepDashes) {
+        String uuid = java.util.UUID.randomUUID().toString();
+
+        if (!Boolean.valueOf(keepDashes)) {
+            return uuid.replace("-", "");
+        }
+
+        return uuid;
     }
 }

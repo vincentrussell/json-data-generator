@@ -139,6 +139,11 @@ uuid:
 {{uuid()}}
 ```
 
+uuid without dashes:
+```
+{{uuid("false")}}
+```
+
 hex (16 bytes):
 ```
 {{hex()}}
@@ -497,6 +502,12 @@ java -cp json-data-generator-1.6-standalone.jar:yourfunctions.jar com.github.vin
 ```
 
 # Change Log
+
+## [1.7](https://github.com/vincentrussell/json-data-generator/tree/json-data-generator-1.7) (2018-11-08)
+
+**Improvements:**
+
+- Added the ability to generate a uuid without dashes.
 
 ## [1.6](https://github.com/vincentrussell/json-data-generator/tree/json-data-generator-1.6) (2018-10-08)
 

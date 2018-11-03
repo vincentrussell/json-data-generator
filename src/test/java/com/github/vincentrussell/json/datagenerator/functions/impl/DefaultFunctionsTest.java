@@ -99,6 +99,13 @@ public class DefaultFunctionsTest {
     }
 
     @Test
+    public void uuidWithoutDashes() throws InvocationTargetException, IllegalAccessException {
+        String result = functionRegistry.executeFunction("uuid", "false");
+        Pattern pattern = Pattern.compile("[0-9a-f]{32}");
+        assertTrue(pattern.matcher(result).matches());
+    }
+
+    @Test
     public void hexDefault16bytes() throws InvocationTargetException, IllegalAccessException {
         String result = functionRegistry.executeFunction("hex", null);
         Pattern pattern = Pattern.compile("[0-9a-f]{32}");
