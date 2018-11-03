@@ -229,6 +229,11 @@ random date between two dates with default format (your input must be in this fo
 {{date("begin-date","end-date"}}
 ```
 
+convert date format from one format to another:
+```
+{{dateFormat("06-16-1956 12:00:00", "from-simple-date-format", "to-simple-date-format")}}
+```
+
 current timestamp (milliseconds, between the current time and midnight, January 1, 1970 UTC):
 ```
 {{timestamp()}}
@@ -601,6 +606,7 @@ java -cp json-data-generator-1.6-standalone.jar:yourfunctions.jar com.github.vin
 
 - Added the ability to generate a uuid without dashes.
 - Added the abiilty to add or subtract days, hours, mintues, months, seconds, and years to dates
+- Added dateFormat function
 
 ## [1.6](https://github.com/vincentrussell/json-data-generator/tree/json-data-generator-1.6) (2018-10-08)
 

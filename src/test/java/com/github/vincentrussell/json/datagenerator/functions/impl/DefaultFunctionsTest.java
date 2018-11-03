@@ -328,6 +328,13 @@ public class DefaultFunctionsTest {
 
 
     @Test
+    public void dateFormat() throws ParseException, InvocationTargetException, IllegalAccessException {
+        String result = functionRegistry.executeFunction("dateFormat", "06-16-1956 12:00:00", "dd-MM-yyyy HH:mm:ss", "EEEEE dd MMMMM yyyy HH:mm:ss.SSSZ");
+        assertEquals("Saturday 06 April 1957 12:00:00.000-0500", result);
+    }
+
+
+    @Test
     public void addDays() throws ParseException, InvocationTargetException, IllegalAccessException {
         addIntervalTest("dd-MM-yyyy HH:mm:ss", "12-12-2012 12:12:12", "addDays", 3, "15-12-2012 12:12:12");
     }

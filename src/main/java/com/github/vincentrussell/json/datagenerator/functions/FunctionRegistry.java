@@ -1,18 +1,5 @@
 package com.github.vincentrussell.json.datagenerator.functions;
 
-import static org.apache.commons.lang.StringUtils.isEmpty;
-import static org.apache.commons.lang.Validate.notNull;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-
 import com.github.vincentrussell.json.datagenerator.functions.impl.AddDays;
 import com.github.vincentrussell.json.datagenerator.functions.impl.AddHours;
 import com.github.vincentrussell.json.datagenerator.functions.impl.AddMinutes;
@@ -20,10 +7,6 @@ import com.github.vincentrussell.json.datagenerator.functions.impl.AddMonths;
 import com.github.vincentrussell.json.datagenerator.functions.impl.AddSeconds;
 import com.github.vincentrussell.json.datagenerator.functions.impl.AddWeeks;
 import com.github.vincentrussell.json.datagenerator.functions.impl.AddYears;
-import com.github.vincentrussell.json.datagenerator.functions.impl.Get;
-import com.github.vincentrussell.json.datagenerator.functions.impl.Put;
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
 import com.github.vincentrussell.json.datagenerator.functions.impl.Alpha;
 import com.github.vincentrussell.json.datagenerator.functions.impl.AlphaNumeric;
 import com.github.vincentrussell.json.datagenerator.functions.impl.Bool;
@@ -33,9 +16,11 @@ import com.github.vincentrussell.json.datagenerator.functions.impl.Concat;
 import com.github.vincentrussell.json.datagenerator.functions.impl.CountriesList;
 import com.github.vincentrussell.json.datagenerator.functions.impl.Country;
 import com.github.vincentrussell.json.datagenerator.functions.impl.Date;
+import com.github.vincentrussell.json.datagenerator.functions.impl.DateFormat;
 import com.github.vincentrussell.json.datagenerator.functions.impl.Email;
 import com.github.vincentrussell.json.datagenerator.functions.impl.FirstName;
 import com.github.vincentrussell.json.datagenerator.functions.impl.Gender;
+import com.github.vincentrussell.json.datagenerator.functions.impl.Get;
 import com.github.vincentrussell.json.datagenerator.functions.impl.Hex;
 import com.github.vincentrussell.json.datagenerator.functions.impl.Index;
 import com.github.vincentrussell.json.datagenerator.functions.impl.Ipv4;
@@ -44,6 +29,7 @@ import com.github.vincentrussell.json.datagenerator.functions.impl.LastName;
 import com.github.vincentrussell.json.datagenerator.functions.impl.LoremIpsum;
 import com.github.vincentrussell.json.datagenerator.functions.impl.ObjectId;
 import com.github.vincentrussell.json.datagenerator.functions.impl.Phone;
+import com.github.vincentrussell.json.datagenerator.functions.impl.Put;
 import com.github.vincentrussell.json.datagenerator.functions.impl.Random;
 import com.github.vincentrussell.json.datagenerator.functions.impl.RandomDouble;
 import com.github.vincentrussell.json.datagenerator.functions.impl.RandomFloat;
@@ -60,6 +46,22 @@ import com.github.vincentrussell.json.datagenerator.functions.impl.UUID;
 import com.github.vincentrussell.json.datagenerator.functions.impl.Username;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+
+import static org.apache.commons.lang.StringUtils.isEmpty;
+import static org.apache.commons.lang.Validate.notNull;
 
 /**
  * Class responsible for registering functions so that they can be used from within the data
@@ -95,6 +97,7 @@ public final class FunctionRegistry {
     registerClass(Phone.class);
     registerClass(Gender.class);
     registerClass(Date.class);
+    registerClass(DateFormat.class);
     registerClass(AddDays.class);
     registerClass(AddHours.class);
     registerClass(AddMinutes.class);
