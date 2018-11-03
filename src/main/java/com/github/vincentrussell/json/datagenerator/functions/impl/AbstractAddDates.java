@@ -50,8 +50,8 @@ public abstract class AbstractAddDates {
         try {
             if (method == null) {
                 method = getMethod();
+                method.setAccessible(true);
             }
-            method.setAccessible(true);
             return (java.util.Date) method.invoke(null, oldDate, amount);
         } catch (IllegalAccessException | NoSuchMethodException
             | SecurityException | InvocationTargetException e) {
