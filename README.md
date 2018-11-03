@@ -244,14 +244,74 @@ random country:
 {{country()}}
 ```
 
-add days to date with format:
+add (or subtract) days to date with format:
 ```
 {{addDays("dd-MM-yyyy HH:mm:ss", "03-11-2018 09:27:56", 12)}}
 ```
 
-add days to date with default input format:
+add (or subtract) days to date with default input format:
 ```
 {{addDays("03-11-2018 09:27:56", 12)}}
+```
+
+add (or subtract) hours to date with format:
+```
+{{addHours("dd-MM-yyyy HH:mm:ss", "03-11-2018 09:27:56", 12)}}
+```
+
+add (or subtract) hours to date with default input format:
+```
+{{addHours("03-11-2018 09:27:56", 12)}}
+```
+
+add (or subtract) minutes to date with format:
+```
+{{addMinutes("dd-MM-yyyy HH:mm:ss", "03-11-2018 09:27:56", 12)}}
+```
+
+add (or subtract) minutes to date with default input format:
+```
+{{addMinutes("03-11-2018 09:27:56", 12)}}
+```
+
+add (or subtract) months to date with format:
+```
+{{addMonths("dd-MM-yyyy HH:mm:ss", "03-11-2018 09:27:56", 12)}}
+```
+
+add (or subtract) months to date with default input format:
+```
+{{addMonths("03-11-2018 09:27:56", 12)}}
+```
+
+add (or subtract) seconds to date with format:
+```
+{{addSeconds("dd-MM-yyyy HH:mm:ss", "03-11-2018 09:27:56", 12)}}
+```
+
+add (or subtract) seconds to date with default input format:
+```
+{{addSeconds("03-11-2018 09:27:56", 12)}}
+```
+
+add (or subtract) weeks to date with format:
+```
+{{addWeeks("dd-MM-yyyy HH:mm:ss", "03-11-2018 09:27:56", 12)}}
+```
+
+add (or subtract) weeks to date with default input format:
+```
+{{addWeeks("03-11-2018 09:27:56", 12)}}
+```
+
+add (or subtract) years to date with format:
+```
+{{addYears("dd-MM-yyyy HH:mm:ss", "03-11-2018 09:27:56", 12)}}
+```
+
+add (or subtract) years to date with default input format:
+```
+{{addYears("03-11-2018 09:27:56", 12)}}
 ```
 
 a json mapping with all country codes to mappings:
@@ -540,6 +600,7 @@ java -cp json-data-generator-1.6-standalone.jar:yourfunctions.jar com.github.vin
 **Improvements:**
 
 - Added the ability to generate a uuid without dashes.
+- Added the abiilty to add or subtract days, hours, mintues, months, seconds, and years to dates
 
 ## [1.6](https://github.com/vincentrussell/json-data-generator/tree/json-data-generator-1.6) (2018-10-08)
 

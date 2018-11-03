@@ -14,6 +14,12 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.github.vincentrussell.json.datagenerator.functions.impl.AddDays;
+import com.github.vincentrussell.json.datagenerator.functions.impl.AddHours;
+import com.github.vincentrussell.json.datagenerator.functions.impl.AddMinutes;
+import com.github.vincentrussell.json.datagenerator.functions.impl.AddMonths;
+import com.github.vincentrussell.json.datagenerator.functions.impl.AddSeconds;
+import com.github.vincentrussell.json.datagenerator.functions.impl.AddWeeks;
+import com.github.vincentrussell.json.datagenerator.functions.impl.AddYears;
 import com.github.vincentrussell.json.datagenerator.functions.impl.Get;
 import com.github.vincentrussell.json.datagenerator.functions.impl.Put;
 import org.apache.commons.lang.builder.EqualsBuilder;
@@ -90,6 +96,12 @@ public final class FunctionRegistry {
     registerClass(Gender.class);
     registerClass(Date.class);
     registerClass(AddDays.class);
+    registerClass(AddHours.class);
+    registerClass(AddMinutes.class);
+    registerClass(AddMonths.class);
+    registerClass(AddSeconds.class);
+    registerClass(AddWeeks.class);
+    registerClass(AddYears.class);
     registerClass(Timestamp.class);
     registerClass(Alpha.class);
     registerClass(AlphaNumeric.class);

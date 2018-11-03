@@ -15,6 +15,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import com.google.common.collect.Lists;
 import org.bitstrings.test.junit.runner.ClassLoaderPerTestRunner;
 import org.junit.Before;
 import org.junit.Test;
@@ -328,25 +329,119 @@ public class DefaultFunctionsTest {
 
     @Test
     public void addDays() throws ParseException, InvocationTargetException, IllegalAccessException {
-        String dateFormatText = "dd-MM-yyyy HH:mm:ss";
-        SimpleDateFormat dateFormat = new SimpleDateFormat(dateFormatText);
-        String result = functionRegistry.executeFunction("addDays", dateFormatText, "12-12-2012 12:12:12", "3");
-        assertEquals("15-12-2012 12:12:12", result);
+        addIntervalTest("dd-MM-yyyy HH:mm:ss", "12-12-2012 12:12:12", "addDays", 3, "15-12-2012 12:12:12");
     }
 
     @Test
     public void addDaysDefaultFormat() throws ParseException, InvocationTargetException, IllegalAccessException {
-        SimpleDateFormat dateFormat = new SimpleDateFormat(Date.DEFAULT_INPUT_FORMAT);
-        String result = functionRegistry.executeFunction("addDays", "12-12-2012 12:12:12", "3");
-        assertEquals("15-12-2012 12:12:12", result);
+        addIntervalTest(null, "12-12-2012 12:12:12", "addDays", 3, "15-12-2012 12:12:12");
     }
 
     @Test
     public void addDaysNegative() throws ParseException, InvocationTargetException, IllegalAccessException {
-        String dateFormatText = "dd-MM-yyyy HH:mm:ss";
-        SimpleDateFormat dateFormat = new SimpleDateFormat(dateFormatText);
-        String result = functionRegistry.executeFunction("addDays", dateFormatText, "12-12-2012 12:12:12", "-3");
-        assertEquals("09-12-2012 12:12:12", result);
+        addIntervalTest("dd-MM-yyyy HH:mm:ss", "12-12-2012 12:12:12", "addDays", -3, "09-12-2012 12:12:12");
+    }
+
+    @Test
+    public void addHours() throws ParseException, InvocationTargetException, IllegalAccessException {
+        addIntervalTest("dd-MM-yyyy HH:mm:ss", "12-12-2012 12:12:12", "addHours", 3, "12-12-2012 15:12:12");
+    }
+
+    @Test
+    public void addHoursDefaultFormat() throws ParseException, InvocationTargetException, IllegalAccessException {
+        addIntervalTest(null, "12-12-2012 12:12:12", "addHours", 3, "12-12-2012 15:12:12");
+    }
+
+    @Test
+    public void addHoursNegative() throws ParseException, InvocationTargetException, IllegalAccessException {
+        addIntervalTest("dd-MM-yyyy HH:mm:ss", "12-12-2012 12:12:12", "addHours", -3, "12-12-2012 09:12:12");
+    }
+
+    @Test
+    public void addMinutes() throws ParseException, InvocationTargetException, IllegalAccessException {
+        addIntervalTest("dd-MM-yyyy HH:mm:ss", "12-12-2012 12:12:12", "addMinutes", 3, "12-12-2012 12:15:12");
+    }
+
+    @Test
+    public void addMinutesDefaultFormat() throws ParseException, InvocationTargetException, IllegalAccessException {
+        addIntervalTest(null, "12-12-2012 12:12:12", "addMinutes", 3, "12-12-2012 12:15:12");
+    }
+
+    @Test
+    public void addMinutesNegative() throws ParseException, InvocationTargetException, IllegalAccessException {
+        addIntervalTest("dd-MM-yyyy HH:mm:ss", "12-12-2012 12:12:12", "addMinutes", -3, "12-12-2012 12:09:12");
+    }
+
+    @Test
+    public void addMonths() throws ParseException, InvocationTargetException, IllegalAccessException {
+        addIntervalTest("dd-MM-yyyy HH:mm:ss", "12-12-2012 12:12:12", "addMonths", 3, "12-03-2013 12:12:12");
+    }
+
+    @Test
+    public void addMonthsDefaultFormat() throws ParseException, InvocationTargetException, IllegalAccessException {
+        addIntervalTest(null, "12-12-2012 12:12:12", "addMonths", 3, "12-03-2013 12:12:12");
+    }
+
+    @Test
+    public void addMonthsNegative() throws ParseException, InvocationTargetException, IllegalAccessException {
+        addIntervalTest("dd-MM-yyyy HH:mm:ss", "12-12-2012 12:12:12", "addMonths", -3, "12-09-2012 12:12:12");
+    }
+
+    @Test
+    public void addSeconds() throws ParseException, InvocationTargetException, IllegalAccessException {
+        addIntervalTest("dd-MM-yyyy HH:mm:ss", "12-12-2012 12:12:12", "addSeconds", 3, "12-12-2012 12:12:15");
+    }
+
+    @Test
+    public void addSecondsDefaultFormat() throws ParseException, InvocationTargetException, IllegalAccessException {
+        addIntervalTest(null, "12-12-2012 12:12:12", "addSeconds", 3, "12-12-2012 12:12:15");
+    }
+
+    @Test
+    public void addSecondsNegative() throws ParseException, InvocationTargetException, IllegalAccessException {
+        addIntervalTest("dd-MM-yyyy HH:mm:ss", "12-12-2012 12:12:12", "addSeconds", -3, "12-12-2012 12:12:09");
+    }
+
+    @Test
+    public void addWeeks() throws ParseException, InvocationTargetException, IllegalAccessException {
+        addIntervalTest("dd-MM-yyyy HH:mm:ss", "12-12-2012 12:12:12", "addWeeks", 3, "02-01-2013 12:12:12");
+    }
+
+    @Test
+    public void addWeeksDefaultFormat() throws ParseException, InvocationTargetException, IllegalAccessException {
+        addIntervalTest(null, "12-12-2012 12:12:12", "addWeeks", 3, "02-01-2013 12:12:12");
+    }
+
+    @Test
+    public void addWeeksNegative() throws ParseException, InvocationTargetException, IllegalAccessException {
+        addIntervalTest("dd-MM-yyyy HH:mm:ss", "12-12-2012 12:12:12", "addWeeks", -3, "21-11-2012 12:12:12");
+    }
+
+    @Test
+    public void addYears() throws ParseException, InvocationTargetException, IllegalAccessException {
+        addIntervalTest("dd-MM-yyyy HH:mm:ss", "12-12-2012 12:12:12", "addYears", 3, "12-12-2015 12:12:12");
+    }
+
+    @Test
+    public void addYearsDefaultFormat() throws ParseException, InvocationTargetException, IllegalAccessException {
+        addIntervalTest(null, "12-12-2012 12:12:12", "addYears", 3, "12-12-2015 12:12:12");
+    }
+
+    @Test
+    public void addYearsNegative() throws ParseException, InvocationTargetException, IllegalAccessException {
+        addIntervalTest("dd-MM-yyyy HH:mm:ss", "12-12-2012 12:12:12", "addYears", -3, "12-12-2009 12:12:12");
+    }
+
+    private void addIntervalTest(String dateFormatText, String date, String function, Integer interval, String expected) throws ParseException, InvocationTargetException, IllegalAccessException {
+        List<String> args = new ArrayList<>();
+
+        if (dateFormatText != null) {
+            args.add(dateFormatText);
+        }
+
+        args.addAll(Lists.newArrayList(date, interval.toString()));
+        String result = functionRegistry.executeFunction(function, args.toArray(new String[args.size()]));
+        assertEquals(expected, result);
     }
 
     @Test

@@ -2,16 +2,12 @@ package com.github.vincentrussell.json.datagenerator.functions.impl;
 
 import com.github.vincentrussell.json.datagenerator.functions.Function;
 import com.github.vincentrussell.json.datagenerator.functions.FunctionInvocation;
-import org.apache.commons.lang.time.DateUtils;
-
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 
 /**
  * addDays to Date function
  */
 @Function(name = "addDays")
-public class AddDays {
+public class AddDays extends AbstractAddDates {
 
     /**
      * add days to date
@@ -21,14 +17,8 @@ public class AddDays {
      * @return the new date
      */
     @FunctionInvocation
-    public String addDays(final String format, final String date, final String days) {
-        try {
-            SimpleDateFormat dateFormat = new SimpleDateFormat(format);
-            java.util.Date myDate = dateFormat.parse(date);
-            return dateFormat.format(DateUtils.addDays(myDate, Integer.valueOf(days)));
-        } catch (ParseException | NullPointerException | NumberFormatException e) {
-            throw new IllegalArgumentException(e);
-        }
+    public final String addDays(final String format, final String date, final String days) {
+       return super.addInterval(format, date, days);
     }
 
     /**
@@ -38,8 +28,12 @@ public class AddDays {
      * @return the new date
      */
     @FunctionInvocation
-    public String addDays(final String date, final String days) {
-        return addDays(Date.DEFAULT_INPUT_FORMAT, date, days);
+    public final String addDays(final String date, final String days) {
+       return super.addInterval(date, days);
     }
 
+    @Override
+    protected final String getMethodName() {
+        return "addDays";
+    }
 }
