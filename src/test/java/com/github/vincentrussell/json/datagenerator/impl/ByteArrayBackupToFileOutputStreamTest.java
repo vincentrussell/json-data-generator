@@ -50,7 +50,6 @@ public class ByteArrayBackupToFileOutputStreamTest {
     public void writeByteArray() throws IOException {
         String string = "This is a test of a byte array";
         byte[] bytes = string.getBytes();
-        new Random().nextBytes(bytes);
         try (ByteArrayBackupToFileOutputStream byteArrayBackupToFileOutputStream = new ByteArrayBackupToFileOutputStream(1, bytes.length)) {
             byteArrayBackupToFileOutputStream.write(bytes);
             try (InputStream inputStream = byteArrayBackupToFileOutputStream.getNewInputStream();
@@ -58,6 +57,47 @@ public class ByteArrayBackupToFileOutputStreamTest {
                 assertTrue(ByteArrayInputStream.class.isInstance(inputStream));
                 IOUtils.copy(inputStream, outputStream);
                 assertArrayEquals(bytes, outputStream.toByteArray());
+            }
+        }
+    }
+
+    @Test
+    public void writeByteArrayUtf8() throws IOException {
+        String string = "中文替换 Как тебя зовут هناك أولاد في الحديقة";
+        byte[] bytes = string.getBytes();
+        try (ByteArrayBackupToFileOutputStream byteArrayBackupToFileOutputStream = new ByteArrayBackupToFileOutputStream(1, bytes.length)) {
+            byteArrayBackupToFileOutputStream.write(bytes);
+            try (InputStream inputStream = byteArrayBackupToFileOutputStream.getNewInputStream();
+                ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+                assertTrue(ByteArrayInputStream.class.isInstance(inputStream));
+                IOUtils.copy(inputStream, outputStream);
+                assertArrayEquals(bytes, outputStream.toByteArray());
+                assertEquals(string, outputStream.toString("UTF-8"));
+            }
+        }
+    }
+
+
+    @Test
+    public void writeByteArrayUtf8FromReader() throws IOException {
+        String string = "中文替换 Как тебя зовут هناك أولاد في الحديقة文";
+        byte[] bytes = string.getBytes();
+        try (final ByteArrayInputStream stringInputStream = new ByteArrayInputStream(bytes);
+            final BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(stringInputStream, "UTF-8"));
+            ByteArrayBackupToFileOutputStream byteArrayBackupToFileOutputStream = new ByteArrayBackupToFileOutputStream(1, bytes.length)) {
+
+            int i;
+            while ((i = bufferedReader.read()) != -1) {
+                String stringChar = Character.valueOf((char) i).toString();
+                byteArrayBackupToFileOutputStream.write(stringChar.getBytes());
+            }
+
+            try (InputStream inputStream = byteArrayBackupToFileOutputStream.getNewInputStream();
+                ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+                assertTrue(ByteArrayInputStream.class.isInstance(inputStream));
+                IOUtils.copy(inputStream, outputStream);
+                assertArrayEquals(bytes, outputStream.toByteArray());
+                assertEquals(string, outputStream.toString("UTF-8"));
             }
         }
     }

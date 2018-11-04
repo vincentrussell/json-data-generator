@@ -27,7 +27,7 @@
         <jdkVersion>1.8</jdkVersion>
         <maven.compiler.source>${jdkVersion}</maven.compiler.source>
         <maven.compiler.target>${jdkVersion}</maven.compiler.target>
-        <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.version>3.0.4</maven.version>
         <maven-checkstyle-plugin.version>3.0.0</maven-checkstyle-plugin.version>
         <checkstyle.version>8.11</checkstyle.version>
@@ -151,6 +151,7 @@
                 <configuration>
                     <source>${jdkVersion}</source>
                     <target>${jdkVersion}</target>
+                    <encoding>${project.build.sourceEncoding}</encoding>
                 </configuration>
             </plugin>
             <plugin>

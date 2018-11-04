@@ -12,6 +12,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.RandomAccessFile;
 import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 
 /**
@@ -153,14 +154,18 @@ public class ByteArrayBackupToFileOutputStream extends OutputStream {
             try {
                 try (InputStream inputStream = new FileInputStream(file)) {
                     StringWriter writer = new StringWriter();
-                    IOUtils.copy(inputStream, writer);
+                    IOUtils.copy(inputStream, writer, "UTF-8");
                     return writer.toString();
                 }
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         } else {
-            return new String(buf, 0, count);
+            try {
+                return new String(buf, 0, count, "UTF-8");
+            } catch (UnsupportedEncodingException e) {
+                throw new IllegalArgumentException(e);
+            }
         }
     }
 

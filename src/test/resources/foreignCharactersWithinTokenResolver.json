@@ -1,0 +1,8 @@
+{
+    "id": "{{uuid()}}",
+    "name": "A green door",
+    "age": {{integer(1,50)}},
+    "random": "{{random("中文替换","Как тебя зовут?","هناك أولاد في الحديقة")}}",
+    "price": 12.50,
+    "tags": ["home", "green"]
+}

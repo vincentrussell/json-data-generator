@@ -3,6 +3,7 @@ package com.github.vincentrussell.json.datagenerator.impl;
 
 import com.github.vincentrussell.json.datagenerator.JsonDataGenerator;
 import com.github.vincentrussell.json.datagenerator.JsonDataGeneratorException;
+import com.google.common.base.Charsets;
 import org.apache.commons.collections4.queue.CircularFifoQueue;
 import org.apache.commons.io.IOUtils;
 
@@ -31,12 +32,11 @@ import static org.apache.commons.lang.Validate.notNull;
  */
 public class JsonDataGeneratorImpl implements JsonDataGenerator {
 
-    public static final String UTF_8 = "UTF-8";
     public static final String REPEAT = "'{{repeat(";
     private static final String REPEAT_TEXT = REPEAT;
-    private static final byte[] CLOSE_BRACKET_BYTE_ARRAY = "]".getBytes();
-    private static final byte[] COMMA_NEWLINE_BYTE_ARRAY = ",\n".getBytes();
-    private static final byte[] NEWLINE_BYTE_ARRAY = "\n".getBytes();
+    private static final byte[] CLOSE_BRACKET_BYTE_ARRAY = "]".getBytes(Charsets.UTF_8);
+    private static final byte[] COMMA_NEWLINE_BYTE_ARRAY = ",\n".getBytes(Charsets.UTF_8);
+    private static final byte[] NEWLINE_BYTE_ARRAY = "\n".getBytes(Charsets.UTF_8);
     public static final int DEFAULT_READ_AHEAD_LIMIT = 1000;
     private static Pattern REPEAT_PARAMETERS_PATTERN = Pattern.compile("^(\\d+),*\\s*(\\d+)*$");
 
@@ -47,7 +47,7 @@ public class JsonDataGeneratorImpl implements JsonDataGenerator {
     public void generateTestDataJson(final String text, final OutputStream outputStream)
         throws JsonDataGeneratorException {
         try (ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(
-            text.getBytes())) {
+            text.getBytes(Charsets.UTF_8))) {
             generateTestDataJson(byteArrayInputStream, outputStream);
         } catch (JsonDataGeneratorException | IOException e) {
             throw new JsonDataGeneratorException(e);
@@ -121,7 +121,7 @@ public class JsonDataGeneratorImpl implements JsonDataGenerator {
     private void handleRepeats(final InputStream inputStream, final OutputStream outputStream)
         throws IOException {
         final BufferedReader bufferedReader =
-            new BufferedReader(new InputStreamReader(inputStream, UTF_8));
+            new BufferedReader(new InputStreamReader(inputStream, Charsets.UTF_8));
         final CircularFifoQueue<Character> lastCharQueue =
             new CircularFifoQueue<>(REPEAT_TEXT.length());
         final List<Character> xmlRepeatTagList = new LinkedList<>();
@@ -134,101 +134,37 @@ public class JsonDataGeneratorImpl implements JsonDataGenerator {
         try (ByteArrayBackupToFileOutputStream tempBuffer = new ByteArrayBackupToFileOutputStream();
             ByteArrayBackupToFileOutputStream repeatBuffer = new ByteArrayBackupToFileOutputStream()) {
             int i;
-            do {
-                i = bufferedReader.read();
-                if (i != -1) {
-                    if (isRepeating) {
-                        repeatBuffer.write((char) i);
+            while ((i = bufferedReader.read()) != -1) {
+                String charAsUTF8String = Character.valueOf((char) i).toString();
+                if (isRepeating) {
+                    repeatBuffer.write(charAsUTF8String.getBytes(Charsets.UTF_8));
 
-                        if (!Character.isWhitespace(i) && firstNonWhitespaceCharacter == -1) {
-                            firstNonWhitespaceCharacter = i;
-                        }
+                    if (!Character.isWhitespace(i) && firstNonWhitespaceCharacter == -1) {
+                        firstNonWhitespaceCharacter = i;
+                    }
 
-                        if ('{' == i) {
-                            bracketCount++;
-                        } else if ('}' == i || (']' == i) && bracketCount == 0) {
-                            bracketCount--;
-                            if (bracketCount == 0 && xmlTag == 0) {
-                                bufferedReader.mark(1);
-                                i = bufferedReader.read();
-                                if (i == firstNonWhitespaceCharacter) {
-                                    repeatBuffer.write((char) i);
-                                } else {
-                                    bufferedReader.reset();
-                                }
-
-                                try (ByteArrayBackupToFileOutputStream newCopyOutputStream = new ByteArrayBackupToFileOutputStream()) {
-                                    try (InputStream repeatBufferNewInputStream = repeatBuffer
-                                        .getNewInputStream()) {
-                                        IOUtils
-                                            .copy(repeatBufferNewInputStream, newCopyOutputStream);
-                                    }
-                                    copyRepeatStream(repeatTimes, repeatBuffer, newCopyOutputStream,
-                                        COMMA_NEWLINE_BYTE_ARRAY);
-                                    try (ByteArrayBackupToFileOutputStream recursiveOutputStream = new ByteArrayBackupToFileOutputStream()) {
-                                        try (InputStream newCopyOutputStreamNewInputStream = newCopyOutputStream
-                                            .getNewInputStream()) {
-                                            handleRepeats(newCopyOutputStreamNewInputStream,
-                                                recursiveOutputStream);
-                                        }
-                                        try (InputStream recursiveOutputStreamNewInputStream = recursiveOutputStream
-                                            .getNewInputStream()) {
-                                            IOUtils.copy(recursiveOutputStreamNewInputStream,
-                                                outputStream);
-                                        }
-                                        repeatBuffer.setLength(0);
-                                        tempBuffer.setLength(0);
-                                        isRepeating = false;
-                                        bracketCount = 0;
-                                    }
-                                }
-                            } else if (bracketCount == -1) {
-                                repeatBuffer.setLength(repeatBuffer.getLength() - 1);
-                                try (ByteArrayBackupToFileOutputStream newCopyFileStream = new ByteArrayBackupToFileOutputStream()) {
-                                    try (InputStream repeatBufferNewInputStream = repeatBuffer
-                                        .getNewInputStream()) {
-                                        IOUtils.copy(repeatBufferNewInputStream, newCopyFileStream);
-                                    }
-                                    copyRepeatStream(repeatTimes, repeatBuffer, newCopyFileStream,
-                                        COMMA_NEWLINE_BYTE_ARRAY);
-                                    newCopyFileStream.write(CLOSE_BRACKET_BYTE_ARRAY);
-                                    try (ByteArrayBackupToFileOutputStream recursiveOutputStream = new ByteArrayBackupToFileOutputStream()) {
-                                        try (InputStream inputStream1 = newCopyFileStream
-                                            .getNewInputStream()) {
-                                            handleRepeats(inputStream1, recursiveOutputStream);
-                                        }
-                                        try (InputStream inputStream1 = recursiveOutputStream
-                                            .getNewInputStream()) {
-                                            IOUtils.copy(inputStream1, outputStream);
-                                        }
-                                    }
-                                    repeatBuffer.setLength(0);
-                                    tempBuffer.setLength(0);
-                                    isRepeating = false;
-                                    bracketCount = 0;
-                                }
-                            }
-                        }
-                        if ('<' == i && xmlTag == 0) {
+                    if ('{' == i) {
+                        bracketCount++;
+                    } else if ('}' == i || (']' == i) && bracketCount == 0) {
+                        bracketCount--;
+                        if (bracketCount == 0 && xmlTag == 0) {
+                            bufferedReader.mark(1);
                             i = bufferedReader.read();
-                            while ('>' != i && i != -1) {
-                                xmlRepeatTagList.add((char) i);
-                                repeatBuffer.write((char) i);
-                                i = bufferedReader.read();
+                            charAsUTF8String = Character.valueOf((char) i).toString();
+                            if (i == firstNonWhitespaceCharacter) {
+                                repeatBuffer.write(charAsUTF8String.getBytes(Charsets.UTF_8));
+                            } else {
+                                bufferedReader.reset();
                             }
-                            xmlTag++;
-                            repeatBuffer.write((char) i);
-                            xmlRepeatTag = "</" + readAsString(xmlRepeatTagList) + ">";
-                        }
-                        if (repeatBuffer.getLength() > 0 && !xmlRepeatTag.isEmpty() && repeatBuffer
-                            .toString().endsWith(xmlRepeatTag)) {
+
                             try (ByteArrayBackupToFileOutputStream newCopyOutputStream = new ByteArrayBackupToFileOutputStream()) {
                                 try (InputStream repeatBufferNewInputStream = repeatBuffer
                                     .getNewInputStream()) {
-                                    IOUtils.copy(repeatBufferNewInputStream, newCopyOutputStream);
+                                    IOUtils
+                                        .copy(repeatBufferNewInputStream, newCopyOutputStream);
                                 }
                                 copyRepeatStream(repeatTimes, repeatBuffer, newCopyOutputStream,
-                                    NEWLINE_BYTE_ARRAY);
+                                    COMMA_NEWLINE_BYTE_ARRAY);
                                 try (ByteArrayBackupToFileOutputStream recursiveOutputStream = new ByteArrayBackupToFileOutputStream()) {
                                     try (InputStream newCopyOutputStreamNewInputStream = newCopyOutputStream
                                         .getNewInputStream()) {
@@ -244,69 +180,136 @@ public class JsonDataGeneratorImpl implements JsonDataGenerator {
                                     tempBuffer.setLength(0);
                                     isRepeating = false;
                                     bracketCount = 0;
-                                    xmlTag = 0;
                                 }
                             }
+                        } else if (bracketCount == -1) {
+                            repeatBuffer.setLength(repeatBuffer.getLength() - 1);
+                            try (ByteArrayBackupToFileOutputStream newCopyFileStream = new ByteArrayBackupToFileOutputStream()) {
+                                try (InputStream repeatBufferNewInputStream = repeatBuffer
+                                    .getNewInputStream()) {
+                                    IOUtils.copy(repeatBufferNewInputStream, newCopyFileStream);
+                                }
+                                copyRepeatStream(repeatTimes, repeatBuffer, newCopyFileStream,
+                                    COMMA_NEWLINE_BYTE_ARRAY);
+                                newCopyFileStream.write(CLOSE_BRACKET_BYTE_ARRAY);
+                                try (ByteArrayBackupToFileOutputStream recursiveOutputStream = new ByteArrayBackupToFileOutputStream()) {
+                                    try (InputStream inputStream1 = newCopyFileStream
+                                        .getNewInputStream()) {
+                                        handleRepeats(inputStream1, recursiveOutputStream);
+                                    }
+                                    try (InputStream inputStream1 = recursiveOutputStream
+                                        .getNewInputStream()) {
+                                        IOUtils.copy(inputStream1, outputStream);
+                                    }
+                                }
+                                repeatBuffer.setLength(0);
+                                tempBuffer.setLength(0);
+                                isRepeating = false;
+                                bracketCount = 0;
+                            }
                         }
-                    } else {
-                        tempBuffer.write((char) i);
-                        lastCharQueue.add((char) i);
                     }
-                    if ((lastCharQueue.peek() != null && lastCharQueue.peek().equals('\''))
-                        && REPEAT.equals(readAsString(lastCharQueue))) {
-                        tempBuffer.mark();
-                        bufferedReader.mark(DEFAULT_READ_AHEAD_LIMIT);
-                        try {
+                    if ('<' == i && xmlTag == 0) {
+                        i = bufferedReader.read();
+                        while ('>' != i && i != -1) {
+                            charAsUTF8String = Character.valueOf((char) i).toString();
+                            xmlRepeatTagList.add((char) i);
+                            repeatBuffer.write(charAsUTF8String.getBytes(Charsets.UTF_8));
                             i = bufferedReader.read();
-                            tempBuffer.write((char) i);
-                            String numRepeats = "";
-                            while (i != ')') {
-                                numRepeats = numRepeats + Character.toString((char) i);
-                                i = bufferedReader.read();
-                                if (i != ')') {
-                                    tempBuffer.write((char) i);
-                                }
-                            }
-                            //)}}'
-                            tempBuffer.write((char) i);
-                            tempBuffer.write((char) (i = bufferedReader.read()));
-                            if (i != '}') {
-                                throw new IllegalStateException();
-                            }
-                            tempBuffer.write((char) (i = bufferedReader.read()));
-                            if (i != '}') {
-                                throw new IllegalStateException();
-                            }
-                            tempBuffer.write((char) (i = bufferedReader.read()));
-                            if (i != '\'') {
-                                throw new IllegalStateException();
-                            }
-                            tempBuffer.write((char) (i = bufferedReader.read()));
-                            if (i != ',') {
-                                throw new IllegalStateException();
-                            }
-                            repeatTimes = parseRepeats(numRepeats);
-                            tempBuffer.setLength(
-                                tempBuffer.getLength() - numRepeats.length()
-                                    - lastCharQueue.size() - 5);
-                            try (InputStream tempBufferNewInputStream = tempBuffer
-                                .getNewInputStream()) {
-                                IOUtils.copy(tempBufferNewInputStream, outputStream);
-                            }
-                            tempBuffer.setLength(0);
-                            repeatBuffer.setLength(0);
-                            isRepeating = true;
-                            bracketCount = 0;
-                            lastCharQueue.clear();
-                            xmlRepeatTagList.clear();
-                        } catch (IllegalStateException e) {
-                            setQueueCharacters(lastCharQueue, REPEAT);
-                            bufferedReader.reset();
-                            tempBuffer.reset();
+                            charAsUTF8String = Character.valueOf((char) i).toString();
                         }
+                        xmlTag++;
+                        repeatBuffer.write(charAsUTF8String.getBytes(Charsets.UTF_8));
+                        xmlRepeatTag = "</" + readAsString(xmlRepeatTagList) + ">";
+                    }
+                    if (repeatBuffer.getLength() > 0 && !xmlRepeatTag.isEmpty() && repeatBuffer
+                        .toString().endsWith(xmlRepeatTag)) {
+                        try (ByteArrayBackupToFileOutputStream newCopyOutputStream = new ByteArrayBackupToFileOutputStream()) {
+                            try (InputStream repeatBufferNewInputStream = repeatBuffer
+                                .getNewInputStream()) {
+                                IOUtils.copy(repeatBufferNewInputStream, newCopyOutputStream);
+                            }
+                            copyRepeatStream(repeatTimes, repeatBuffer, newCopyOutputStream,
+                                NEWLINE_BYTE_ARRAY);
+                            try (ByteArrayBackupToFileOutputStream recursiveOutputStream = new ByteArrayBackupToFileOutputStream()) {
+                                try (InputStream newCopyOutputStreamNewInputStream = newCopyOutputStream
+                                    .getNewInputStream()) {
+                                    handleRepeats(newCopyOutputStreamNewInputStream,
+                                        recursiveOutputStream);
+                                }
+                                try (InputStream recursiveOutputStreamNewInputStream = recursiveOutputStream
+                                    .getNewInputStream()) {
+                                    IOUtils.copy(recursiveOutputStreamNewInputStream,
+                                        outputStream);
+                                }
+                                repeatBuffer.setLength(0);
+                                tempBuffer.setLength(0);
+                                isRepeating = false;
+                                bracketCount = 0;
+                                xmlTag = 0;
+                            }
+                        }
+                    }
+                } else {
+                    tempBuffer.write(charAsUTF8String.getBytes(Charsets.UTF_8));
+                    lastCharQueue.add((char) i);
+                }
+                if ((lastCharQueue.peek() != null && lastCharQueue.peek().equals('\''))
+                    && REPEAT.equals(readAsString(lastCharQueue))) {
+                    tempBuffer.mark();
+                    bufferedReader.mark(DEFAULT_READ_AHEAD_LIMIT);
+                    try {
+                        i = bufferedReader.read();
+                        charAsUTF8String = Character.valueOf((char) i).toString();
+                        tempBuffer.write(charAsUTF8String.getBytes());
+                        String numRepeats = "";
+                        while (i != ')') {
+                            numRepeats = numRepeats + Character.toString((char) i);
+                            i = bufferedReader.read();
+                            charAsUTF8String = Character.valueOf((char) i).toString();
+                            if (i != ')') {
+                                tempBuffer.write(charAsUTF8String.getBytes());
+                            }
+                        }
+                        //)}}'
+                        tempBuffer.write((char) i);
+                        tempBuffer.write((char) (i = bufferedReader.read()));
+                        if (i != '}') {
+                            throw new IllegalStateException();
+                        }
+                        tempBuffer.write((char) (i = bufferedReader.read()));
+                        if (i != '}') {
+                            throw new IllegalStateException();
+                        }
+                        tempBuffer.write((char) (i = bufferedReader.read()));
+                        if (i != '\'') {
+                            throw new IllegalStateException();
+                        }
+                        tempBuffer.write((char) (i = bufferedReader.read()));
+                        if (i != ',') {
+                            throw new IllegalStateException();
+                        }
+                        repeatTimes = parseRepeats(numRepeats);
+                        tempBuffer.setLength(
+                            tempBuffer.getLength() - numRepeats.length()
+                                - lastCharQueue.size() - 5);
+                        try (InputStream tempBufferNewInputStream = tempBuffer
+                            .getNewInputStream()) {
+                            IOUtils.copy(tempBufferNewInputStream, outputStream);
+                        }
+                        tempBuffer.setLength(0);
+                        repeatBuffer.setLength(0);
+                        isRepeating = true;
+                        bracketCount = 0;
+                        lastCharQueue.clear();
+                        xmlRepeatTagList.clear();
+                    } catch (IllegalStateException e) {
+                        setQueueCharacters(lastCharQueue, REPEAT);
+                        bufferedReader.reset();
+                        tempBuffer.reset();
                     }
                 }
-            } while (i != -1);
+        }
             bufferedReader.close();
             try (InputStream inputStream1 = tempBuffer.getNewInputStream()) {
                 IOUtils.copy(inputStream1, outputStream);
@@ -378,13 +381,14 @@ public class JsonDataGeneratorImpl implements JsonDataGenerator {
     private void handleNestedFunctions(final InputStream inputStream,
         final OutputStream outputStream)
         throws IOException {
-        Reader reader = new FunctionReplacingReader(new InputStreamReader(inputStream, UTF_8),
-            new FunctionTokenResolver());
+        Reader reader = new FunctionReplacingReader(
+            new InputStreamReader(inputStream, Charsets.UTF_8), new FunctionTokenResolver());
 
         int data = 0;
         try {
             while ((data = reader.read()) != -1) {
-                outputStream.write(data);
+                String charAsUTF8String = Character.valueOf((char) data).toString();
+                outputStream.write(charAsUTF8String.getBytes(Charsets.UTF_8));
             }
 
         } finally {

@@ -4,6 +4,7 @@ import com.github.approval.Approvals;
 import com.github.approval.reporters.Reporters;
 import com.github.vincentrussell.json.datagenerator.functions.impl.Index;
 import com.github.vincentrussell.json.datagenerator.impl.JsonDataGeneratorImpl;
+import com.google.common.collect.Lists;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -25,6 +26,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.regex.Pattern;
 
@@ -102,6 +104,11 @@ public class JsonDataGeneratorTest{
         return Paths.get(basePath, testName);
     }
 
+
+    @Test
+    public void utf8TestForeignCharacters() throws IOException, JsonDataGeneratorException {
+        classpathJsonTests("foreignCharacters.json");
+    }
 
     @Test
     public void copyJson() throws IOException, JsonDataGeneratorException {
@@ -286,6 +293,18 @@ public class JsonDataGeneratorTest{
         JsonObject obj = (JsonObject) parser.parse(results);
         assertEquals("A green door", obj.get("name").getAsString());
         assertEquals(12.50, obj.get("price").getAsDouble(), 0);
+    }
+
+    @Test
+    public void foreignCharactersInTokenResolver() throws IOException, JsonDataGeneratorException {
+        parser.generateTestDataJson(this.getClass().getClassLoader().getResource("foreignCharactersWithinTokenResolver.json"), outputStream);
+        String results = new String(outputStream.toByteArray());
+        com.google.gson.JsonParser parser = new com.google.gson.JsonParser();
+        JsonObject obj = (JsonObject) parser.parse(results);
+        String randomResult = obj.get("random").getAsString();
+        ArrayList<String> randomOptions =
+            Lists.newArrayList("中文替换", "Как тебя зовут?", "هناك أولاد في الحديقة");
+        assertTrue(randomOptions.contains(randomResult));
     }
 
     @Test

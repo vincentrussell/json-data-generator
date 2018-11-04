@@ -607,6 +607,7 @@ java -cp json-data-generator-1.6-standalone.jar:yourfunctions.jar com.github.vin
 - Added the ability to generate a uuid without dashes.
 - Added the abiilty to add or subtract days, hours, mintues, months, seconds, and years to dates
 - Added dateFormat function
+- Added UTF-8 international character support
 
 ## [1.6](https://github.com/vincentrussell/json-data-generator/tree/json-data-generator-1.6) (2018-10-08)
 
