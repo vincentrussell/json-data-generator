@@ -358,7 +358,7 @@ random first name:
 {{firstName()}}
 ```
 
-random username based on first initial from rnadom first name and lastname lowercased:
+random username based on first initial from random first name and lastname lowercased:
 ```
 {{username()}}
 ```
