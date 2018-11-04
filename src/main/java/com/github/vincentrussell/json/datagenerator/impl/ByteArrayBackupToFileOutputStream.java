@@ -1,5 +1,6 @@
 package com.github.vincentrussell.json.datagenerator.impl;
 
+import com.google.common.base.Charsets;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 
@@ -12,7 +13,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.RandomAccessFile;
 import java.io.StringWriter;
-import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 
 /**
@@ -161,11 +161,7 @@ public class ByteArrayBackupToFileOutputStream extends OutputStream {
                 throw new RuntimeException(e);
             }
         } else {
-            try {
-                return new String(buf, 0, count, "UTF-8");
-            } catch (UnsupportedEncodingException e) {
-                throw new IllegalArgumentException(e);
-            }
+            return new String(buf, 0, count, Charsets.UTF_8);
         }
     }
 
