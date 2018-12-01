@@ -26,13 +26,15 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Map;
 import java.util.regex.Pattern;
 
 import static org.hamcrest.CoreMatchers.isA;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 
 public class JsonDataGeneratorTest{
@@ -176,6 +178,37 @@ public class JsonDataGeneratorTest{
         assertEquals("{\n" +
                 "    \"concattest\": \"{test}\",\n" +
                 "}",results);
+    }
+
+
+    @Test
+    public void singleQuoteFunctionTest() throws IOException, JsonDataGeneratorException {
+        parser.generateTestDataJson("{\"day1\": \"{{put('date', date('dd-MM-yyyy HH:mm:ss'))}}\",\"day2\": \"{{addDays(get('date'), 12)}}\"}", outputStream);
+        String results = new String(outputStream.toByteArray());
+        JsonObject obj = (JsonObject) new com.google.gson.JsonParser().parse(results);
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+        assertIsDate(dateFormat, obj.getAsJsonPrimitive("day1").getAsString());
+        assertIsDate(dateFormat, obj.getAsJsonPrimitive("day2").getAsString());
+    }
+
+    private void assertIsDate(SimpleDateFormat dateFormat, String date) {
+        try {
+            Date dateObj = dateFormat.parse(date);
+            assertNotNull(dateObj);
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
+    @Test
+    public void doubleQuoteFunctionTest() throws IOException, JsonDataGeneratorException {
+        parser.generateTestDataJson("{\"day1\": \"{{put(\"date\", date(\"dd-MM-yyyy HH:mm:ss\"))}}\",\"day2\":\"{{addDays(get(\"date\"), 12)}}\"}\n", outputStream);
+        String results = new String(outputStream.toByteArray());
+        JsonObject obj = (JsonObject) new com.google.gson.JsonParser().parse(results);
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+        assertIsDate(dateFormat, obj.getAsJsonPrimitive("day1").getAsString());
+        assertIsDate(dateFormat, obj.getAsJsonPrimitive("day2").getAsString());
     }
 
     @Test

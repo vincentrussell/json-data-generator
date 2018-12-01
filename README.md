@@ -10,7 +10,7 @@ Add a dependency to `com.github.vincentrussell:json-data-generator`.
 <dependency>
    <groupId>com.github.vincentrussell</groupId>
    <artifactId>json-data-generator</artifactId>
-   <version>1.7</version>
+   <version>1.8</version>
 </dependency>
 ```
 
@@ -49,7 +49,7 @@ parser.generateTestDataJson(InputStream inputStream, OutputStream outputStream);
 ## Running it as a standalone jar
 
 ```
-java -jar json-data-generator-1.7-standalone.jar -s source.json -d destination.json
+java -jar json-data-generator-1.8-standalone.jar -s source.json -d destination.json
 ```
 ### Options
 
@@ -595,10 +595,16 @@ public class NewFunction {
 then you can put the jar that you have created on the classpath with the the standalone jar (-f registers one or more classes with the Function Registry):
 
 ```
-java -cp json-data-generator-1.7-standalone.jar:yourfunctions.jar com.github.vincentrussell.json.datagenerator.CLIMain -s source.json -d destination.json -f my.package.NewFunction
+java -cp json-data-generator-1.8-standalone.jar:yourfunctions.jar com.github.vincentrussell.json.datagenerator.CLIMain -s source.json -d destination.json -f my.package.NewFunction
 ```
 
 # Change Log
+
+## [1.8](https://github.com/vincentrussell/json-data-generator/tree/json-data-generator-1.8) (2018-12-01)
+
+**Bugs:**
+
+- String arguments for functions can be single or double-quoted
 
 ## [1.7](https://github.com/vincentrussell/json-data-generator/tree/json-data-generator-1.7) (2018-11-05)
 

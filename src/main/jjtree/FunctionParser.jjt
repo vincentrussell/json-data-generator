@@ -45,7 +45,7 @@ SKIP :
 
 /* TOKENS */
 TOKEN : {
-	  < STRING_LITERAL:
+	  < DOUBLE_QUOTED_STRING_LITERAL:
           "\""
           (   (~["\"","\\","\n","\r"])
             | ("\\"
@@ -56,6 +56,18 @@ TOKEN : {
               )
           )*
           "\""
+      >
+    | < SINGLE_QUOTED_STRING_LITERAL:
+            "'"
+            (   (~["'","\\","\n","\r"])
+              | ("\\"
+                  ( ["n","t","b","r","f","\\","\""]
+                  | ["0"-"7"] ( ["0"-"7"] )?
+                  | ["0"-"3"] ["0"-"7"] ["0"-"7"]
+                  )
+                )
+            )*
+            "'"
       >
 	| < NUMBER: <INTEGER> (["L"])? | <FLOATING_POINT_LITERAL>  >
 	| < FLOATING_POINT_LITERAL:
@@ -87,10 +99,17 @@ String FunctionName() : {Token t=null;}
     }
 }
 
-String StringLiteral() : {Token t=null;}
+String DoubleQuotedStringLiteral() : {Token t=null;}
 {
-    t=<STRING_LITERAL> {
+    t=<DOUBLE_QUOTED_STRING_LITERAL> {
         return t.image.replaceAll("^\"|\"$", "");
+    }
+}
+
+String SingleQuotedStringLiteral() : {Token t=null;}
+{
+    t=<SINGLE_QUOTED_STRING_LITERAL> {
+        return t.image.replaceAll("^'|'$", "");
     }
 }
 
@@ -132,7 +151,7 @@ String[] FormalParameters() :
 String FormalParameter() :
 {String t=null;}
 {
-  ( t=StringLiteral() | t=Number() | t=Parse() ) {
+  ( t=DoubleQuotedStringLiteral() | t=SingleQuotedStringLiteral() | t=Number() | t=Parse() ) {
         return t;
   }
 }
