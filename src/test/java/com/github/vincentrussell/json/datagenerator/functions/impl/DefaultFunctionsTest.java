@@ -51,6 +51,15 @@ public class DefaultFunctionsTest {
     }
 
     @Test
+    public void randomDoubleWithFormat() throws InvocationTargetException, IllegalAccessException {
+        String[] args = new String[]{"23.124", "34.12", "%.2f"};
+        String result = functionRegistry.executeFunction("double", args);
+        Double doub = Double.valueOf(result);
+        assertTrue(doub >= 23.124 && doub <= 34.12);
+        assertDecimalPlaces(result, 2);
+    }
+
+    @Test
     public void randomFloat() throws InvocationTargetException, IllegalAccessException {
         String[] args = new String[]{"0.90310", "1.3421"};
         Float flo = Float.valueOf(functionRegistry.executeFunction("float", args));
