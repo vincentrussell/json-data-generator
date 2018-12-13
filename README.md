@@ -124,9 +124,13 @@ random float in range (with optional format):
 {{float(min,max,"%.2f")}}
 ```
 
-random double in range:
+random double in range (with optional format):
 ```
 {{double(min,max)}}
+```
+
+```
+{{double(min,max,"%.2f")}}
 ```
 
 random long in range:
@@ -599,6 +603,12 @@ java -cp json-data-generator-1.8-standalone.jar:yourfunctions.jar com.github.vin
 ```
 
 # Change Log
+
+## [1.9](https://github.com/vincentrussell/json-data-generator/tree/json-data-generator-1.9) (2018-12-24)
+
+**Bugs:**
+
+- random function now supports a format
 
 ## [1.8](https://github.com/vincentrussell/json-data-generator/tree/json-data-generator-1.8) (2018-12-01)
 
