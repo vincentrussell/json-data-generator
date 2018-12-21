@@ -196,12 +196,32 @@ public class DefaultFunctionsTest {
     }
 
     @Test
-    public void indexWithNameAndStartingPointIgnoreAdditionalChangesInNumbe() throws InvocationTargetException, IllegalAccessException {
+    public void indexWithNameAndStartingPointIgnoreAdditionalChangesInNumber() throws InvocationTargetException, IllegalAccessException {
         assertEquals("45", functionRegistry.executeFunction("index", "name1", "45"));
         assertEquals("46", functionRegistry.executeFunction("index", "name1", "47"));
         assertEquals("47", functionRegistry.executeFunction("index", "name1", "49"));
     }
 
+    @Test(expected = InvocationTargetException.class)
+    public void resetIndexDefaultNotFound() throws InvocationTargetException, IllegalAccessException {
+        functionRegistry.executeFunction("resetIndex");
+    }
+
+    @Test(expected = InvocationTargetException.class)
+    public void resetIndexSpecifiedNameNotFound() throws InvocationTargetException, IllegalAccessException {
+        functionRegistry.executeFunction("resetIndex", "name1");
+    }
+
+    @Test
+    public void resetIndex() throws InvocationTargetException, IllegalAccessException {
+        assertEquals("45", functionRegistry.executeFunction("index", "name1", "45"));
+        assertEquals("46", functionRegistry.executeFunction("index", "name1", "45"));
+        assertEquals("47", functionRegistry.executeFunction("index", "name1", "45"));
+        assertEquals("", functionRegistry.executeFunction("resetIndex", "name1"));
+        assertEquals("45", functionRegistry.executeFunction("index", "name1", "45"));
+        assertEquals("46", functionRegistry.executeFunction("index", "name1", "45"));
+        assertEquals("47", functionRegistry.executeFunction("index", "name1", "45"));
+    }
 
     @Test
     public void loremWords() throws InvocationTargetException, IllegalAccessException {

@@ -13,11 +13,11 @@ import java.util.concurrent.ConcurrentHashMap;
 @Function(name = "index")
 public class Index {
 
-    private static final Map<String, IndexHolder>
+    static final Map<String, IndexHolder>
         STRING_INDEX_HOLDER_MAP = new ConcurrentHashMap<>();
 
 
-    public static final String DEFAULT = "DEFAULT";
+    static final String DEFAULT = "DEFAULT";
 
     /**
      * function call with default index name

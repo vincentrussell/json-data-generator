@@ -239,6 +239,11 @@ public class JsonDataGeneratorTest{
     }
 
     @Test
+    public void resetIndex() throws IOException, JsonDataGeneratorException {
+        classpathJsonTests("resetIndex.json");
+    }
+
+    @Test
     public void floatingRepeatsWithQuotes() throws IOException, JsonDataGeneratorException {
         parser.generateTestDataJson("[\n" +
                 "  '{{repeat(1, 1)}}',\n" +

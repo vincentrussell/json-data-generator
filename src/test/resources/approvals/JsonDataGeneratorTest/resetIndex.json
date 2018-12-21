@@ -1,0 +1,66 @@
+[
+  
+  {
+    index: '0',
+    friends: [
+      
+      {
+        id: '0',
+        name: 'nameValue'
+      },
+
+      {
+        id: '0',
+        name: 'nameValue'
+      },
+
+      {
+        id: '0',
+        name: 'nameValue'
+      }
+    ],
+},
+
+  {
+    index: '1',
+    friends: [
+      
+      {
+        id: '0',
+        name: 'nameValue'
+      },
+
+      {
+        id: '0',
+        name: 'nameValue'
+      },
+
+      {
+        id: '0',
+        name: 'nameValue'
+      }
+    ],
+},
+
+  {
+    index: '2',
+    friends: [
+      
+      {
+        id: '0',
+        name: 'nameValue'
+      },
+
+      {
+        id: '0',
+        name: 'nameValue'
+      },
+
+      {
+        id: '0',
+        name: 'nameValue'
+      }
+    ],
+}
+]
+

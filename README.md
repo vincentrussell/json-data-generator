@@ -193,6 +193,29 @@ an incrementing index integer with a name and a specific starting point
 {{index("index-name",78)}
 ```
 
+reset the default index
+```
+{{resetIndex("inner")}}
+```
+
+reset an index with name (more detailed example)
+
+```
+[
+  '{{repeat(3)}}',
+  {
+    index: '{{index("outer")}}',
+    friends: [
+      '{{repeat(3)}}',
+      {
+        id: '{{index("inner")}}',
+        name: 'nameValue'{{resetIndex("inner")}}
+      }
+    ],
+}
+]
+```
+
 lorem ipsum words:
 ```
 {{lorem(count,"words")}}
@@ -608,7 +631,8 @@ java -cp json-data-generator-1.8-standalone.jar:yourfunctions.jar com.github.vin
 
 **Bugs:**
 
-- random function now supports a format
+- random double function now supports a format
+- index values can be reset to their starting point with resetIndex function
 
 ## [1.8](https://github.com/vincentrussell/json-data-generator/tree/json-data-generator-1.8) (2018-12-01)
 

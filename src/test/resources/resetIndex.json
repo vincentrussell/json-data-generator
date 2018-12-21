@@ -1,0 +1,13 @@
+[
+  '{{repeat(3)}}',
+  {
+    index: '{{index("outer")}}',
+    friends: [
+      '{{repeat(3)}}',
+      {
+        id: '{{index("inner")}}',
+        name: 'nameValue'{{resetIndex("inner")}}
+      }
+    ],
+}
+]

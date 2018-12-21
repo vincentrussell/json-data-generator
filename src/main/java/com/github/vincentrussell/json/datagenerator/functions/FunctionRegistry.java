@@ -35,6 +35,7 @@ import com.github.vincentrussell.json.datagenerator.functions.impl.RandomDouble;
 import com.github.vincentrussell.json.datagenerator.functions.impl.RandomFloat;
 import com.github.vincentrussell.json.datagenerator.functions.impl.RandomInteger;
 import com.github.vincentrussell.json.datagenerator.functions.impl.RandomLong;
+import com.github.vincentrussell.json.datagenerator.functions.impl.ResetIndex;
 import com.github.vincentrussell.json.datagenerator.functions.impl.Ssn;
 import com.github.vincentrussell.json.datagenerator.functions.impl.State;
 import com.github.vincentrussell.json.datagenerator.functions.impl.Street;
@@ -89,6 +90,7 @@ public final class FunctionRegistry {
     registerClass(UUID.class);
     registerClass(Bool.class);
     registerClass(Index.class);
+    registerClass(ResetIndex.class);
     registerClass(LoremIpsum.class);
     registerClass(Concat.class);
     registerClass(ToUpper.class);
