@@ -10,12 +10,12 @@ Add a dependency to `com.github.vincentrussell:json-data-generator`.
 <dependency>
    <groupId>com.github.vincentrussell</groupId>
    <artifactId>json-data-generator</artifactId>
-   <version>1.8</version>
+   <version>1.9</version>
 </dependency>
 ```
 
 ## Requirements
-- JDK 1.8 or higher
+- JDK 1.9 or higher
 - Apache Maven 3.1.0 or higher
 
 ## Running it from Java
@@ -49,7 +49,7 @@ parser.generateTestDataJson(InputStream inputStream, OutputStream outputStream);
 ## Running it as a standalone jar
 
 ```
-java -jar json-data-generator-1.8-standalone.jar -s source.json -d destination.json
+java -jar json-data-generator-1.9-standalone.jar -s source.json -d destination.json
 ```
 ### Options
 
@@ -622,12 +622,12 @@ public class NewFunction {
 then you can put the jar that you have created on the classpath with the the standalone jar (-f registers one or more classes with the Function Registry):
 
 ```
-java -cp json-data-generator-1.8-standalone.jar:yourfunctions.jar com.github.vincentrussell.json.datagenerator.CLIMain -s source.json -d destination.json -f my.package.NewFunction
+java -cp json-data-generator-1.9-standalone.jar:yourfunctions.jar com.github.vincentrussell.json.datagenerator.CLIMain -s source.json -d destination.json -f my.package.NewFunction
 ```
 
 # Change Log
 
-## [1.9](https://github.com/vincentrussell/json-data-generator/tree/json-data-generator-1.9) (2018-12-24)
+## [1.9](https://github.com/vincentrussell/json-data-generator/tree/json-data-generator-1.9) (2019-01-01)
 
 **Bugs:**
 
