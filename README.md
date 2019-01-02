@@ -15,7 +15,7 @@ Add a dependency to `com.github.vincentrussell:json-data-generator`.
 ```
 
 ## Requirements
-- JDK 1.9 or higher
+- JDK 1.8 or higher
 - Apache Maven 3.1.0 or higher
 
 ## Running it from Java
