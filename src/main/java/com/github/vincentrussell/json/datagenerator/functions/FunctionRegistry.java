@@ -1,54 +1,10 @@
 package com.github.vincentrussell.json.datagenerator.functions;
 
-import com.github.vincentrussell.json.datagenerator.functions.impl.AddDays;
-import com.github.vincentrussell.json.datagenerator.functions.impl.AddHours;
-import com.github.vincentrussell.json.datagenerator.functions.impl.AddMinutes;
-import com.github.vincentrussell.json.datagenerator.functions.impl.AddMonths;
-import com.github.vincentrussell.json.datagenerator.functions.impl.AddSeconds;
-import com.github.vincentrussell.json.datagenerator.functions.impl.AddWeeks;
-import com.github.vincentrussell.json.datagenerator.functions.impl.AddYears;
-import com.github.vincentrussell.json.datagenerator.functions.impl.Alpha;
-import com.github.vincentrussell.json.datagenerator.functions.impl.AlphaNumeric;
-import com.github.vincentrussell.json.datagenerator.functions.impl.Bool;
-import com.github.vincentrussell.json.datagenerator.functions.impl.City;
-import com.github.vincentrussell.json.datagenerator.functions.impl.Company;
-import com.github.vincentrussell.json.datagenerator.functions.impl.Concat;
-import com.github.vincentrussell.json.datagenerator.functions.impl.CountriesList;
-import com.github.vincentrussell.json.datagenerator.functions.impl.Country;
-import com.github.vincentrussell.json.datagenerator.functions.impl.Date;
-import com.github.vincentrussell.json.datagenerator.functions.impl.DateFormat;
-import com.github.vincentrussell.json.datagenerator.functions.impl.Email;
-import com.github.vincentrussell.json.datagenerator.functions.impl.FirstName;
-import com.github.vincentrussell.json.datagenerator.functions.impl.Gender;
-import com.github.vincentrussell.json.datagenerator.functions.impl.Get;
-import com.github.vincentrussell.json.datagenerator.functions.impl.Hex;
-import com.github.vincentrussell.json.datagenerator.functions.impl.Index;
-import com.github.vincentrussell.json.datagenerator.functions.impl.Ipv4;
-import com.github.vincentrussell.json.datagenerator.functions.impl.Ipv6;
-import com.github.vincentrussell.json.datagenerator.functions.impl.LastName;
-import com.github.vincentrussell.json.datagenerator.functions.impl.LoremIpsum;
-import com.github.vincentrussell.json.datagenerator.functions.impl.ObjectId;
-import com.github.vincentrussell.json.datagenerator.functions.impl.Phone;
-import com.github.vincentrussell.json.datagenerator.functions.impl.Put;
-import com.github.vincentrussell.json.datagenerator.functions.impl.Random;
-import com.github.vincentrussell.json.datagenerator.functions.impl.RandomDouble;
-import com.github.vincentrussell.json.datagenerator.functions.impl.RandomFloat;
-import com.github.vincentrussell.json.datagenerator.functions.impl.RandomInteger;
-import com.github.vincentrussell.json.datagenerator.functions.impl.RandomLong;
-import com.github.vincentrussell.json.datagenerator.functions.impl.ResetIndex;
-import com.github.vincentrussell.json.datagenerator.functions.impl.Ssn;
-import com.github.vincentrussell.json.datagenerator.functions.impl.State;
-import com.github.vincentrussell.json.datagenerator.functions.impl.Street;
-import com.github.vincentrussell.json.datagenerator.functions.impl.Substring;
-import com.github.vincentrussell.json.datagenerator.functions.impl.Timestamp;
-import com.github.vincentrussell.json.datagenerator.functions.impl.ToLower;
-import com.github.vincentrussell.json.datagenerator.functions.impl.ToUpper;
-import com.github.vincentrussell.json.datagenerator.functions.impl.UUID;
-import com.github.vincentrussell.json.datagenerator.functions.impl.Username;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.reflections.Reflections;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -82,51 +38,12 @@ public final class FunctionRegistry {
    * this is a singleton so private constructor
    */
   private FunctionRegistry() {
-    registerClass(RandomInteger.class);
-    registerClass(RandomDouble.class);
-    registerClass(RandomFloat.class);
-    registerClass(RandomLong.class);
-    registerClass(Random.class);
-    registerClass(UUID.class);
-    registerClass(Bool.class);
-    registerClass(Index.class);
-    registerClass(ResetIndex.class);
-    registerClass(LoremIpsum.class);
-    registerClass(Concat.class);
-    registerClass(ToUpper.class);
-    registerClass(ToLower.class);
-    registerClass(Substring.class);
-    registerClass(Phone.class);
-    registerClass(Gender.class);
-    registerClass(Date.class);
-    registerClass(DateFormat.class);
-    registerClass(AddDays.class);
-    registerClass(AddHours.class);
-    registerClass(AddMinutes.class);
-    registerClass(AddMonths.class);
-    registerClass(AddSeconds.class);
-    registerClass(AddWeeks.class);
-    registerClass(AddYears.class);
-    registerClass(Timestamp.class);
-    registerClass(Alpha.class);
-    registerClass(AlphaNumeric.class);
-    registerClass(City.class);
-    registerClass(Company.class);
-    registerClass(Country.class);
-    registerClass(Email.class);
-    registerClass(FirstName.class);
-    registerClass(LastName.class);
-    registerClass(Username.class);
-    registerClass(State.class);
-    registerClass(Street.class);
-    registerClass(Ssn.class);
-    registerClass(Ipv4.class);
-    registerClass(Ipv6.class);
-    registerClass(ObjectId.class);
-    registerClass(Hex.class);
-    registerClass(CountriesList.class);
-    registerClass(Put.class);
-    registerClass(Get.class);
+    Reflections reflections = new Reflections(getClass().getPackage().getName() + ".impl");
+    Set<Class<? extends Object>> functionClasses =
+            reflections.getTypesAnnotatedWith(Function.class);
+    for (Class<?> clazz: functionClasses) {
+      registerClass(clazz);
+    }
   }
 
   /**
