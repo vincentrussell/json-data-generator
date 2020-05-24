@@ -30,7 +30,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.version>3.0.4</maven.version>
         <maven-checkstyle-plugin.version>3.0.0</maven-checkstyle-plugin.version>
-        <checkstyle.version>8.11</checkstyle.version>
+        <checkstyle.version>8.29</checkstyle.version>
         <checkstyle.configLocation>${project.basedir}/src/test/resources/checkstyle/checkstyle_checks.xml</checkstyle.configLocation>
         <checkstyle.suppressions.file>${project.basedir}/src/test/resources/checkstyle/checkstyle_suppressions.xml</checkstyle.suppressions.file>
         <checkstyle.excludes>**/x/y/generated/GeneratedClass.java, **/generated/**</checkstyle.excludes>
