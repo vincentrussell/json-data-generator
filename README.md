@@ -1,4 +1,4 @@
-# json-data-generator
+# json-data-generator [![Maven Central](https://img.shields.io/maven-central/v/com.github.vincentrussell/json-data-generator.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22com.github.vincentrussell%22%20AND%20a:%22json-data-generator%22) [![Build Status](https://travis-ci.org/vincentrussell/json-data-generator.svg?branch=master)](https://travis-ci.org/vincentrussell/json-data-generator)
 
 json-data-generator helps you build json data that you need for test data purposes.   It has a lot of nice features that you can use to build as much test data as you need.
 
