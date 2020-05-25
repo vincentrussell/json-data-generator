@@ -13,11 +13,14 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.TimeZone;
 import java.util.regex.Pattern;
 
 import com.google.common.collect.Lists;
 import org.bitstrings.test.junit.runner.ClassLoaderPerTestRunner;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -29,12 +32,25 @@ import com.google.gson.JsonParser;
 @RunWith(ClassLoaderPerTestRunner.class)
 public class DefaultFunctionsTest {
 
-	private FunctionRegistry functionRegistry;
+    private static TimeZone DEFAULT_TIMEZONE = TimeZone.getDefault();
+
+    private FunctionRegistry functionRegistry;
+
+    @BeforeClass
+    public static void changeTimeZone() {
+        TimeZone.setDefault(TimeZone.getTimeZone("GMT"));
+    }
+
+    @AfterClass
+    public static void resetTimeZone() {
+        TimeZone.setDefault(DEFAULT_TIMEZONE);
+    }
 
     @Before
     public void registerClasses() {
         functionRegistry = FunctionRegistry.getInstance();
     }
+
 
     @Test
     public void randomInteger() throws InvocationTargetException, IllegalAccessException {
@@ -359,7 +375,7 @@ public class DefaultFunctionsTest {
     @Test
     public void dateFormat() throws ParseException, InvocationTargetException, IllegalAccessException {
         String result = functionRegistry.executeFunction("dateFormat", "06-16-1956 12:00:00", "dd-MM-yyyy HH:mm:ss", "EEEEE dd MMMMM yyyy HH:mm:ss.SSSZ");
-        assertEquals("Saturday 06 April 1957 12:00:00.000-0500", result);
+        assertEquals("Saturday 06 April 1957 12:00:00.000+0000", result);
     }
 
 
