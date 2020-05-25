@@ -14,6 +14,8 @@ import com.github.vincentrussell.json.datagenerator.functions.FunctionRegistry;
 /** An Arithmetic Grammar. */
 public class FunctionParser {
 
+  private static FunctionRegistry FUNCTIONREGISTRY = FunctionRegistry.getInstance();
+
   /** Main entry point. */
   public static void main(String args[]) {
     System.out.println("Reading from standard input...");

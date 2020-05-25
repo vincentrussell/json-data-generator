@@ -51,7 +51,7 @@ public final class FunctionRegistry {
    *
    * @return the singleton
    */
-  public static FunctionRegistry getInstance() {
+  public static synchronized FunctionRegistry getInstance() {
     if (INSTANCE == null) {
       INSTANCE = new FunctionRegistry();
     }
