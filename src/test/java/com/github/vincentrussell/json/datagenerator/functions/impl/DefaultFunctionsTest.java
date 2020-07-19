@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.TimeZone;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.google.common.collect.Lists;
@@ -677,13 +678,31 @@ public class DefaultFunctionsTest {
 		assertTrue(result.equals("India"));
 	}
 
-	@Test
+  @Test
   public void putAndGet() throws InvocationTargetException, IllegalAccessException {
       assertEquals("value", functionRegistry.executeFunction("put", "key", "value"));
       assertEquals("value", functionRegistry.executeFunction("get", "key"));
       assertEquals("value2", functionRegistry.executeFunction("put", "key", "value2"));
       assertEquals("value2", functionRegistry.executeFunction("get", "key"));
   }
+
+    @Test
+    public void regexify() throws InvocationTargetException, IllegalAccessException {
+        String regex = "[a-z1-9]{10}";
+        String[] args = new String[]{regex};
+        String result = functionRegistry.executeFunction("regexify", args);
+        Matcher alphaNumericMatcher = Pattern.compile(regex).matcher(result);
+        assertTrue(String.format("%s doesn't match regex: %s", result, regex),alphaNumericMatcher.find());
+    }
+
+    @Test
+    public void regexifyWithLocale() throws InvocationTargetException, IllegalAccessException {
+        String regex = "[a-z1-9]{10}";
+        String[] args = new String[]{"en-GB", regex};
+        String result = functionRegistry.executeFunction("regexify", args);
+        Matcher alphaNumericMatcher = Pattern.compile(regex).matcher(result);
+        assertTrue(alphaNumericMatcher.find());
+    }
 
     private List<String> getArrayAsListFromStaticField(Class<?> clazz, String fieldName) throws IllegalAccessException, NoSuchFieldException {
         Field field = clazz.getDeclaredField(fieldName);

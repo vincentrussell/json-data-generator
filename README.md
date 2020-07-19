@@ -490,6 +490,16 @@ retrieve a value from the cache:
 {{get("key"}}
 ```
 
+regexify (defaults to en-US local)... build string based on regex:
+```
+{{regexify("[a-z1-9]{10}")}}
+```
+
+regexify with local:
+```
+{{regexify("en-GB", "[a-z1-9]{10}")}}
+```
+
 
 ## Escape braces
 
@@ -626,6 +636,13 @@ java -cp json-data-generator-1.9-standalone.jar:yourfunctions.jar com.github.vin
 ```
 
 # Change Log
+
+## [1.10](https://github.com/vincentrussell/json-data-generator/tree/json-data-generator-1.10) (2020-07-19)
+
+**Improvements:**
+
+- upgrade ph-javacc-maven-plugin to 4.1.4
+- added the regexify function
 
 ## [1.9](https://github.com/vincentrussell/json-data-generator/tree/json-data-generator-1.9) (2019-01-01)
 
