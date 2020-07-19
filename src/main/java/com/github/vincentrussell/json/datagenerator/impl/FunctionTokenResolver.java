@@ -19,7 +19,7 @@ public class FunctionTokenResolver implements TokenResolver {
     public String resolveToken(final CharSequence s) {
         try {
             FunctionParser functionParser = new FunctionParser(
-                new ByteArrayInputStream(s.toString().getBytes(Charsets.UTF_8)));
+                new ByteArrayInputStream(s.toString().getBytes(Charsets.UTF_8)), Charsets.UTF_8);
             return functionParser.Parse();
         } catch (Throwable e) {
             throw new IllegalArgumentException(new StringBuilder("cannot parse function: ")
