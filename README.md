@@ -635,6 +635,13 @@ then you can put the jar that you have created on the classpath with the the sta
 java -cp json-data-generator-1.10-standalone.jar:yourfunctions.jar com.github.vincentrussell.json.datagenerator.CLIMain -s source.json -d destination.json -f my.package.NewFunction
 ```
 
+Or you add json-data-generator as a dependency to your application you can simply add your function to the registry like this:
+
+```
+FunctionRegistry functionRegistry = FunctionRegistry.getInstance(); 
+functionRegistry.registerClass(Customer.class);
+```
+
 # Change Log
 
 ## [1.10](https://github.com/vincentrussell/json-data-generator/tree/json-data-generator-1.10) (2020-07-19)
