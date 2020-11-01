@@ -106,6 +106,12 @@ You can also get a random repeat within a range like this:
 '{{repeat(2,9)}}',
 ```
 
+You can have a repeat not occur possibly by having 0 in the low end of the range:
+
+```
+'{{repeat(0,9)}}',
+```
+
 ## Available functions
 
 You can do a lot of cool functions in your puesdo json that that help you randomize your test data.
@@ -643,6 +649,13 @@ functionRegistry.registerClass(Customer.class);
 ```
 
 # Change Log
+
+## [1.11](https://github.com/vincentrussell/json-data-generator/tree/json-data-generator-1.11) (2020-11-02)
+
+**Improvements:**
+
+- allow repeat ranges with zero
+- changed repeat ranges to be inclusive
 
 ## [1.10](https://github.com/vincentrussell/json-data-generator/tree/json-data-generator-1.10) (2020-07-19)
 

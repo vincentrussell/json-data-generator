@@ -128,6 +128,16 @@ public class JsonDataGeneratorTest{
     }
 
     @Test
+    public void zeroRepeat() throws IOException, JsonDataGeneratorException {
+        classpathJsonTests("zeroRepeat.json");
+    }
+
+    @Test
+    public void zeroRepeatRange() throws IOException, JsonDataGeneratorException {
+        classpathJsonTests("zeroRepeatRange.json");
+    }
+
+    @Test
     public void repeatNonFunctionJsonArray() throws IOException, JsonDataGeneratorException {
         classpathJsonTests("repeatNonFunctionJsonArray.json");
     }

@@ -106,7 +106,7 @@ public class JsonDataGeneratorImpl implements JsonDataGenerator {
         throws JsonDataGeneratorException {
         try (ByteArrayBackupToFileOutputStream
             byteArrayBackupToFileOutputStream = new ByteArrayBackupToFileOutputStream()) {
-            handleRepeats(inputStream, byteArrayBackupToFileOutputStream);
+            handleRepeats(inputStream, byteArrayBackupToFileOutputStream, true);
             try (InputStream copyInputStream = byteArrayBackupToFileOutputStream
                 .getNewInputStream()) {
                 handleNestedFunctions(copyInputStream, outputStream);
@@ -118,7 +118,8 @@ public class JsonDataGeneratorImpl implements JsonDataGenerator {
 
     @SuppressWarnings({"checkstyle:linelength", "checkstyle:innerassignment",
         "checkstyle:methodlength", "checkstyle:magicnumber"})
-    private void handleRepeats(final InputStream inputStream, final OutputStream outputStream)
+    private void handleRepeats(final InputStream inputStream, final OutputStream outputStream,
+                               final boolean shouldWriteToRepeatStream)
         throws IOException {
         final BufferedReader bufferedReader =
             new BufferedReader(new InputStreamReader(inputStream, Charsets.UTF_8));
@@ -168,8 +169,7 @@ public class JsonDataGeneratorImpl implements JsonDataGenerator {
                                 try (ByteArrayBackupToFileOutputStream recursiveOutputStream = new ByteArrayBackupToFileOutputStream()) {
                                     try (InputStream newCopyOutputStreamNewInputStream = newCopyOutputStream
                                         .getNewInputStream()) {
-                                        handleRepeats(newCopyOutputStreamNewInputStream,
-                                            recursiveOutputStream);
+                                        handleRepeats(newCopyOutputStreamNewInputStream, recursiveOutputStream, !isRepeating || (isRepeating && repeatTimes > 0));
                                     }
                                     try (InputStream recursiveOutputStreamNewInputStream = recursiveOutputStream
                                         .getNewInputStream()) {
@@ -195,7 +195,7 @@ public class JsonDataGeneratorImpl implements JsonDataGenerator {
                                 try (ByteArrayBackupToFileOutputStream recursiveOutputStream = new ByteArrayBackupToFileOutputStream()) {
                                     try (InputStream inputStream1 = newCopyFileStream
                                         .getNewInputStream()) {
-                                        handleRepeats(inputStream1, recursiveOutputStream);
+                                        handleRepeats(inputStream1, recursiveOutputStream, shouldWriteToRepeatStream);
                                     }
                                     try (InputStream inputStream1 = recursiveOutputStream
                                         .getNewInputStream()) {
@@ -235,7 +235,7 @@ public class JsonDataGeneratorImpl implements JsonDataGenerator {
                                 try (InputStream newCopyOutputStreamNewInputStream = newCopyOutputStream
                                     .getNewInputStream()) {
                                     handleRepeats(newCopyOutputStreamNewInputStream,
-                                        recursiveOutputStream);
+                                        recursiveOutputStream, shouldWriteToRepeatStream);
                                 }
                                 try (InputStream recursiveOutputStreamNewInputStream = recursiveOutputStream
                                     .getNewInputStream()) {
@@ -312,7 +312,9 @@ public class JsonDataGeneratorImpl implements JsonDataGenerator {
         }
             bufferedReader.close();
             try (InputStream inputStream1 = tempBuffer.getNewInputStream()) {
-                IOUtils.copy(inputStream1, outputStream);
+                if (shouldWriteToRepeatStream) {
+                    IOUtils.copy(inputStream1, outputStream);
+                }
             }
         } finally {
             bufferedReader.close();
@@ -346,7 +348,7 @@ public class JsonDataGeneratorImpl implements JsonDataGenerator {
             if (integer.equals(integer2)) {
                 return integer;
             } else {
-                return new Random().nextInt(integer2 - integer) + integer;
+                return new Random().nextInt((integer2 - integer) + 1) + integer;
             }
         }
         throw new IllegalArgumentException(
