@@ -25,6 +25,7 @@ public class ByteArrayBackupToFileOutputStream extends OutputStream {
     private byte[] buf;
 
     private int count;
+    private int copyCount = 0;
     private final int sizeBeforeOverFlow;
     private File file = null;
     private FileOutputStream fileOutputStream = null;
@@ -193,6 +194,19 @@ public class ByteArrayBackupToFileOutputStream extends OutputStream {
     }
 
     /**
+     * Copy the contents of this {@link OutputStream} to a new {@link OutputStream}.
+     * @param outputStream
+     * @throws IOException
+     */
+    public void copyToOutputStream(final OutputStream outputStream) throws IOException {
+        try (InputStream repeatBufferNewInputStream = getNewInputStream()) {
+            IOUtils.copy(repeatBufferNewInputStream, outputStream);
+        } finally {
+            copyCount++;
+        }
+    }
+
+    /**
      * Marks the current position in this input stream.
      * @throws IOException if the length of {@link OutputStream} cannot be retrieved
      */
@@ -206,6 +220,7 @@ public class ByteArrayBackupToFileOutputStream extends OutputStream {
      * @throws IOException if the length of {@link OutputStream} cannot be set
      */
     public void reset() throws IOException {
+        copyCount = 0;
         if (lastMark <= 0) {
             throw new IOException("mark has not been set yet.");
         }

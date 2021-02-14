@@ -159,11 +159,7 @@ public class JsonDataGeneratorImpl implements JsonDataGenerator {
                             }
 
                             try (ByteArrayBackupToFileOutputStream newCopyOutputStream = new ByteArrayBackupToFileOutputStream()) {
-                                try (InputStream repeatBufferNewInputStream = repeatBuffer
-                                    .getNewInputStream()) {
-                                    IOUtils
-                                        .copy(repeatBufferNewInputStream, newCopyOutputStream);
-                                }
+                                repeatBuffer.copyToOutputStream(newCopyOutputStream);
                                 copyRepeatStream(repeatTimes, repeatBuffer, newCopyOutputStream,
                                     COMMA_NEWLINE_BYTE_ARRAY);
                                 try (ByteArrayBackupToFileOutputStream recursiveOutputStream = new ByteArrayBackupToFileOutputStream()) {
@@ -171,11 +167,7 @@ public class JsonDataGeneratorImpl implements JsonDataGenerator {
                                         .getNewInputStream()) {
                                         handleRepeats(newCopyOutputStreamNewInputStream, recursiveOutputStream, !isRepeating || (isRepeating && repeatTimes > 0));
                                     }
-                                    try (InputStream recursiveOutputStreamNewInputStream = recursiveOutputStream
-                                        .getNewInputStream()) {
-                                        IOUtils.copy(recursiveOutputStreamNewInputStream,
-                                            outputStream);
-                                    }
+                                    recursiveOutputStream.copyToOutputStream(outputStream);
                                     repeatBuffer.setLength(0);
                                     tempBuffer.setLength(0);
                                     isRepeating = false;
@@ -185,10 +177,7 @@ public class JsonDataGeneratorImpl implements JsonDataGenerator {
                         } else if (bracketCount == -1) {
                             repeatBuffer.setLength(repeatBuffer.getLength() - 1);
                             try (ByteArrayBackupToFileOutputStream newCopyFileStream = new ByteArrayBackupToFileOutputStream()) {
-                                try (InputStream repeatBufferNewInputStream = repeatBuffer
-                                    .getNewInputStream()) {
-                                    IOUtils.copy(repeatBufferNewInputStream, newCopyFileStream);
-                                }
+                                repeatBuffer.copyToOutputStream(newCopyFileStream);
                                 copyRepeatStream(repeatTimes, repeatBuffer, newCopyFileStream,
                                     COMMA_NEWLINE_BYTE_ARRAY);
                                 newCopyFileStream.write(CLOSE_BRACKET_BYTE_ARRAY);
@@ -197,10 +186,7 @@ public class JsonDataGeneratorImpl implements JsonDataGenerator {
                                         .getNewInputStream()) {
                                         handleRepeats(inputStream1, recursiveOutputStream, shouldWriteToRepeatStream);
                                     }
-                                    try (InputStream inputStream1 = recursiveOutputStream
-                                        .getNewInputStream()) {
-                                        IOUtils.copy(inputStream1, outputStream);
-                                    }
+                                    recursiveOutputStream.copyToOutputStream(outputStream);
                                 }
                                 repeatBuffer.setLength(0);
                                 tempBuffer.setLength(0);
@@ -225,10 +211,7 @@ public class JsonDataGeneratorImpl implements JsonDataGenerator {
                     if (repeatBuffer.getLength() > 0 && !xmlRepeatTag.isEmpty() && repeatBuffer
                         .toString().endsWith(xmlRepeatTag)) {
                         try (ByteArrayBackupToFileOutputStream newCopyOutputStream = new ByteArrayBackupToFileOutputStream()) {
-                            try (InputStream repeatBufferNewInputStream = repeatBuffer
-                                .getNewInputStream()) {
-                                IOUtils.copy(repeatBufferNewInputStream, newCopyOutputStream);
-                            }
+                            repeatBuffer.copyToOutputStream(newCopyOutputStream);
                             copyRepeatStream(repeatTimes, repeatBuffer, newCopyOutputStream,
                                 NEWLINE_BYTE_ARRAY);
                             try (ByteArrayBackupToFileOutputStream recursiveOutputStream = new ByteArrayBackupToFileOutputStream()) {
@@ -237,11 +220,7 @@ public class JsonDataGeneratorImpl implements JsonDataGenerator {
                                     handleRepeats(newCopyOutputStreamNewInputStream,
                                         recursiveOutputStream, shouldWriteToRepeatStream);
                                 }
-                                try (InputStream recursiveOutputStreamNewInputStream = recursiveOutputStream
-                                    .getNewInputStream()) {
-                                    IOUtils.copy(recursiveOutputStreamNewInputStream,
-                                        outputStream);
-                                }
+                                recursiveOutputStream.copyToOutputStream(outputStream);
                                 repeatBuffer.setLength(0);
                                 tempBuffer.setLength(0);
                                 isRepeating = false;
@@ -293,10 +272,7 @@ public class JsonDataGeneratorImpl implements JsonDataGenerator {
                         tempBuffer.setLength(
                             tempBuffer.getLength() - numRepeats.length()
                                 - lastCharQueue.size() - 5);
-                        try (InputStream tempBufferNewInputStream = tempBuffer
-                            .getNewInputStream()) {
-                            IOUtils.copy(tempBufferNewInputStream, outputStream);
-                        }
+                        tempBuffer.copyToOutputStream(outputStream);
                         tempBuffer.setLength(0);
                         repeatBuffer.setLength(0);
                         isRepeating = true;
@@ -311,10 +287,8 @@ public class JsonDataGeneratorImpl implements JsonDataGenerator {
                 }
         }
             bufferedReader.close();
-            try (InputStream inputStream1 = tempBuffer.getNewInputStream()) {
-                if (shouldWriteToRepeatStream) {
-                    IOUtils.copy(inputStream1, outputStream);
-                }
+            if (shouldWriteToRepeatStream) {
+                tempBuffer.copyToOutputStream(outputStream);
             }
         } finally {
             bufferedReader.close();
@@ -326,9 +300,7 @@ public class JsonDataGeneratorImpl implements JsonDataGenerator {
         throws IOException {
         for (int j = 1; j < repeatTimes; j++) {
             newCopyFileStream.write(separatorBytes);
-            try (InputStream repeatBufferInputStream = repeatBuffer.getNewInputStream()) {
-                IOUtils.copy(repeatBufferInputStream, newCopyFileStream);
-            }
+            repeatBuffer.copyToOutputStream(newCopyFileStream);
         }
     }
 
