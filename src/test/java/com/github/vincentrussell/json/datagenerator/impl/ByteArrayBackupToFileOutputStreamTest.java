@@ -1,5 +1,6 @@
 package com.github.vincentrussell.json.datagenerator.impl;
 
+import com.google.common.io.CountingInputStream;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.TeeOutputStream;
@@ -14,6 +15,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Random;
@@ -64,17 +66,19 @@ public class ByteArrayBackupToFileOutputStreamTest {
     @Test
     public void overflowWithCopy() throws IOException {
         try (InputStream lipSumStream = ByteArrayBackupToFileOutputStreamTest.class.getResourceAsStream("/loremipsum.txt");
+             final CountingInputStream countingInputStream = new CountingInputStream(lipSumStream);
              ByteArrayBackupToFileOutputStream byteArrayBackupToFileOutputStream = new ByteArrayBackupToFileOutputStream(500, 1050)) {
 
-            IOUtils.write("I want to see if this overflows.\n", byteArrayBackupToFileOutputStream, "UTF-8");
-            IOUtils.copy(lipSumStream, byteArrayBackupToFileOutputStream);
+            String additionalData = "I want to see if this overflows.\n";
+            IOUtils.write(additionalData, byteArrayBackupToFileOutputStream, "UTF-8");
+            IOUtils.copy(countingInputStream, byteArrayBackupToFileOutputStream);
 
             try (InputStream inputStream = byteArrayBackupToFileOutputStream.getNewInputStream();
                  ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
                 assertTrue(FileInputStream.class.isInstance(inputStream));
                 IOUtils.copy(inputStream, outputStream);
-                //assertArrayEquals(bytes, outputStream.toByteArray());
-                //assertEquals(stream1.toString("UTF-8"), outputStream.toString("UTF-8") );
+                assertEquals(countingInputStream.getCount()
+                        + additionalData.getBytes(StandardCharsets.UTF_8).length, outputStream.toByteArray().length);
                 assertFalse(Hex.encodeHexString(outputStream.toByteArray()).contains("0000"));
             }
         }
