@@ -1,14 +1,29 @@
 package com.github.vincentrussell.json.datagenerator.impl;
 
+import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.output.TeeOutputStream;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Random;
 
 import static org.junit.Assert.*;
 
 public class ByteArrayBackupToFileOutputStreamTest {
+
+    @Rule
+    public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
     @Test
     public void notOverflow() throws IOException {
@@ -29,7 +44,7 @@ public class ByteArrayBackupToFileOutputStreamTest {
     }
 
     @Test
-    public void overflow() throws IOException {
+    public void overflowWithWrite() throws IOException {
         int size = 1000;
         byte[] bytes = new byte[size];
         new Random().nextBytes(bytes);
@@ -44,6 +59,53 @@ public class ByteArrayBackupToFileOutputStreamTest {
                 assertArrayEquals(bytes, outputStream.toByteArray());
             }
         }
+    }
+
+    @Test
+    public void overflowWithCopy() throws IOException {
+        try (InputStream lipSumStream = ByteArrayBackupToFileOutputStreamTest.class.getResourceAsStream("/loremipsum.txt");
+             ByteArrayBackupToFileOutputStream byteArrayBackupToFileOutputStream = new ByteArrayBackupToFileOutputStream(500, 1050)) {
+
+            IOUtils.write("I want to see if this overflows.\n", byteArrayBackupToFileOutputStream, "UTF-8");
+            IOUtils.copy(lipSumStream, byteArrayBackupToFileOutputStream);
+
+            try (InputStream inputStream = byteArrayBackupToFileOutputStream.getNewInputStream();
+                 ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+                assertTrue(FileInputStream.class.isInstance(inputStream));
+                IOUtils.copy(inputStream, outputStream);
+                //assertArrayEquals(bytes, outputStream.toByteArray());
+                //assertEquals(stream1.toString("UTF-8"), outputStream.toString("UTF-8") );
+                assertFalse(Hex.encodeHexString(outputStream.toByteArray()).contains("0000"));
+            }
+        }
+    }
+
+
+
+    @Test
+    public void overflowWithActualCharacters() throws IOException {
+        int size = 1000;
+
+        try (ByteArrayOutputStream stream1 = new ByteArrayOutputStream();
+             ByteArrayBackupToFileOutputStream stream2 = new ByteArrayBackupToFileOutputStream(1028, 1030);
+             TeeOutputStream teeOutputStream = new TeeOutputStream(stream2, stream1)) {
+            for (int i = 0; i < size; i++) {
+                IOUtils.write("I want to see if this overflows.\n", teeOutputStream, "UTF-8");
+            }
+            try (InputStream inputStream = stream2.getNewInputStream();
+                 ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+                assertTrue(FileInputStream.class.isInstance(inputStream));
+                IOUtils.copy(inputStream, outputStream);
+                assertEquals(stream1.toString("UTF-8"), outputStream.toString("UTF-8") );
+                assertFalse(Hex.encodeHexString(outputStream.toByteArray()).contains("0000"));
+            }
+        }
+    }
+
+    private Path getApprovalPath(String testName) {
+        final String basePath = Paths.get("src", "test", "resources", "approvals",
+                ByteArrayBackupToFileOutputStreamTest.class.getSimpleName()).toString();
+        return Paths.get(basePath, testName);
     }
 
     @Test

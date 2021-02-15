@@ -9,6 +9,8 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
@@ -104,6 +106,20 @@ public class JsonDataGeneratorTest{
     private Path getApprovalPath(String testName) {
         final String basePath = Paths.get("src", "test", "resources", "approvals", JsonDataGeneratorTest.class.getSimpleName()).toString();
         return Paths.get(basePath, testName);
+    }
+
+    @Test
+    public void copyRepeatsDoesNotAddNullCharacters() throws IOException, JsonDataGeneratorException {
+        File file = temporaryFolder.newFile();
+
+        try (InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream("large_repeats.json");
+        FileOutputStream fileOutputStream = new FileOutputStream(file)) {
+            new JsonDataGeneratorImpl().generateTestDataJson(inputStream, fileOutputStream);
+        } catch (Throwable t) {
+            throw new RuntimeException(t);
+        }
+        assertTrue(file.exists());
+       assertFalse(Hex.encodeHexString(FileUtils.readFileToByteArray(file)).contains("0000"));
     }
 
 

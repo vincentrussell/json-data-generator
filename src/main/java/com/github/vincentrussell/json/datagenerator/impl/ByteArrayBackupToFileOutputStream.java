@@ -1,18 +1,21 @@
 package com.github.vincentrussell.json.datagenerator.impl;
 
 import com.google.common.base.Charsets;
+import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.RandomAccessFile;
 import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 /**
@@ -26,6 +29,7 @@ public class ByteArrayBackupToFileOutputStream extends OutputStream {
 
     private int count;
     private int copyCount = 0;
+    private long byteLength = 0;
     private final int sizeBeforeOverFlow;
     private File file = null;
     private FileOutputStream fileOutputStream = null;
@@ -62,7 +66,8 @@ public class ByteArrayBackupToFileOutputStream extends OutputStream {
         if (minCapacity > sizeBeforeOverFlow && file == null) {
             file = File.createTempFile("temp", "temp");
             fileOutputStream = new FileOutputStream(file);
-            fileOutputStream.write(buf);
+            fileOutputStream.write(Arrays.copyOf(buf, count));
+            fileOutputStream.flush();
             buf = null;
             return;
         }
@@ -98,7 +103,8 @@ public class ByteArrayBackupToFileOutputStream extends OutputStream {
             return;
         }
         buf[count] = (byte) b;
-        count += 1;
+        count++;
+        byteLength++;
     }
 
     /**
@@ -118,6 +124,7 @@ public class ByteArrayBackupToFileOutputStream extends OutputStream {
 
 
         buf[--count] = (byte) 0;
+        byteLength--;
     }
 
     /**
@@ -131,19 +138,20 @@ public class ByteArrayBackupToFileOutputStream extends OutputStream {
         }
         ensureCapacity(count + len);
         if (buf == null) {
-            fileOutputStream.write(b);
+            fileOutputStream.write(b, 0, len);
             return;
         }
         System.arraycopy(b, off, buf, count, len);
         count += len;
+        byteLength += len;
     }
 
     /**
      * get the number or bytes written to the {@link OutputStream}
      * @return the size
      */
-    public synchronized int size() {
-        return count;
+    public synchronized long size() {
+        return byteLength;
     }
 
     /**
@@ -167,6 +175,14 @@ public class ByteArrayBackupToFileOutputStream extends OutputStream {
     }
 
     /**
+     * convert the current buffer for text... can be used for testing.
+     * @return the hex representation of the bytes in UTF-8
+     */
+    public String toHex() {
+        return Hex.encodeHexString(toString().getBytes(StandardCharsets.UTF_8));
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -175,7 +191,11 @@ public class ByteArrayBackupToFileOutputStream extends OutputStream {
             fileOutputStream.close();
         }
         if (file != null) {
-            FileUtils.forceDelete(file);
+            try {
+                FileUtils.forceDelete(file);
+            } catch (FileNotFoundException e) {
+                //noop
+            }
         }
     }
 
@@ -230,6 +250,7 @@ public class ByteArrayBackupToFileOutputStream extends OutputStream {
     private void shrink(final int newCapacity) {
         buf = Arrays.copyOf(buf, newCapacity);
         count = newCapacity;
+        byteLength = newCapacity;
     }
 
     /**
@@ -263,7 +284,7 @@ public class ByteArrayBackupToFileOutputStream extends OutputStream {
      */
     public long getLength() {
         if (buf != null) {
-            return count;
+            return byteLength;
         } else {
             return file.length();
         }
