@@ -173,7 +173,6 @@ public class JsonDataGeneratorTest{
         classpathJsonTests("putGetTest.json");
     }
 
-
     @Test
     public void repeatFunctionRangeJsonArrayNoQuotes() throws IOException, JsonDataGeneratorException {
         parser.generateTestDataJson(this.getClass().getClassLoader().getResource("repeatFunctionRangeJsonArrayNoQuotes.json"), outputStream);

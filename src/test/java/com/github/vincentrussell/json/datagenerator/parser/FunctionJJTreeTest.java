@@ -8,6 +8,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Random;
 
 import static org.junit.Assert.assertEquals;
@@ -25,56 +26,56 @@ public class FunctionJJTreeTest {
 
 
     @Test
-    public void testFunctionWithTwoStringsArgs() throws ParseException {
+    public void testFunctionWithTwoStringsArgs() throws ParseException, InvocationTargetException, IllegalAccessException {
         FunctionParser functionParser = new FunctionParser(new ByteArrayInputStream("test-concat(\"a\",\"b\")".getBytes()), Charsets.UTF_8);
         String result = functionParser.Parse();
         assertEquals("ab", result);
     }
 
     @Test
-    public void testFunctionWithTwoNumbersArgs() throws ParseException {
+    public void testFunctionWithTwoNumbersArgs() throws ParseException, InvocationTargetException, IllegalAccessException {
         FunctionParser functionParser = new FunctionParser(new ByteArrayInputStream("test-concat(1,23)".getBytes()), Charsets.UTF_8);
         String result = functionParser.Parse();
         assertEquals("123", result);
     }
 
     @Test
-    public void testFunctionWithOneStringOneNumberArgs() throws ParseException {
+    public void testFunctionWithOneStringOneNumberArgs() throws ParseException, InvocationTargetException, IllegalAccessException {
         FunctionParser functionParser = new FunctionParser(new ByteArrayInputStream("test-concat(\"a\",23)".getBytes()), Charsets.UTF_8);
         String result = functionParser.Parse();
         assertEquals("a23", result);
     }
 
     @Test
-    public void testFunctionWithOneStringOneFloatArgs() throws ParseException {
+    public void testFunctionWithOneStringOneFloatArgs() throws ParseException, InvocationTargetException, IllegalAccessException {
         FunctionParser functionParser = new FunctionParser(new ByteArrayInputStream("test-concat(\"a\",21231.342342)".getBytes()), Charsets.UTF_8);
         String result = functionParser.Parse();
         assertEquals("a21231.342342", result);
     }
 
     @Test
-    public void testFunctionWithNoArgs() throws ParseException {
+    public void testFunctionWithNoArgs() throws ParseException, InvocationTargetException, IllegalAccessException {
         FunctionParser functionParser = new FunctionParser(new ByteArrayInputStream("test-gender()".getBytes()), Charsets.UTF_8);
         String result = functionParser.Parse();
         assertTrue("male".equals(result) || "female".equals(result));
     }
 
     @Test
-    public void testFunctionWithArgsNested() throws ParseException {
+    public void testFunctionWithArgsNested() throws ParseException, InvocationTargetException, IllegalAccessException {
         FunctionParser functionParser = new FunctionParser(new ByteArrayInputStream("test-concat(\"a \",test-gender())".getBytes()), Charsets.UTF_8);
         String result = functionParser.Parse();
         assertTrue("a male".equals(result) || "a female".equals(result));
     }
 
     @Test
-    public void testFunctionWithArgsMultipleNested() throws ParseException {
+    public void testFunctionWithArgsMultipleNested() throws ParseException, InvocationTargetException, IllegalAccessException {
         FunctionParser functionParser = new FunctionParser(new ByteArrayInputStream("test-concat(test-concat(\"a \",test-gender()),\" is cool\")".getBytes()), Charsets.UTF_8);
         String result = functionParser.Parse();
         assertTrue("a male is cool".equals(result) || "a female is cool".equals(result));
     }
 
     @Test
-    public void canParseFloatingPointNumbers() throws ParseException {
+    public void canParseFloatingPointNumbers() throws ParseException, InvocationTargetException, IllegalAccessException {
         FunctionParser functionParser = new FunctionParser(new ByteArrayInputStream("test-floating(1.232,2.543)".getBytes()), Charsets.UTF_8);
         String result = functionParser.Parse();
         Float flo = Float.valueOf(result);
@@ -82,7 +83,7 @@ public class FunctionJJTreeTest {
     }
 
     @Test
-    public void canParseNegativeFloatingPointNumbers() throws ParseException {
+    public void canParseNegativeFloatingPointNumbers() throws ParseException, InvocationTargetException, IllegalAccessException {
         FunctionParser functionParser = new FunctionParser(new ByteArrayInputStream("test-floating(-3.543,-2.543)".getBytes()), Charsets.UTF_8);
         String result = functionParser.Parse();
         Float flo = Float.valueOf(result);
@@ -90,7 +91,7 @@ public class FunctionJJTreeTest {
     }
 
     @Test
-    public void canParseNegativeIntegers() throws ParseException {
+    public void canParseNegativeIntegers() throws ParseException, InvocationTargetException, IllegalAccessException {
         FunctionParser functionParser = new FunctionParser(new ByteArrayInputStream("test-integer(-20,-10)".getBytes()), Charsets.UTF_8);
         String result = functionParser.Parse();
         Integer integer = Integer.valueOf(result);

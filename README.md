@@ -242,7 +242,7 @@ random gender (male or female):
 {{gender()}}
 ```
 
-current date date:
+current date date (default format is: EEE, d MMM yyyy HH:mm:ss z):
 ```
 {{date()}}
 ```
