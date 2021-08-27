@@ -141,13 +141,14 @@ public final class CLIMain {
                     throw new IOException(destination + " already exists");
                 }
 
+                FunctionRegistry functionRegistry = new FunctionRegistry();
                 if (functionClasses != null) {
                     for (String functionClass : functionClasses) {
-                        FunctionRegistry.getInstance().registerClass(Class.forName(functionClass));
+                        functionRegistry.registerClass(Class.forName(functionClass));
                     }
                 }
 
-                JsonDataGenerator jsonDataGenerator = new JsonDataGeneratorImpl();
+                JsonDataGenerator jsonDataGenerator = new JsonDataGeneratorImpl(functionRegistry);
                 try (InputStream inputStream = new FileInputStream(sourceFile);
                      OutputStream outputStream = destinationFile != null
                              ? new FileOutputStream(destinationFile)

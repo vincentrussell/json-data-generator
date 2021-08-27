@@ -49,7 +49,7 @@ public class DefaultFunctionsTest {
 
     @Before
     public void registerClasses() {
-        functionRegistry = FunctionRegistry.getInstance();
+        functionRegistry = new FunctionRegistry();
     }
 
 

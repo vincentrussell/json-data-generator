@@ -644,11 +644,19 @@ java -cp json-data-generator-1.12-standalone.jar:yourfunctions.jar com.github.vi
 Or you add json-data-generator as a dependency to your application you can simply add your function to the registry like this:
 
 ```
-FunctionRegistry functionRegistry = FunctionRegistry.getInstance(); 
+FunctionRegistry functionRegistry = new FunctionRegistry(); 
 functionRegistry.registerClass(Customer.class);
+JsonDataGenerator jsonDataGenerator = new JsonDataGeneratorImpl(functionRegistry);
 ```
 
+
 # Change Log
+
+## [1.13](https://github.com/vincentrussell/json-data-generator/tree/json-data-generator-1.13) (2021-08-27)
+
+**Improvements:**
+
+- making the FunctionRegistry not be static
 
 ## [1.12](https://github.com/vincentrussell/json-data-generator/tree/json-data-generator-1.12) (2021-02-15)
 

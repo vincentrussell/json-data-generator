@@ -17,7 +17,11 @@ import java.lang.IllegalAccessException;
 /** An Arithmetic Grammar. */
 public class FunctionParser {
 
-  private static FunctionRegistry FUNCTIONREGISTRY = FunctionRegistry.getInstance();
+  private FunctionRegistry functionRegistry;
+
+  public void setFunctionRegistry(final FunctionRegistry functionRegistry) {
+    this.functionRegistry = functionRegistry;
+  }
 
   /** Main entry point. */
   public static void main(String args[]) {
@@ -139,7 +143,7 @@ String Parse() throws InvocationTargetException, IllegalAccessException : {
 }
 {
     (functionName=FunctionName()) (parameters=FormalParameters()) {
-        return FunctionRegistry.getInstance().executeFunction(functionName,parameters.length == 0 ? null : parameters);
+        return functionRegistry.executeFunction(functionName,parameters.length == 0 ? null : parameters);
     }
 }
 

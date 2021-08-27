@@ -3,6 +3,7 @@ package com.github.vincentrussell.json.datagenerator.impl;
 
 import com.github.vincentrussell.json.datagenerator.JsonDataGenerator;
 import com.github.vincentrussell.json.datagenerator.JsonDataGeneratorException;
+import com.github.vincentrussell.json.datagenerator.functions.FunctionRegistry;
 import com.google.common.base.Charsets;
 import org.apache.commons.collections4.queue.CircularFifoQueue;
 import org.apache.commons.io.IOUtils;
@@ -39,6 +40,15 @@ public class JsonDataGeneratorImpl implements JsonDataGenerator {
     private static final byte[] NEWLINE_BYTE_ARRAY = "\n".getBytes(Charsets.UTF_8);
     public static final int DEFAULT_READ_AHEAD_LIMIT = 1000;
     private static Pattern REPEAT_PARAMETERS_PATTERN = Pattern.compile("^(\\d+),*\\s*(\\d+)*$");
+    private final FunctionRegistry functionRegistry;
+
+    public JsonDataGeneratorImpl(final FunctionRegistry functionRegistry) {
+        this.functionRegistry = functionRegistry;
+    }
+
+    public JsonDataGeneratorImpl() {
+        this(new FunctionRegistry());
+    }
 
     /**
      * {@inheritDoc}
@@ -356,7 +366,8 @@ public class JsonDataGeneratorImpl implements JsonDataGenerator {
         final OutputStream outputStream)
         throws IOException {
         Reader reader = new FunctionReplacingReader(
-            new InputStreamReader(inputStream, Charsets.UTF_8), new FunctionTokenResolver());
+            new InputStreamReader(inputStream, Charsets.UTF_8),
+                new FunctionTokenResolver(functionRegistry));
 
         int data = 0;
         try {

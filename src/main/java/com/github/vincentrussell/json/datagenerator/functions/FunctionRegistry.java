@@ -26,8 +26,6 @@ import static org.apache.commons.lang.Validate.notNull;
  */
 public final class FunctionRegistry {
 
-  private static FunctionRegistry INSTANCE;
-
   private final Map<FunctionInvocationHolder,
       MethodAndObjectHolder> functionInvocationHolderMethodConcurrentHashMap =
       new ConcurrentHashMap<>();
@@ -37,25 +35,13 @@ public final class FunctionRegistry {
   /**
    * this is a singleton so private constructor
    */
-  private FunctionRegistry() {
+  public FunctionRegistry() {
     Reflections reflections = new Reflections(getClass().getPackage().getName() + ".impl");
     Set<Class<? extends Object>> functionClasses =
             reflections.getTypesAnnotatedWith(Function.class);
     for (Class<?> clazz: functionClasses) {
       registerClass(clazz);
     }
-  }
-
-  /**
-   * get an instance of this singleton
-   *
-   * @return the singleton
-   */
-  public static synchronized FunctionRegistry getInstance() {
-    if (INSTANCE == null) {
-      INSTANCE = new FunctionRegistry();
-    }
-    return INSTANCE;
   }
 
   /**

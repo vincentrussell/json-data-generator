@@ -2,6 +2,7 @@ package com.github.vincentrussell.json.datagenerator.impl;
 
 
 import com.github.vincentrussell.json.datagenerator.TokenResolver;
+import com.github.vincentrussell.json.datagenerator.functions.FunctionRegistry;
 import com.github.vincentrussell.json.datagenerator.parser.FunctionParser;
 import com.google.common.base.Charsets;
 import org.slf4j.Logger;
@@ -14,7 +15,13 @@ import java.io.ByteArrayInputStream;
  */
 public class FunctionTokenResolver implements TokenResolver {
 
+    private final FunctionRegistry functionRegistry;
+
     private static final Logger LOGGER = LoggerFactory.getLogger(FunctionTokenResolver.class);
+
+    public FunctionTokenResolver(final FunctionRegistry functionRegistry) {
+        this.functionRegistry = functionRegistry;
+    }
 
     /**
      * {@inheritDoc}
@@ -24,6 +31,7 @@ public class FunctionTokenResolver implements TokenResolver {
         try {
             FunctionParser functionParser = new FunctionParser(
                 new ByteArrayInputStream(s.toString().getBytes(Charsets.UTF_8)), Charsets.UTF_8);
+            functionParser.setFunctionRegistry(functionRegistry);
             return functionParser.Parse();
         } catch (Throwable e) {
             LOGGER.warn(e.getMessage(), e);

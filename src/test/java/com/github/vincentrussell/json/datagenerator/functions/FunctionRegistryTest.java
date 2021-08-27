@@ -22,7 +22,7 @@ public class FunctionRegistryTest {
 
     @Before
     public void loadFunctionRegistry() {
-        functionRegistry = FunctionRegistry.getInstance();
+        functionRegistry = new FunctionRegistry();
     }
 
     @Test
