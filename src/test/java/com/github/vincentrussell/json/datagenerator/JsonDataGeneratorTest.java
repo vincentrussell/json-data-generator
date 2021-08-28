@@ -298,7 +298,7 @@ public class JsonDataGeneratorTest{
            });
         }
 
-       List<Future<String>> futures = executorService.invokeAll(callables);
+        List<Future<String>> futures = executorService.invokeAll(callables);
         List<String> results = Lists.newArrayList(Iterables.transform(futures, new Function<Future<String>, String>() {
             @Override
             public @Nullable String apply(@Nullable Future<String> stringFuture) {

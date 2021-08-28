@@ -33,8 +33,7 @@ public final class FunctionRegistry {
   private final Map<Method, Object> methodInstanceMap = new ConcurrentHashMap<>();
   private final Set<String> nonOverridableFunctionNames = new HashSet<>();
   private final Map<String, String> getAndPutCache = new ConcurrentHashMap<>();
-  private final Map<String, IndexHolder>
-          stringIndexHolderMap = new ConcurrentHashMap<>();
+  private final Map<String, IndexHolder> stringIndexHolderMap = new ConcurrentHashMap<>();
 
   /**
    * this is a singleton so private constructor
