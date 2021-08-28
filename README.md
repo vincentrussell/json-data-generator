@@ -656,7 +656,7 @@ JsonDataGenerator jsonDataGenerator = new JsonDataGeneratorImpl(functionRegistry
 
 **Improvements:**
 
-- making the FunctionRegistry not be static
+- removing statics associated with FunctionRegistry to provide multithreaded support.
 
 ## [1.12](https://github.com/vincentrussell/json-data-generator/tree/json-data-generator-1.12) (2021-02-15)
 

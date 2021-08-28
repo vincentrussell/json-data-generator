@@ -6,7 +6,8 @@
       '{{repeat(3)}}',
       {
         id: '{{index("inner")}}',
-        name: 'nameValue'{{resetIndex("inner")}}
+        name: 'nameValue{{resetIndex("inner")}}',
+        value: 'valueValue{{index("value")}}'
       }
     ],
 }

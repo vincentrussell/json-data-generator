@@ -5,6 +5,8 @@ import com.github.approval.reporters.Reporters;
 import com.github.vincentrussell.json.datagenerator.functions.FunctionRegistry;
 import com.github.vincentrussell.json.datagenerator.functions.impl.Index;
 import com.github.vincentrussell.json.datagenerator.impl.JsonDataGeneratorImpl;
+import com.google.common.base.Function;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -13,6 +15,7 @@ import com.google.gson.JsonPrimitive;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.custommonkey.xmlunit.exceptions.XpathException;
@@ -33,7 +36,9 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.*;
 import java.util.regex.Pattern;
 
 import static org.hamcrest.CoreMatchers.isA;
@@ -270,6 +275,45 @@ public class JsonDataGeneratorTest{
     @Test
     public void resetIndex() throws IOException, JsonDataGeneratorException {
         classpathJsonTests("resetIndex.json");
+    }
+
+
+    @Test
+    public void multiThreadedTests() throws IOException, JsonDataGeneratorException, InterruptedException {
+        int concurrentSize = 20;
+        List<JsonDataGeneratorImpl> jsonDataGenerators = new ArrayList<>(concurrentSize);
+        for (int i = 0; i < concurrentSize; i++) {
+            jsonDataGenerators.add(new JsonDataGeneratorImpl());
+        }
+        ExecutorService executorService = Executors.newFixedThreadPool(concurrentSize);
+
+        List<Callable<String>> callables = new ArrayList<>(concurrentSize);
+        for (int i = 0; i < concurrentSize; i++) {
+            final JsonDataGeneratorImpl jsonDataGenerator = jsonDataGenerators.get(i);
+           callables.add(() -> {
+               ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+               jsonDataGenerator.generateTestDataJson(Thread.currentThread()
+                       .getContextClassLoader().getResourceAsStream("resetIndex.json"), byteArrayOutputStream);
+               return byteArrayOutputStream.toString("UTF-8");
+           });
+        }
+
+       List<Future<String>> futures = executorService.invokeAll(callables);
+        List<String> results = Lists.newArrayList(Iterables.transform(futures, new Function<Future<String>, String>() {
+            @Override
+            public @Nullable String apply(@Nullable Future<String> stringFuture) {
+                try {
+                    return stringFuture.get();
+                } catch (InterruptedException | ExecutionException e) {
+                   throw new RuntimeException(e);
+                }
+            }
+        }));
+
+        for (String string : results) {
+            Approvals.verify(string, getApprovalPath("multiThreadedTests.json"));
+        }
+
     }
 
     @Test
