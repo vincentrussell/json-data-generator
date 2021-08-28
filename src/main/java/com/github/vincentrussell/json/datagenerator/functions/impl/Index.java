@@ -2,10 +2,10 @@ package com.github.vincentrussell.json.datagenerator.functions.impl;
 
 import com.github.vincentrussell.json.datagenerator.functions.Function;
 import com.github.vincentrussell.json.datagenerator.functions.FunctionInvocation;
+import com.github.vincentrussell.json.datagenerator.functions.FunctionRegistry;
 import com.github.vincentrussell.json.datagenerator.impl.IndexHolder;
 
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * an incrementing index integer
@@ -13,11 +13,13 @@ import java.util.concurrent.ConcurrentHashMap;
 @Function(name = "index")
 public class Index {
 
-    static final Map<String, IndexHolder>
-        STRING_INDEX_HOLDER_MAP = new ConcurrentHashMap<>();
-
-
     static final String DEFAULT = "DEFAULT";
+
+    private final FunctionRegistry functionRegistry;
+
+    public Index(final FunctionRegistry functionRegistry) {
+        this.functionRegistry = functionRegistry;
+    }
 
     /**
      * function call with default index name
@@ -62,11 +64,12 @@ public class Index {
     }
 
     private IndexHolder getIndexHolder(final String indexName, final int startingPoint) {
-        if (STRING_INDEX_HOLDER_MAP.containsKey(indexName)) {
-            return STRING_INDEX_HOLDER_MAP.get(indexName);
+        Map<String, IndexHolder> stringIndexHolderMap = functionRegistry.getStringIndexHolderMap();
+        if (stringIndexHolderMap.containsKey(indexName)) {
+            return stringIndexHolderMap.get(indexName);
         }
         IndexHolder indexHolder = new IndexHolder(startingPoint);
-        STRING_INDEX_HOLDER_MAP.put(indexName, indexHolder);
+        stringIndexHolderMap.put(indexName, indexHolder);
         return indexHolder;
     }
 }

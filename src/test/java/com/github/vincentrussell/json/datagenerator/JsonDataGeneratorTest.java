@@ -2,6 +2,7 @@ package com.github.vincentrussell.json.datagenerator;
 
 import com.github.approval.Approvals;
 import com.github.approval.reporters.Reporters;
+import com.github.vincentrussell.json.datagenerator.functions.FunctionRegistry;
 import com.github.vincentrussell.json.datagenerator.functions.impl.Index;
 import com.github.vincentrussell.json.datagenerator.impl.JsonDataGeneratorImpl;
 import com.google.common.collect.Lists;
@@ -42,6 +43,7 @@ import static org.junit.Assert.*;
 public class JsonDataGeneratorTest{
 
     private JsonDataGeneratorImpl parser;
+    private FunctionRegistry functionRegistry;
     ByteArrayOutputStream outputStream;
 
     @Rule
@@ -52,9 +54,11 @@ public class JsonDataGeneratorTest{
 
     @Before
     public void setUp() {
-        parser = new JsonDataGeneratorImpl();
+        functionRegistry = new FunctionRegistry();
+        parser = new JsonDataGeneratorImpl(functionRegistry);
         outputStream = new ByteArrayOutputStream();
-        ((Map<?, ?>)ReflectionTestUtils.getField(Index.class,"STRING_INDEX_HOLDER_MAP")).clear();
+        functionRegistry.getGetAndPutCache().clear();
+        functionRegistry.getStringIndexHolderMap().clear();
         Approvals.setReporter(Reporters.console());
     }
 

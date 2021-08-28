@@ -1,5 +1,6 @@
 package com.github.vincentrussell.json.datagenerator.functions;
 
+import com.github.vincentrussell.json.datagenerator.impl.IndexHolder;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import org.apache.commons.lang.builder.EqualsBuilder;
@@ -31,6 +32,9 @@ public final class FunctionRegistry {
       new ConcurrentHashMap<>();
   private final Map<Method, Object> methodInstanceMap = new ConcurrentHashMap<>();
   private final Set<String> nonOverridableFunctionNames = new HashSet<>();
+  private final Map<String, String> getAndPutCache = new ConcurrentHashMap<>();
+  private final Map<String, IndexHolder>
+          stringIndexHolderMap = new ConcurrentHashMap<>();
 
   /**
    * this is a singleton so private constructor
@@ -45,6 +49,24 @@ public final class FunctionRegistry {
   }
 
   /**
+   * the cache that is used to gets and puts
+   * in the {@link com.github.vincentrussell.json.datagenerator.functions.impl.Get}
+   * and {@link com.github.vincentrussell.json.datagenerator.functions.impl.Put}
+   * @return the cache as map
+   */
+  public Map<String, String> getGetAndPutCache() {
+    return getAndPutCache;
+  }
+
+  /**
+   * get the map that is responsible for keeping track of indices via the {@link IndexHolder}
+   * @return the index holder as a map
+   */
+  public Map<String, IndexHolder> getStringIndexHolderMap() {
+    return stringIndexHolderMap;
+  }
+
+  /**
    * register a class that has functions
    *
    * @param clazz the class that has the {@link Function} and {@link FunctionInvocation}
@@ -54,7 +76,20 @@ public final class FunctionRegistry {
     checkClassValidity(clazz, annotation);
     try {
       for (String annotationName : annotation.name()) {
-        Object instance = clazz.newInstance();
+
+        int zeroArgConstructorCount = getZeroArgConstructorCount(clazz);
+        int functionRegistryConstructorArgumentCount = getFunctionRegistryConstructorArgumentCount(
+                clazz);
+
+        Object instance = null;
+        if (functionRegistryConstructorArgumentCount == 1) {
+          instance = clazz.getConstructors()[0].newInstance(this);
+        } else if (zeroArgConstructorCount == 1) {
+          instance = clazz.newInstance();
+        } else {
+          throw new IllegalArgumentException("proper constructor for class "
+                  + clazz + " cannot be found");
+        }
         for (final Method method : clazz.getDeclaredMethods()) {
           if (method.isAnnotationPresent(FunctionInvocation.class)) {
             checkMethodValidity(method);
@@ -74,7 +109,21 @@ public final class FunctionRegistry {
       throw new IllegalArgumentException(e);
     } catch (IllegalAccessException e) {
       throw new IllegalArgumentException(e);
+    } catch (InvocationTargetException e) {
+      throw new IllegalArgumentException(e);
     }
+  }
+
+  private int getFunctionRegistryConstructorArgumentCount(final Class<?> clazz) {
+    return Iterables.size(
+            Iterables.filter(Arrays.asList(clazz.getConstructors()),
+                    new Predicate<Constructor<?>>() {
+              @Override
+              public boolean apply(final Constructor<?> constructor) {
+                return constructor.getParameterTypes().length == 1
+                        && constructor.getParameterTypes()[0].equals(FunctionRegistry.class);
+              }
+            }));
   }
 
   private void checkMethodValidity(final Method method) {
@@ -129,15 +178,12 @@ public final class FunctionRegistry {
       }
     }
 
-    int zeroArgConstructorCount = Iterables.size(
-        Iterables.filter(Arrays.asList(clazz.getConstructors()), new Predicate<Constructor<?>>() {
-          @Override
-          public boolean apply(final Constructor<?> constructor) {
-            return constructor.getParameterTypes().length == 0;
-          }
-        }));
+    int zeroArgConstructorCount = getZeroArgConstructorCount(clazz);
 
-    if (zeroArgConstructorCount != 1) {
+    int functionRegistryConstructorArgumentCount = getFunctionRegistryConstructorArgumentCount(
+            clazz);
+
+    if (zeroArgConstructorCount != 1 && functionRegistryConstructorArgumentCount != 1) {
       throw new IllegalArgumentException(clazz.getName() + " must have a no-arg constructor");
     }
 
@@ -154,6 +200,17 @@ public final class FunctionRegistry {
           clazz.getName() + ": could not find any public methods annotated with "
               + FunctionInvocation.class.getName());
     }
+  }
+
+  private int getZeroArgConstructorCount(final Class<?> clazz) {
+    return Iterables.size(
+            Iterables.filter(Arrays.asList(clazz.getConstructors()),
+                    new Predicate<Constructor<?>>() {
+              @Override
+              public boolean apply(final Constructor<?> constructor) {
+                return constructor.getParameterTypes().length == 0;
+              }
+            }));
   }
 
   /**
