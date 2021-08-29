@@ -88,6 +88,27 @@ public class CLIMainTest {
         }
     }
 
+    @Test
+    public void pipeMode() throws IOException, JsonDataGeneratorException, ParseException, ClassNotFoundException, InterruptedException {
+        String name = "A green door";
+        exit.expectSystemExitWithStatus(0);
+        systemInMock.provideLines("{\n" +
+                "    \"id\": \"{{uuid()}}\",\n" +
+                "    \"name\": \"" + name + "\",\n" +
+                "    \"age\": {{integer(1,50)}},\n" +
+                "    \"price\": 12.50,\n" +
+                "    \"tags\": [\"home\", \"green\"]\n" +
+                "}");
+        try {
+            CLIMain.main(new String[]{"-p"});
+        } finally {
+            Thread.sleep(1000);
+            String result = systemOutRule.getLog();
+            JsonObject obj = (JsonObject)new com.google.gson.JsonParser().parse(result);
+            assertEquals(name,obj.get("name").getAsString());
+        }
+    }
+
     @Test(expected = FileNotFoundException.class)
     public void sourceFileNotFound() throws IOException, JsonDataGeneratorException, ParseException, ClassNotFoundException {
         sourceFile.delete();

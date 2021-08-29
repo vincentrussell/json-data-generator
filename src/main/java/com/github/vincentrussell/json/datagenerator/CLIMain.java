@@ -20,6 +20,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
@@ -73,6 +74,12 @@ public final class CLIMain {
         o.setRequired(false);
         options.addOption(o);
 
+        o = new Option("p", "pipeMode", false,
+                "pipe mode");
+        o.setRequired(false);
+        options.addOption(o);
+
+
         return options;
     }
 
@@ -95,7 +102,7 @@ public final class CLIMain {
 
             CommandLineParser parser = new DefaultParser();
             HelpFormatter help = new HelpFormatter();
-            help.setOptionComparator(new OptionComparator(Arrays.asList("s", "d", "f", "i", "t")));
+            help.setOptionComparator(new OptionComparator(Arrays.asList("s", "d", "f", "i", "t", "p")));
 
             CommandLine cmd = null;
             try {
@@ -103,6 +110,22 @@ public final class CLIMain {
 
                 String source = cmd.getOptionValue("s");
                 boolean interactiveMode = cmd.hasOption('i');
+                boolean pipeMode = cmd.hasOption('p');
+                String[] functionClasses = cmd.getOptionValues("f");
+                String timeZone = cmd.getOptionValue("t");
+
+
+                if (timeZone != null) {
+                    TimeZone.setDefault(TimeZone.getTimeZone(timeZone));
+                }
+
+
+                FunctionRegistry functionRegistry = new FunctionRegistry();
+                if (functionClasses != null) {
+                    for (String functionClass : functionClasses) {
+                        functionRegistry.registerClass(Class.forName(functionClass));
+                    }
+                }
 
                 if (interactiveMode) {
                     System.out.println(ENTER_JSON_TEXT);
@@ -110,21 +133,18 @@ public final class CLIMain {
                         1, TimeUnit.SECONDS);
                          OutputStream outputStream = new NonCloseableBufferedOutputStream(
                              System.out)) {
-                        IOUtils.write("\n\n\n\n\n", outputStream);
-                        JsonDataGenerator jsonDataGenerator = new JsonDataGeneratorImpl();
+                        IOUtils.write("\n\n\n\n\n", outputStream, StandardCharsets.UTF_8);
+                        JsonDataGenerator jsonDataGenerator = new JsonDataGeneratorImpl(functionRegistry);
                         jsonDataGenerator.generateTestDataJson(inputStream, outputStream);
                     }
-
+                    System.exit(0);
+                } else if (pipeMode) {
+                    JsonDataGenerator jsonDataGenerator = new JsonDataGeneratorImpl(functionRegistry);
+                    jsonDataGenerator.generateTestDataJson(System.in, System.out);
                     System.exit(0);
                 }
 
                 String destination = cmd.getOptionValue("d");
-                String[] functionClasses = cmd.getOptionValues("f");
-                String timeZone = cmd.getOptionValue("t");
-
-                if (timeZone != null) {
-                    TimeZone.setDefault(TimeZone.getTimeZone(timeZone));
-                }
 
                 if (source == null) {
                     throw new ParseException("Missing required option: s or i");
@@ -141,12 +161,6 @@ public final class CLIMain {
                     throw new IOException(destination + " already exists");
                 }
 
-                FunctionRegistry functionRegistry = new FunctionRegistry();
-                if (functionClasses != null) {
-                    for (String functionClass : functionClasses) {
-                        functionRegistry.registerClass(Class.forName(functionClass));
-                    }
-                }
 
                 JsonDataGenerator jsonDataGenerator = new JsonDataGeneratorImpl(functionRegistry);
                 try (InputStream inputStream = new FileInputStream(sourceFile);

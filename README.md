@@ -62,6 +62,7 @@ usage: [-s <arg>] [-d
  -f,--functionClasses <arg>   additional function classes that are on the
                               classpath and should be loaded
  -i,--interactiveMode         interactive mode
+ -p,--pipeMode                pipe mode
  -t,--timeZone <arg>          default time zone to use when dealing with dates
 ```
 
@@ -76,6 +77,12 @@ usage: [-s <arg>] [-d
     "price": 12.50,
     "tags": ["home", "green"]
 }
+```
+
+### pipeMode
+
+```
+cat putGetTest.json | java -jar json-data-generator-1.14.standalone.jar -p | jq  .code.rgba | jq length
 ```
 
 ### Repeats
@@ -651,6 +658,13 @@ JsonDataGenerator jsonDataGenerator = new JsonDataGeneratorImpl(functionRegistry
 
 
 # Change Log
+
+## [1.14](https://github.com/vincentrussell/json-data-generator/tree/json-data-generator-1.14) (2021-08-29)
+
+**Improvements:**
+
+- added -p for pipeMode to be used with unix pipes
+
 
 ## [1.13](https://github.com/vincentrussell/json-data-generator/tree/json-data-generator-1.13) (2021-08-28)
 
