@@ -225,9 +225,29 @@ public class JsonDataGeneratorTest{
         assertIsDate(dateFormat, obj.getAsJsonPrimitive("day2").getAsString());
     }
 
+    @Test
+    public void convertDateToTimestamp() throws IOException, JsonDataGeneratorException {
+        parser.generateTestDataJson("{\"day1\": \"{{put('date', date('dd-MM-yyyy HH:mm:ss'))}}\",\"day2\": \"{{toTimestamp(addDays(get('date'), 12), 'dd-MM-yyyy HH:mm:ss')}}\"}", outputStream);
+        String results = new String(outputStream.toByteArray());
+        JsonObject obj = (JsonObject) new com.google.gson.JsonParser().parse(results);
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+        assertIsDate(dateFormat, obj.getAsJsonPrimitive("day1").getAsString());
+        assertIsDateTimestamp(dateFormat, obj.getAsJsonPrimitive("day2").getAsString());
+    }
+
     private void assertIsDate(SimpleDateFormat dateFormat, String date) {
         try {
             Date dateObj = dateFormat.parse(date);
+            assertNotNull(dateObj);
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
+    private void assertIsDateTimestamp(SimpleDateFormat dateFormat, String timestamp) {
+        try {
+            Date dateObj = dateFormat.parse(dateFormat.format(new Date(Long.parseLong(timestamp))));
             assertNotNull(dateObj);
         } catch (ParseException e) {
             throw new RuntimeException(e);

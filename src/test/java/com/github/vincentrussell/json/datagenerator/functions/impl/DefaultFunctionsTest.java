@@ -346,6 +346,23 @@ public class DefaultFunctionsTest {
     }
 
     @Test
+    public void toTimestamp() throws InvocationTargetException, IllegalAccessException, ParseException {
+        String formattedDate = "Sat, 12 Feb 2022 21:01:21 GMT";
+        String result = functionRegistry.executeFunction("toTimestamp", formattedDate);
+        DateFormat dateFormat = new SimpleDateFormat(Date.DEFAULT_DATE_STRING);
+        assertEquals(result, dateFormat.parse(formattedDate).getTime() + "");
+    }
+
+    @Test
+    public void toTimestampWithDateFormat() throws InvocationTargetException, IllegalAccessException, ParseException {
+        String formattedDate = "12-02-2022 21:01:21";
+        String result = functionRegistry.executeFunction("toTimestamp", formattedDate, Date.DEFAULT_INPUT_FORMAT);
+        DateFormat dateFormat = new SimpleDateFormat(Date.DEFAULT_INPUT_FORMAT);
+        assertEquals(result, dateFormat.parse(formattedDate).getTime() + "");
+    }
+
+
+    @Test
     public void dateWithFormat() throws ParseException, InvocationTargetException, IllegalAccessException {
         String dateFormatText = "MMM yyyy HH:mm:ss z";
         SimpleDateFormat dateFormat = new SimpleDateFormat(dateFormatText);
