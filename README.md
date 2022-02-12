@@ -10,7 +10,7 @@ Add a dependency to `com.github.vincentrussell:json-data-generator`.
 <dependency>
    <groupId>com.github.vincentrussell</groupId>
    <artifactId>json-data-generator</artifactId>
-   <version>1.13</version>
+   <version>1.14</version>
 </dependency>
 ```
 
@@ -49,7 +49,7 @@ parser.generateTestDataJson(InputStream inputStream, OutputStream outputStream);
 ## Running it as a standalone jar
 
 ```
-java -jar json-data-generator-1.13-standalone.jar -s source.json -d destination.json
+java -jar json-data-generator-1.14-standalone.jar -s source.json -d destination.json
 ```
 ### Options
 
@@ -655,7 +655,7 @@ public class NewFunction {
 then you can put the jar that you have created on the classpath with the the standalone jar (-f registers one or more classes with the Function Registry):
 
 ```
-java -cp json-data-generator-1.13-standalone.jar:yourfunctions.jar com.github.vincentrussell.json.datagenerator.CLIMain -s source.json -d destination.json -f my.package.NewFunction
+java -cp json-data-generator-1.14-standalone.jar:yourfunctions.jar com.github.vincentrussell.json.datagenerator.CLIMain -s source.json -d destination.json -f my.package.NewFunction
 ```
 
 Or you add json-data-generator as a dependency to your application you can simply add your function to the registry like this:
