@@ -359,6 +359,16 @@ add (or subtract) years to date with default input format:
 {{addYears("03-11-2018 09:27:56", 12)}}
 ```
 
+convert date to timestamp with date format:
+```
+{{toTimestamp("03-11-2018 09:27:56", "dd-MM-yyyy HH:mm:ss")}}
+```
+
+convert date to timestamp with defaultFormat:
+```
+{{toTimestamp("Sat, 12 Feb 2022 21:01:21 GMT")}}
+```
+
 a json mapping with all country codes to mappings:
 ```
 {{countryList()}}
@@ -659,11 +669,12 @@ JsonDataGenerator jsonDataGenerator = new JsonDataGeneratorImpl(functionRegistry
 
 # Change Log
 
-## [1.14](https://github.com/vincentrussell/json-data-generator/tree/json-data-generator-1.14) (2021-08-29)
+## [1.14](https://github.com/vincentrussell/json-data-generator/tree/json-data-generator-1.14) (2022-02-12)
 
 **Improvements:**
 
 - added -p for pipeMode to be used with unix pipes
+- added the ability to convert dates to timestamp via toTimestampFunction
 
 
 ## [1.13](https://github.com/vincentrussell/json-data-generator/tree/json-data-generator-1.13) (2021-08-28)
