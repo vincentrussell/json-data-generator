@@ -363,6 +363,24 @@ public class DefaultFunctionsTest {
 
 
     @Test
+    public void toTimestampSeconds() throws InvocationTargetException, IllegalAccessException, ParseException {
+        String formattedDate = "Sat, 12 Feb 2022 21:01:21 GMT";
+        String result = functionRegistry.executeFunction("toTimestampSeconds", formattedDate);
+        DateFormat dateFormat = new SimpleDateFormat(Date.DEFAULT_DATE_STRING);
+        assertEquals(result, (dateFormat.parse(formattedDate).getTime() / 1000) + "");
+    }
+
+    @Test
+    public void toTimestampSecondsWithDateFormat() throws InvocationTargetException, IllegalAccessException, ParseException {
+        String formattedDate = "12-02-2022 21:01:21";
+        String result = functionRegistry.executeFunction("toTimestampSeconds", formattedDate, Date.DEFAULT_INPUT_FORMAT);
+        DateFormat dateFormat = new SimpleDateFormat(Date.DEFAULT_INPUT_FORMAT);
+        assertEquals(result, (dateFormat.parse(formattedDate).getTime() / 1000) + "");
+    }
+
+
+
+    @Test
     public void dateWithFormat() throws ParseException, InvocationTargetException, IllegalAccessException {
         String dateFormatText = "MMM yyyy HH:mm:ss z";
         SimpleDateFormat dateFormat = new SimpleDateFormat(dateFormatText);
@@ -534,7 +552,7 @@ public class DefaultFunctionsTest {
 
     @Test
     public void timestampSeconds() throws InvocationTargetException, IllegalAccessException, ParseException {
-        String result = functionRegistry.executeFunction("timestamp_seconds", null);
+        String result = functionRegistry.executeFunction("timestampSeconds", null);
         java.util.Date date = new java.util.Date();
         date.setTime(Long.parseLong(result));
         assertNotNull(date);
@@ -543,7 +561,7 @@ public class DefaultFunctionsTest {
 
     @Test
     public void timestampSecondsWithinRangeWithFormat() throws ParseException, InvocationTargetException, IllegalAccessException {
-        String result = functionRegistry.executeFunction("timestamp_seconds", "06-16-2012 12:00:00", "06-16-2015 12:00:00");
+        String result = functionRegistry.executeFunction("timestampSeconds", "06-16-2012 12:00:00", "06-16-2015 12:00:00");
         java.util.Date date = new java.util.Date();
         date.setTime(Long.parseLong(result));
         assertNotNull(date);

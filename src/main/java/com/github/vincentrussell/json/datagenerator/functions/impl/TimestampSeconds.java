@@ -11,16 +11,18 @@ import java.util.Calendar;
 /**
  * timestamp (seconds, between the current time and midnight, January 1, 1970 UTC):
  */
-@Function(name = "timestamp_seconds")
+@Function(name = "timestampSeconds")
 public class TimestampSeconds {
+
+    public static final int ONE_THOUSAND_MILLISECONDS = 1000;
 
     /**
      * timestamp based on "now"
      * @return the result
      */
     @FunctionInvocation
-    public String timestamp_seconds() {
-        return (new java.util.Date().getTime() / 1000) + "";
+    public String timestampSeconds() {
+        return (new java.util.Date().getTime() / ONE_THOUSAND_MILLISECONDS) + "";
     }
 
     /**
@@ -30,7 +32,7 @@ public class TimestampSeconds {
      * @return the result
      */
     @FunctionInvocation
-    public String timestamp_seconds(final String beginDate, final String endDate) {
+    public String timestampSeconds(final String beginDate, final String endDate) {
         try {
             DateFormat formatter = new SimpleDateFormat(Date.DEFAULT_INPUT_FORMAT);
             Calendar cal = Calendar.getInstance();
@@ -39,7 +41,7 @@ public class TimestampSeconds {
             cal.setTime(formatter.parse(endDate));
             Long endLong = cal.getTimeInMillis();
             long randomLong = (long) (beginLong + Math.random() * (endLong - beginLong));
-            return (randomLong / 1000) + "";
+            return (randomLong / ONE_THOUSAND_MILLISECONDS) + "";
         } catch (ParseException e) {
             throw new IllegalArgumentException(e);
         }
