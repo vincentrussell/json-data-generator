@@ -284,6 +284,16 @@ random timestamp (milliseconds since midnight, January 1, 1970 UTC) between two 
 {{timestamp("begin-date","end-date"}}
 ```
 
+current timestamp (seconds, between the current time and midnight, January 1, 1970 UTC):
+```
+{{timestampSeconds()}}
+```
+
+random timestamp (seconds since midnight, January 1, 1970 UTC) between two dates with default format (your input must be in this format EEE, d MMM yyyy HH:mm:ss z):
+```
+{{timestampSeconds("begin-date","end-date"}}
+```
+
 random country:
 ```
 {{country()}}
@@ -367,6 +377,16 @@ convert date to timestamp with date format:
 convert date to timestamp with defaultFormat:
 ```
 {{toTimestamp("Sat, 12 Feb 2022 21:01:21 GMT")}}
+```
+
+convert date to timestamp in seconds format with date format:
+```
+{{toTimestampSeconds("03-11-2018 09:27:56", "dd-MM-yyyy HH:mm:ss")}}
+```
+
+convert date to timestamp in seconds format with defaultFormat:
+```
+{{toTimestampSeconds("Sat, 12 Feb 2022 21:01:21 GMT")}}
 ```
 
 a json mapping with all country codes to mappings:
@@ -666,6 +686,16 @@ functionRegistry.registerClass(Customer.class);
 JsonDataGenerator jsonDataGenerator = new JsonDataGeneratorImpl(functionRegistry);
 ```
 
+# Change Log
+
+## [1.15](https://github.com/vincentrussell/json-data-generator/tree/json-data-generator-1.15) (TBD)
+
+**Improvements:**
+
+- created timeStampSeconds function
+- added the ability to convert dates to timestamp via toTimestampSeconds function
+
+
 
 # Change Log
 
@@ -674,7 +704,7 @@ JsonDataGenerator jsonDataGenerator = new JsonDataGeneratorImpl(functionRegistry
 **Improvements:**
 
 - added -p for pipeMode to be used with unix pipes
-- added the ability to convert dates to timestamp via toTimestampFunction
+- added the ability to convert dates to timestamp via toTimestamp function
 
 
 ## [1.13](https://github.com/vincentrussell/json-data-generator/tree/json-data-generator-1.13) (2021-08-28)
