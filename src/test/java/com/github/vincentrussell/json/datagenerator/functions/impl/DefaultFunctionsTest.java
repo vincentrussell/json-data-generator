@@ -533,6 +533,24 @@ public class DefaultFunctionsTest {
     }
 
     @Test
+    public void timestampSeconds() throws InvocationTargetException, IllegalAccessException, ParseException {
+        String result = functionRegistry.executeFunction("timestamp_seconds", null);
+        java.util.Date date = new java.util.Date();
+        date.setTime(Long.parseLong(result));
+        assertNotNull(date);
+        assertTrue(Long.parseLong(result) > 0);
+    }
+
+    @Test
+    public void timestampSecondsWithinRangeWithFormat() throws ParseException, InvocationTargetException, IllegalAccessException {
+        String result = functionRegistry.executeFunction("timestamp_seconds", "06-16-2012 12:00:00", "06-16-2015 12:00:00");
+        java.util.Date date = new java.util.Date();
+        date.setTime(Long.parseLong(result));
+        assertNotNull(date);
+        assertTrue(Long.parseLong(result) > 0);
+    }
+
+    @Test
     public void city() throws InvocationTargetException, IllegalAccessException, NoSuchFieldException {
         assertFunctionRandomFromField("city", City.class, "CITIES");
     }
