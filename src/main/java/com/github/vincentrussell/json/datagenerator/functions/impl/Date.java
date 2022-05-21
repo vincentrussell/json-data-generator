@@ -28,26 +28,40 @@ public class Date {
 
     /**
      * function call for now date with {@link SimpleDateFormat}
-     * @param format simple date format
+     * @param outputFormat simple date outputFormat
      * @return the result
      */
     @FunctionInvocation
-    public String date(final String format) {
-        return new SimpleDateFormat(format).format(new java.util.Date());
+    public String date(final String outputFormat) {
+        return new SimpleDateFormat(outputFormat).format(new java.util.Date());
     }
 
     /**
      * random date between begin date and end date
      * @param beginDate date with the dd-MM-yyyy HH:mm:ss format
      * @param endDate date with the dd-MM-yyyy HH:mm:ss format
-     * @param format output format in {@link SimpleDateFormat} format
+     * @param outputFormat output format in {@link SimpleDateFormat} format
      * @return formatted date
      */
     @FunctionInvocation
-    public String date(final String beginDate, final String endDate, final String format) {
+    public String date(final String beginDate, final String endDate, final String outputFormat) {
+        return date(beginDate, endDate, DEFAULT_INPUT_FORMAT, outputFormat);
+    }
+
+    /**
+     * random date between begin date and end date
+     * @param beginDate date with the dd-MM-yyyy HH:mm:ss format
+     * @param endDate date with the dd-MM-yyyy HH:mm:ss format
+     * @param inputFormat input format in {@link SimpleDateFormat} format
+     * @param outputFormat output format in {@link SimpleDateFormat} format
+     * @return formatted date
+     */
+    @FunctionInvocation
+    public String date(final String beginDate, final String endDate,
+                       final String inputFormat, final String outputFormat) {
         try {
-            DateFormat formatter = new SimpleDateFormat(DEFAULT_INPUT_FORMAT);
-            SimpleDateFormat dateFormat = new SimpleDateFormat(format);
+            DateFormat formatter = new SimpleDateFormat(inputFormat);
+            SimpleDateFormat dateFormat = new SimpleDateFormat(outputFormat);
             Calendar cal = Calendar.getInstance();
             cal.setTime(formatter.parse(beginDate));
             Long beginLong = cal.getTimeInMillis();
@@ -59,7 +73,6 @@ public class Date {
         } catch (ParseException e) {
             throw new IllegalArgumentException(e);
         }
-
     }
 
     /**

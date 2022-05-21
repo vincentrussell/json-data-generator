@@ -256,17 +256,23 @@ current date date (default format is: EEE, d MMM yyyy HH:mm:ss z):
 
 current date with format:
 ```
-{{date("java-simple-date-format")}}
+{{date("output-java-simple-date-format")}}
 ```
 
 random date between two dates with format (your input must be in this format dd-MM-yyyy HH:mm:ss):
 ```
-{{date("begin-date","end-date","java-simple-date-format"}}
+{{date("begin-date","end-date","output-java-simple-date-format")}}
 ```
+
+random date between two dates with format for input and output (both your start date and end date must be in the same format):
+```
+{{date("begin-date","end-date","input-java-simple-date-format","output-java-simple-date-format")}}
+```
+
 
 random date between two dates with default format (your input must be in this format EEE, d MMM yyyy HH:mm:ss z):
 ```
-{{date("begin-date","end-date"}}
+{{date("begin-date","end-date")}}
 ```
 
 convert date format from one format to another:
@@ -694,6 +700,7 @@ JsonDataGenerator jsonDataGenerator = new JsonDataGeneratorImpl(functionRegistry
 
 - created timeStampSeconds function
 - added the ability to convert dates to timestamp via toTimestampSeconds function
+- added the ability to pass in a particular input format for date function
 
 
 
