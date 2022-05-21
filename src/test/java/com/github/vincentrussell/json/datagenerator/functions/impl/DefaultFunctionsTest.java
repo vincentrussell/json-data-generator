@@ -10,6 +10,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -377,6 +379,31 @@ public class DefaultFunctionsTest {
         DateFormat dateFormat = new SimpleDateFormat(Date.DEFAULT_INPUT_FORMAT);
         assertEquals(result, (dateFormat.parse(formattedDate).getTime() / 1000) + "");
     }
+
+
+    @Test
+    public void timeNow() throws ParseException, InvocationTargetException, IllegalAccessException {
+        String result = functionRegistry.executeFunction("time");
+        LocalTime localTime = LocalTime.parse(result, DateTimeFormatter.ofPattern(Time.DEFAULT_INPUT_FORMAT));
+        assertNotNull(localTime);
+    }
+
+    @Test
+    public void timeNowWithFormat() throws ParseException, InvocationTargetException, IllegalAccessException {
+        String timeFormat = "HH:mm:ss";
+        String result = functionRegistry.executeFunction("time", timeFormat);
+        LocalTime localTime = LocalTime.parse(result, DateTimeFormatter.ofPattern(timeFormat));
+        assertNotNull(localTime);
+    }
+
+    @Test
+    public void randomTimeBetweenTwoTimes() throws ParseException, InvocationTargetException, IllegalAccessException {
+        String timeFormat = "HH:mm:ss";
+        String result = functionRegistry.executeFunction("time", "6:05PM", "6:07PM", timeFormat);
+        LocalTime localTime = LocalTime.parse(result, DateTimeFormatter.ofPattern(timeFormat));
+        assertNotNull(localTime);
+    }
+
 
 
 

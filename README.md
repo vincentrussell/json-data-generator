@@ -249,6 +249,22 @@ random gender (male or female):
 {{gender()}}
 ```
 
+current time (default format is: "h[:mm][ ]a"):
+```
+{{time()}}
+```
+
+current time with the time format specified:
+```
+{{time("HH:mm:ss")}}
+```
+
+random time between two times and the output format specified.  The input format must be "h[:mm][ ]a":
+```
+{{time("6:05PM", "6:07PM", "HH:mm:ss")}}
+```
+
+
 current date date (default format is: EEE, d MMM yyyy HH:mm:ss z):
 ```
 {{date()}}
@@ -701,6 +717,7 @@ JsonDataGenerator jsonDataGenerator = new JsonDataGeneratorImpl(functionRegistry
 - created timeStampSeconds function
 - added the ability to convert dates to timestamp via toTimestampSeconds function
 - added the ability to pass in a particular input format for date function
+- added time function
 
 
 
