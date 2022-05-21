@@ -399,6 +399,15 @@ public class DefaultFunctionsTest {
     }
 
     @Test
+    public void dateWithinRangeInputAndOutputFormat() throws ParseException, InvocationTargetException, IllegalAccessException {
+        String dateFormatText = "dd-MM-yyyy HH:mm:ss";
+        SimpleDateFormat dateFormat = new SimpleDateFormat(dateFormatText);
+        String result = functionRegistry.executeFunction("date", "06-16-1956 12:00:00", "06-16-1975 12:00:00", "dd-MM-yyyy HH:mm:ss", "dd-MM-yyyy HH:mm:ss");
+        java.util.Date date = dateFormat.parse(result);
+        assertNotNull(date);
+    }
+
+    @Test
     public void dateWithinRangeWithFormat() throws ParseException, InvocationTargetException, IllegalAccessException {
         String dateFormatText = "MMM yyyy HH:mm:ss z";
         SimpleDateFormat dateFormat = new SimpleDateFormat(dateFormatText);
