@@ -586,7 +586,7 @@ If you want to escape braces from within a function use a single escape characte
 
 ## Nesting functions
 
-jason-data-generator supports nesting functions as well.
+json-data-generator supports nesting functions as well.
 
 For example, if you wanted to create results that looked like dollar amounts you could do something like:
 
