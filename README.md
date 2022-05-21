@@ -188,17 +188,17 @@ random boolean with given probability:
 
 an incrementing index integer
 ```
-{{index()}
+{{index()}}
 ```
 
 a named incrementing index integer
 ```
-{{index("index-name")}
+{{index("index-name")}}
 ```
 
 an incrementing index integer with a specific starting point
 ```
-{{index(78)}
+{{index(78)}}
 ```
 
 an incrementing index integer with a name and a specific starting point
@@ -287,7 +287,7 @@ current timestamp (milliseconds, between the current time and midnight, January 
 
 random timestamp (milliseconds since midnight, January 1, 1970 UTC) between two dates with default format (your input must be in this format EEE, d MMM yyyy HH:mm:ss z):
 ```
-{{timestamp("begin-date","end-date"}}
+{{timestamp("begin-date","end-date")}}
 ```
 
 current timestamp (seconds, between the current time and midnight, January 1, 1970 UTC):
@@ -297,7 +297,7 @@ current timestamp (seconds, between the current time and midnight, January 1, 19
 
 random timestamp (seconds since midnight, January 1, 1970 UTC) between two dates with default format (your input must be in this format EEE, d MMM yyyy HH:mm:ss z):
 ```
-{{timestampSeconds("begin-date","end-date"}}
+{{timestampSeconds("begin-date","end-date")}}
 ```
 
 random country:
@@ -531,12 +531,12 @@ upper case a string:
 
 put a value in the cache:
 ```
-{{put("key", "VALUE"}}
+{{put("key", "VALUE")}}
 ```
 
 retrieve a value from the cache:
 ```
-{{get("key"}}
+{{get("key")}}
 ```
 
 regexify (defaults to en-US local)... build string based on regex:
