@@ -293,6 +293,27 @@ public class JsonDataGeneratorTest{
     }
 
     @Test
+    public void repeatWithSystemProperties() throws IOException, JsonDataGeneratorException {
+        System.setProperty("repeatTime", "10");
+        try {
+            parser.generateTestDataJson("{\n" +
+                    "    \"id\": \"dfasf235345345\",\n" +
+                    "    \"name\": \"A green door\",\n" +
+                    "    \"age\": 23,\n" +
+                    "    \"price\": 12.50,\n" +
+                    "    \"numbers\": ['{{repeat(systemProperty('repeatTime'),systemProperty('repeatTime'))}}',\n" +
+                    "             {{integer(1,100)}}]\n" +
+                    "}", outputStream);
+            String results = new String(outputStream.toByteArray());
+            JsonObject obj = (JsonObject) new com.google.gson.JsonParser().parse(results);
+            int numberSize = obj.getAsJsonArray("numbers").size();
+            assertEquals(10, numberSize);
+        } finally {
+            System.clearProperty("repeatTime");
+        }
+    }
+
+    @Test
     public void resetIndex() throws IOException, JsonDataGeneratorException {
         classpathJsonTests("resetIndex.json");
     }

@@ -7,7 +7,7 @@ import com.github.vincentrussell.json.datagenerator.functions.FunctionRegistry;
 import static org.apache.commons.lang.Validate.notNull;
 
 /**
- * store a value in the cache
+ * get a value from the cache
  */
 @Function(name = "get")
 public class Get {

@@ -119,6 +119,12 @@ You can have a repeat not occur possibly by having 0 in the low end of the range
 '{{repeat(0,9)}}',
 ```
 
+You can have a repeat based on a system property:
+
+```
+'{{repeat(systemProperty('lowerRange'),systemProperty('upperRange'))}}',
+```
+
 ## Available functions
 
 You can do a lot of cool functions in your puesdo json that that help you randomize your test data.
@@ -555,6 +561,11 @@ retrieve a value from the cache:
 {{get("key")}}
 ```
 
+retrieve a value from a system property:
+```
+{{systemProperty("property")}}
+```
+
 regexify (defaults to en-US local)... build string based on regex:
 ```
 {{regexify("[a-z1-9]{10}")}}
@@ -709,6 +720,13 @@ JsonDataGenerator jsonDataGenerator = new JsonDataGeneratorImpl(functionRegistry
 ```
 
 # Change Log
+
+## [1.16](https://github.com/vincentrussell/json-data-generator/tree/json-data-generator-1.16) (2022-06-04)
+
+**Improvements:**
+
+- created systemProperty function
+- repeats are now functions so it can support nested functions
 
 ## [1.15](https://github.com/vincentrussell/json-data-generator/tree/json-data-generator-1.15) (2022-05-22)
 
