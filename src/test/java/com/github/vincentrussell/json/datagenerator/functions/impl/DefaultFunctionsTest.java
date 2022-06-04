@@ -776,6 +776,14 @@ public class DefaultFunctionsTest {
   }
 
     @Test
+    public void putAndGetSystemProperty() throws InvocationTargetException, IllegalAccessException {
+        System.setProperty("key", "value");
+        assertEquals("value", functionRegistry.executeFunction("systemProperty", "key"));
+        System.setProperty("key", "value2");
+        assertEquals("value2", functionRegistry.executeFunction("systemProperty", "key"));
+    }
+
+    @Test
     public void regexify() throws InvocationTargetException, IllegalAccessException {
         String regex = "[a-z1-9]{10}";
         String[] args = new String[]{regex};

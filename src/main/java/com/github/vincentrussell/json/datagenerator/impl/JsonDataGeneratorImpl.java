@@ -21,9 +21,6 @@ import java.io.Reader;
 import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Random;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import static org.apache.commons.lang.Validate.isTrue;
 import static org.apache.commons.lang.Validate.notNull;
@@ -34,12 +31,11 @@ import static org.apache.commons.lang.Validate.notNull;
 public class JsonDataGeneratorImpl implements JsonDataGenerator {
 
     public static final String REPEAT = "'{{repeat(";
-    private static final String REPEAT_TEXT = REPEAT;
     private static final byte[] CLOSE_BRACKET_BYTE_ARRAY = "]".getBytes(Charsets.UTF_8);
     private static final byte[] COMMA_NEWLINE_BYTE_ARRAY = ",\n".getBytes(Charsets.UTF_8);
     private static final byte[] NEWLINE_BYTE_ARRAY = "\n".getBytes(Charsets.UTF_8);
     public static final int DEFAULT_READ_AHEAD_LIMIT = 1000;
-    private static Pattern REPEAT_PARAMETERS_PATTERN = Pattern.compile("^(\\d+),*\\s*(\\d+)*$");
+
     private final FunctionRegistry functionRegistry;
 
     public JsonDataGeneratorImpl(final FunctionRegistry functionRegistry) {
@@ -134,7 +130,7 @@ public class JsonDataGeneratorImpl implements JsonDataGenerator {
         final BufferedReader bufferedReader =
             new BufferedReader(new InputStreamReader(inputStream, Charsets.UTF_8));
         final CircularFifoQueue<Character> lastCharQueue =
-            new CircularFifoQueue<>(REPEAT_TEXT.length());
+            new CircularFifoQueue<>(REPEAT.length());
         final List<Character> xmlRepeatTagList = new LinkedList<>();
         boolean isRepeating = false;
         int bracketCount = 0;
@@ -251,21 +247,17 @@ public class JsonDataGeneratorImpl implements JsonDataGenerator {
                         i = bufferedReader.read();
                         charAsUTF8String = Character.valueOf((char) i).toString();
                         tempBuffer.write(charAsUTF8String.getBytes());
-                        String numRepeats = "";
-                        while (i != ')') {
-                            numRepeats = numRepeats + Character.toString((char) i);
+                        String repeatFunction = REPEAT;
+                        while (i != '}') {
+                            repeatFunction = repeatFunction + Character.toString((char) i);
                             i = bufferedReader.read();
                             charAsUTF8String = Character.valueOf((char) i).toString();
-                            if (i != ')') {
+                            if (i != '}') {
                                 tempBuffer.write(charAsUTF8String.getBytes());
                             }
                         }
                         //)}}'
                         tempBuffer.write((char) i);
-                        tempBuffer.write((char) (i = bufferedReader.read()));
-                        if (i != '}') {
-                            throw new IllegalStateException();
-                        }
                         tempBuffer.write((char) (i = bufferedReader.read()));
                         if (i != '}') {
                             throw new IllegalStateException();
@@ -278,10 +270,9 @@ public class JsonDataGeneratorImpl implements JsonDataGenerator {
                         if (i != ',') {
                             throw new IllegalStateException();
                         }
-                        repeatTimes = parseRepeats(numRepeats);
+                        repeatTimes = parseRepeats(repeatFunction);
                         tempBuffer.setLength(
-                            tempBuffer.getLength() - numRepeats.length()
-                                - lastCharQueue.size() - 5);
+                            tempBuffer.getLength() - repeatFunction.length() - 4);
                         tempBuffer.copyToOutputStream(outputStream);
                         tempBuffer.setLength(0);
                         repeatBuffer.setLength(0);
@@ -314,27 +305,11 @@ public class JsonDataGeneratorImpl implements JsonDataGenerator {
         }
     }
 
+    @SuppressWarnings("checkstyle:magicnumber")
     private int parseRepeats(final String repeatArguments) {
-        final Matcher matcher = REPEAT_PARAMETERS_PATTERN.matcher(repeatArguments);
-        if (matcher.find()) {
-            Integer integer = Integer.parseInt(matcher.group(1));
-            Integer integer2 = Integer.parseInt(matcher.group(1));
-            if (matcher.group(2) != null) {
-                integer2 = Integer.parseInt(matcher.group(2));
-            } else if (integer >= integer2 && !integer.equals(integer2)) {
-                throw new IllegalArgumentException(
-                    "the second number must be greater than the first number" + repeatArguments);
-            } else {
-                return integer;
-            }
-            if (integer.equals(integer2)) {
-                return integer;
-            } else {
-                return new Random().nextInt((integer2 - integer) + 1) + integer;
-            }
-        }
-        throw new IllegalArgumentException(
-            "invalid arguments for repeat function: " + repeatArguments);
+        FunctionTokenResolver functionTokenResolver = new FunctionTokenResolver(functionRegistry);
+        String result = functionTokenResolver.resolveToken(repeatArguments.substring(3));
+        return Integer.parseInt(result);
     }
 
     private String readAsString(final CircularFifoQueue<Character> characters) {
