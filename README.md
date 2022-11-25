@@ -307,7 +307,7 @@ current timestamp (milliseconds, between the current time and midnight, January 
 {{timestamp()}}
 ```
 
-random timestamp (milliseconds since midnight, January 1, 1970 UTC) between two dates with default format (your input must be in this format EEE, d MMM yyyy HH:mm:ss z):
+random timestamp (milliseconds since midnight, January 1, 1970 UTC) between two dates with default format (your input must be in this format dd-MM-yyyy HH:mm:ss):
 ```
 {{timestamp("begin-date","end-date")}}
 ```
